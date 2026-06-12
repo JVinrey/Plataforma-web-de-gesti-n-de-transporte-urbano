@@ -1,0 +1,7 @@
+export * from './HomePage'
+export * from './LoginPage'
+export * from './RegisterPage'
+export * from './RoutesPage'
+export * from './TripPage'
+export * from './ProfilePage'
+export * from './NotFoundPage'

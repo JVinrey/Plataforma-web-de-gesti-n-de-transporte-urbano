@@ -1,0 +1,93 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+ * Preferencias de accesibilidad (WCAG 2.2)
+ * El AccessibilityMenu aplica estas clases sobre <html> (document.documentElement).
+ * ------------------------------------------------------------------------- */
+
+:root {
+  --app-font-scale: 1;
+  --app-line-height: 1.5;
+  font-size: calc(100% * var(--app-font-scale));
+}
+
+body {
+  line-height: var(--app-line-height);
+  background-color: #ffffff;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tamaño de texto: 4 niveles (1.4.4 Cambio de tamaño del texto) */
+.text-size-small {
+  --app-font-scale: 0.875;
+}
+.text-size-normal {
+  --app-font-scale: 1;
+}
+.text-size-large {
+  --app-font-scale: 1.25;
+}
+.text-size-xlarge {
+  --app-font-scale: 1.5;
+}
+
+/* Espaciado de línea aumentado (1.4.12 Espaciado del texto) */
+.increased-spacing {
+  --app-line-height: 1.9;
+}
+.increased-spacing body * {
+  letter-spacing: 0.12em;
+  word-spacing: 0.16em;
+}
+
+/* Alto contraste (1.4.3 / 1.4.6 Contraste) */
+.high-contrast body {
+  background-color: #000000;
+  color: #ffffff;
+}
+.high-contrast a {
+  color: #ffd400;
+  text-decoration: underline;
+}
+.high-contrast button,
+.high-contrast [role='button'] {
+  outline: 2px solid #ffffff;
+}
+
+/* Fuente apta para dislexia */
+.dyslexia-font body,
+.dyslexia-font body * {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', Verdana, Arial, sans-serif !important;
+}
+
+/* Reducir animaciones (2.3.3 Animación por interacción) */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Fallback cuando el sistema operativo lo solicita */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Indicador de foco visible (2.4.7 Foco visible) */
+:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}
+.high-contrast :focus-visible {
+  outline-color: #ffd400;
+}
