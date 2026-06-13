@@ -62,6 +62,34 @@ export function useVehicles() {
   })
 }
 
+/** Parada de una ruta con su posición en el recorrido. */
+export interface RouteStop extends StopRow {
+  position: number
+}
+
+/**
+ * Paradas ordenadas de una ruta concreta (route_stops → stops).
+ * Devuelve la secuencia real del recorrido para dibujar la polilínea en el mapa.
+ */
+export function useRouteStops(routeId: string | null | undefined) {
+  return useQuery({
+    queryKey: ['route-stops', routeId],
+    enabled: !!routeId,
+    queryFn: async (): Promise<RouteStop[]> => {
+      const { data, error } = await supabase
+        .from('route_stops')
+        .select('position, stop:stops(*)')
+        .eq('route_id', routeId!)
+        .order('position', { ascending: true })
+      if (error) throw error
+      return (data ?? []).map((row) => ({
+        ...(row.stop as unknown as StopRow),
+        position: row.position,
+      }))
+    },
+  })
+}
+
 export interface FleetStats {
   total: number
   active: number

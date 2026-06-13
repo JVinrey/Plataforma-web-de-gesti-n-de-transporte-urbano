@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { useRoutes, useVehicles } from '../hooks/use-transit-data';
+import { useRoutes, useRouteStops, useStops, useVehicles } from '../hooks/use-transit-data';
 import type { RouteRow } from '../hooks/use-transit-data';
+import { MantaMap } from '../components/map';
+import type { MapVehicle } from '../components/map';
 
 type RouteStatus = RouteRow['status']; // 'on_time' | 'delayed' | 'off_line'
 
@@ -63,7 +65,7 @@ function RouteEditPanel({ route, onClose, onUpdate, onSuspend }: RouteEditPanelP
     <form
       onSubmit={handleSubmit}
       aria-label={`Editar despliegue de ${route.code}`}
-      className="absolute right-4 top-4 w-72 rounded-xl bg-surface-bright/95 p-lg shadow-lg backdrop-blur"
+      className="absolute right-4 top-4 z-[1000] w-72 rounded-xl bg-surface-bright/95 p-lg shadow-lg backdrop-blur"
     >
       <div className="mb-md flex items-center justify-between">
         <h3 className="text-title-lg font-bold text-primary">{route.code}</h3>
@@ -185,6 +187,25 @@ export default function RoutePlanningPage() {
 
   const [panelOpen, setPanelOpen] = useState(true);
   const [statusMessage, setStatusMessage] = useState('');
+
+  // Datos reales para el mapa de telemetría: recorrido de la ruta seleccionada,
+  // toda la red y vehículos en vivo posicionados sobre Manta.
+  const { data: routePath = [] } = useRouteStops(selected?.id ?? null);
+  const { data: allStops = [] } = useStops();
+  const mapVehicles = useMemo<MapVehicle[]>(
+    () =>
+      vehicles
+        .filter((v) => v.lat != null && v.lng != null)
+        .map((v) => ({
+          id: v.id,
+          plate: v.plate,
+          lat: v.lat,
+          lng: v.lng,
+          status: v.status,
+          routeLabel: v.route ? `${v.route.code} · ${v.route.name}` : undefined,
+        })),
+    [vehicles],
+  );
 
   const selectRoute = (route: PlannedRoute) => {
     setSelectedId(route.id);
@@ -452,20 +473,25 @@ export default function RoutePlanningPage() {
             <div className="col-span-12 space-y-lg lg:col-span-8">
               {/* Map telemetry panel */}
               <section
-                aria-label="Mapa de telemetría de rutas"
+                aria-label="Mapa de telemetría de rutas en Manta"
                 className="relative h-[420px] overflow-hidden rounded-xl border border-outline-variant/40 shadow-sm"
-                style={{
-                  backgroundColor: '#0b2138',
-                  backgroundImage:
-                    'linear-gradient(rgba(45, 212, 191, 0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(45, 212, 191, 0.12) 1px, transparent 1px)',
-                  backgroundSize: '32px 32px',
-                }}
               >
                 {/* Layer chip */}
-                <div className="absolute left-4 top-4 flex items-center gap-xs rounded-lg bg-black/40 px-3 py-1.5 font-label-lg text-white backdrop-blur-sm">
+                <div className="pointer-events-none absolute left-4 top-4 z-[500] flex items-center gap-xs rounded-lg bg-black/50 px-3 py-1.5 font-label-lg text-white backdrop-blur-sm">
                   <span className="material-symbols-outlined text-[18px]">layers</span>
-                  Layer: Route Telemetry
+                  {selected ? `Ruta ${selected.code} · ${mapVehicles.length} buses` : 'Route Telemetry'}
                 </div>
+
+                <MantaMap
+                  routePath={routePath}
+                  stops={allStops}
+                  vehicles={mapVehicles}
+                  ariaLabel={
+                    selected
+                      ? `Mapa de telemetría de la ruta ${selected.code} en Manta`
+                      : 'Mapa de telemetría de la red de Manta'
+                  }
+                />
 
                 {/* Route edit card — keyed por ruta para reiniciar el formulario al cambiar */}
                 {panelOpen && selected && (
@@ -477,32 +503,6 @@ export default function RoutePlanningPage() {
                     onSuspend={handleSuspend}
                   />
                 )}
-
-                {/* Map controls */}
-                <div className="absolute bottom-20 right-4 flex flex-col overflow-hidden rounded-lg bg-surface-bright shadow-md">
-                  <button
-                    type="button"
-                    className="px-2 py-1.5 text-on-surface transition-colors hover:bg-surface-container focus-visible:outline-3"
-                    aria-label="Acercar mapa"
-                  >
-                    <span className="material-symbols-outlined">add</span>
-                  </button>
-                  <div className="h-px bg-outline-variant" aria-hidden="true" />
-                  <button
-                    type="button"
-                    className="px-2 py-1.5 text-on-surface transition-colors hover:bg-surface-container focus-visible:outline-3"
-                    aria-label="Alejar mapa"
-                  >
-                    <span className="material-symbols-outlined">remove</span>
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  className="absolute bottom-4 right-4 rounded-lg bg-primary p-2.5 text-on-primary shadow-md transition-opacity hover:opacity-90 focus-visible:outline-3"
-                  aria-label="Centrar mapa en la flota"
-                >
-                  <span className="material-symbols-outlined">my_location</span>
-                </button>
               </section>
 
               {/* Stats bar */}

@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useDocumentTitle } from '../hooks/use-document-title';
-import { useRoutes } from '../hooks/use-transit-data';
+import { useRoutes, useRouteStops, useStops, useVehicles } from '../hooks/use-transit-data';
 import type { RouteRow } from '../hooks/use-transit-data';
+import { MantaMap } from '../components/map';
+import type { MapVehicle } from '../components/map';
 
 type Congestion = 'baja' | 'media' | 'alta';
 
@@ -95,6 +97,28 @@ export default function TripPlannerPage() {
     routeOptions.find((o) => o.recommended)?.id ||
     routeOptions[0]?.id ||
     '';
+
+  // Datos reales para el mapa: paradas del recorrido seleccionado, toda la
+  // red (cuando no hay selección) y vehículos en vivo de esa línea.
+  const { data: routePath = [] } = useRouteStops(effectiveRoute || null);
+  const { data: allStops = [] } = useStops();
+  const { data: vehicles = [] } = useVehicles();
+
+  const selectedRouteRow = routeRows.find((r) => r.id === effectiveRoute);
+  const mapVehicles = useMemo<MapVehicle[]>(
+    () =>
+      vehicles
+        .filter((v) => v.route_id === effectiveRoute)
+        .map((v) => ({
+          id: v.id,
+          plate: v.plate,
+          lat: v.lat,
+          lng: v.lng,
+          status: v.status,
+          routeLabel: v.route ? `${v.route.code} · ${v.route.name}` : undefined,
+        })),
+    [vehicles, effectiveRoute],
+  );
 
   const swapEnds = () => {
     setOrigin(destination);
@@ -407,100 +431,48 @@ export default function TripPlannerPage() {
           </ul>
         </main>
 
-        {/* Map */}
+        {/* Map — Leaflet real centrado en Manta con el recorrido seleccionado */}
         <section
           aria-label="Mapa del viaje planificado en Manta"
           className="relative m-lg flex-1 overflow-hidden rounded-2xl border border-outline-variant/50"
-          style={{
-            backgroundColor: '#e3edfa',
-            backgroundImage: 'radial-gradient(rgba(27, 58, 87, 0.18) 1px, transparent 1.5px)',
-            backgroundSize: '22px 22px',
-          }}
         >
           {/* Weather chip */}
-          <div className="absolute right-4 top-4 flex items-center gap-xs rounded-full bg-surface-bright px-4 py-2 font-label-lg font-semibold text-on-surface shadow-md">
+          <div className="pointer-events-none absolute right-4 top-4 z-[500] flex items-center gap-xs rounded-full bg-surface-bright px-4 py-2 font-label-lg font-semibold text-on-surface shadow-md">
             <span className="material-symbols-outlined text-[18px] text-[#c47d00]" aria-hidden="true">
               sunny
             </span>
             Manta: 28°C
           </div>
 
-          {/* Route line + endpoints */}
-          <svg
-            className="absolute inset-0 h-full w-full"
-            viewBox="0 0 800 600"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M 110 540 C 220 470, 230 300, 430 270 C 600 245, 640 180, 720 150"
-              fill="none"
-              stroke="#3f6f9e"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeDasharray="2 14"
-            />
-          </svg>
-          {/* Origin dot */}
-          <span
-            className="absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-primary shadow"
-            style={{ left: '13.75%', top: '90%' }}
-            aria-hidden="true"
-          />
-          {/* Destination pin */}
-          <span
-            className="material-symbols-outlined absolute -translate-x-1/2 -translate-y-full text-[36px] text-error"
-            style={{ left: '90%', top: '25%', fontVariationSettings: "'FILL' 1" }}
-            aria-hidden="true"
-          >
-            location_on
-          </span>
-
-          {/* Vehicle popup */}
-          <div className="absolute left-1/2 top-[46%] flex -translate-x-1/2 items-center gap-md rounded-xl border-2 border-secondary bg-surface-bright px-4 py-3 shadow-lg">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-on-secondary">
-              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
-                directions_bus
+          {/* Chip con la línea recomendada en vivo */}
+          {selectedRouteRow && (
+            <div className="absolute left-4 top-4 z-[500] flex items-center gap-sm rounded-xl border-2 border-secondary bg-surface-bright px-4 py-2 shadow-md">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-on-secondary">
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                  directions_bus
+                </span>
               </span>
-            </span>
-            <div>
-              <p className="font-body-md font-bold text-on-surface">Línea 14</p>
-              <p className="font-label-md text-on-surface-variant">A 2 min de tu ubicación</p>
+              <div>
+                <p className="font-body-md font-bold leading-tight text-on-surface">
+                  {selectedRouteRow.code}
+                </p>
+                <p className="font-label-md leading-tight text-on-surface-variant">
+                  {selectedRouteRow.name}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Map controls */}
-          <button
-            type="button"
-            className="absolute bottom-32 right-4 flex h-11 w-11 items-center justify-center rounded-full bg-surface-bright text-on-surface shadow-md transition-colors hover:bg-surface-container focus-visible:outline-3"
-            aria-label="Centrar en mi ubicación"
-          >
-            <span className="material-symbols-outlined">my_location</span>
-          </button>
-          <div className="absolute bottom-16 right-4 flex flex-col overflow-hidden rounded-full bg-surface-bright shadow-md">
-            <button
-              type="button"
-              className="px-2.5 py-2 text-on-surface transition-colors hover:bg-surface-container focus-visible:outline-3"
-              aria-label="Acercar mapa"
-            >
-              <span className="material-symbols-outlined">add</span>
-            </button>
-            <div className="mx-2 h-px bg-outline-variant" aria-hidden="true" />
-            <button
-              type="button"
-              className="px-2.5 py-2 text-on-surface transition-colors hover:bg-surface-container focus-visible:outline-3"
-              aria-label="Alejar mapa"
-            >
-              <span className="material-symbols-outlined">remove</span>
-            </button>
-          </div>
-          <button
-            type="button"
-            className="absolute bottom-4 right-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary text-on-primary shadow-md transition-opacity hover:opacity-90 focus-visible:outline-3"
-            aria-label="Cambiar capas del mapa"
-          >
-            <span className="material-symbols-outlined">layers</span>
-          </button>
+          <MantaMap
+            routePath={routePath}
+            stops={allStops}
+            vehicles={mapVehicles}
+            ariaLabel={
+              selectedRouteRow
+                ? `Mapa del recorrido de la línea ${selectedRouteRow.code} en Manta`
+                : 'Mapa de la red de transporte de Manta'
+            }
+          />
         </section>
       </div>
     </div>
