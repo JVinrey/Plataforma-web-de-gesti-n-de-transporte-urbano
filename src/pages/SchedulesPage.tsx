@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRoutes, useVehicles } from '../hooks/use-transit-data';
 
 /**
  * SchedulesPage - Transit Schedules & Dispatch
@@ -7,10 +8,20 @@ import { useState } from 'react';
  * - Full keyboard navigation
  * - Accessible form controls
  * - Screen reader friendly tables
+ * Datos en vivo desde Supabase (routes + vehicles).
  */
 export default function SchedulesPage() {
-  const [selectedRoute, setSelectedRoute] = useState('bus-1128');
+  const { data: routes = [] } = useRoutes();
+  const { data: vehicles = [] } = useVehicles();
+  const [selectedRoute, setSelectedRoute] = useState('');
   const [timeAdjustment, setTimeAdjustment] = useState(0);
+
+  // Selección efectiva: la elegida por el usuario o la primera ruta disponible.
+  const effectiveRoute = selectedRoute || routes[0]?.id || '';
+
+  const activeCount = vehicles.filter((v) => v.status !== 'maintenance').length;
+  const onTimeCount = vehicles.filter((v) => v.status === 'on_time').length;
+  const delayedCount = vehicles.filter((v) => v.status === 'delayed').length;
 
   const handleAdjustTiming = (minutes: number) => {
     setTimeAdjustment(timeAdjustment + minutes);
@@ -156,16 +167,16 @@ export default function SchedulesPage() {
           <div className="grid grid-cols-12 gap-lg mb-lg">
             <div className="col-span-12 lg:col-span-4 bg-white p-lg rounded-lg shadow-sm border border-outline-variant/30">
               <span className="text-label-md font-label-md text-primary bg-primary/10 px-2 py-1 rounded inline-block">Active Now</span>
-              <h3 className="text-display-lg font-bold text-on-surface mt-sm">42</h3>
+              <h3 className="text-display-lg font-bold text-on-surface mt-sm">{activeCount}</h3>
               <p className="text-body-md text-on-surface-variant">Buses currently in service</p>
               <div className="mt-lg flex items-center gap-lg">
                 <div className="flex items-center gap-1">
                   <div className="w-3 h-3 rounded-full bg-secondary"></div>
-                  <span className="text-label-lg text-on-surface-variant">38 On-Time</span>
+                  <span className="text-label-lg text-on-surface-variant">{onTimeCount} On-Time</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <div className="w-3 h-3 rounded-full bg-error"></div>
-                  <span className="text-label-lg text-on-surface-variant">4 Delayed</span>
+                  <span className="text-label-lg text-on-surface-variant">{delayedCount} Delayed</span>
                 </div>
               </div>
             </div>
@@ -199,14 +210,17 @@ export default function SchedulesPage() {
                   </label>
                   <select
                     id="fleet-id"
-                    value={selectedRoute}
+                    value={effectiveRoute}
                     onChange={(e) => setSelectedRoute(e.target.value)}
                     className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md py-2 px-3 focus:ring-2 focus:ring-primary"
-                    aria-label="Seleccionar vehículo de flota"
+                    aria-label="Seleccionar ruta de flota"
                   >
-                    <option value="bus-1128">Bus #1128 - Route 101</option>
-                    <option value="bus-4492">Bus #4492 - Route 202</option>
-                    <option value="bus-9921">Bus #9921 - Route 305</option>
+                    {routes.length === 0 && <option value="">Sin rutas disponibles</option>}
+                    {routes.map((route) => (
+                      <option key={route.id} value={route.id}>
+                        {route.code} - {route.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>

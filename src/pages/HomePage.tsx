@@ -1,9 +1,22 @@
 import { useNavigate } from 'react-router-dom'
 import { useDocumentTitle } from '../hooks/use-document-title'
+import { useRoutes } from '../hooks/use-transit-data'
 
 export function HomePage() {
   useDocumentTitle('Inicio')
   const navigate = useNavigate()
+  const { data: routes = [] } = useRoutes()
+
+  // Toma una incidencia real de la red: la primera ruta con retraso o fuera de servicio.
+  const affected = routes.find((r) => r.status === 'delayed' || r.status === 'off_line')
+  const serviceTitle = affected
+    ? affected.status === 'off_line'
+      ? `${affected.name} (${affected.code}) fuera de servicio`
+      : `${affected.name} (${affected.code}) con retraso`
+    : 'Servicio operando con normalidad'
+  const serviceDetail = affected
+    ? `Tramo ${affected.origin ?? '—'} → ${affected.destination ?? '—'}. Frecuencia habitual cada ${affected.frequency_minutes} min.`
+    : 'Todas las rutas de la red circulan según su horario previsto.'
 
   return (
     <section aria-labelledby="home-title" className="space-y-8">
@@ -21,8 +34,8 @@ export function HomePage() {
           <div className="mb-5 flex items-start justify-between gap-4">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">Actualización del servicio</p>
-              <h2 className="mt-1 text-2xl font-bold text-gray-900">Línea Azul con retraso de 15 min</h2>
-              <p className="mt-2 text-gray-700">Se mantiene el servicio mientras se realiza mantenimiento preventivo en un tramo principal.</p>
+              <h2 className="mt-1 text-2xl font-bold text-gray-900">{serviceTitle}</h2>
+              <p className="mt-2 text-gray-700">{serviceDetail}</p>
             </div>
             <button type="button" className="rounded-md border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-700" onClick={() => navigate('/rutas')}>
               Ver rutas

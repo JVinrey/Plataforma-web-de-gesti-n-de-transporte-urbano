@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useFleetStats } from '../hooks/use-transit-data';
+import type { VehicleWithRelations } from '../hooks/use-transit-data';
 
-interface Vehicle {
-  id: string;
-  route: string;
-  driver: string;
-  status: 'on-time' | 'delayed' | 'maintenance';
-  load: number;
-  lastUpdate: string;
+/** Tiempo relativo legible a partir de una marca ISO. */
+function timeAgo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const mins = Math.max(0, Math.round(diffMs / 60000));
+  if (mins === 0) return 'Just now';
+  if (mins === 1) return '1 min ago';
+  if (mins < 60) return `${mins} mins ago`;
+  const hours = Math.round(mins / 60);
+  return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
 }
 
 /**
@@ -16,21 +19,17 @@ interface Vehicle {
  * - Full keyboard navigation
  * - Screen reader friendly
  * - Accessible data tables
+ * Datos en vivo desde Supabase (tablas vehicles + routes + drivers).
  */
 export default function FleetPage() {
-  const [vehicles] = useState<Vehicle[]>([
-    { id: '#4021', route: 'Route 12B (Express)', driver: 'Marcus Thorne', status: 'delayed', load: 85, lastUpdate: '2 mins ago' },
-    { id: '#3855', route: 'Route 05 (Downtown)', driver: 'Sarah Jenkins', status: 'on-time', load: 42, lastUpdate: 'Just now' },
-    { id: '#5112', route: 'Route 22A (Airport)', driver: 'Elena Rodriguez', status: 'on-time', load: 15, lastUpdate: '5 mins ago' },
-    { id: '#4209', route: 'Route 09 (Harbor)', driver: 'David Chen', status: 'delayed', load: 60, lastUpdate: '8 mins ago' },
-  ]);
+  const { data: vehicles = [], isLoading, isError, stats } = useFleetStats();
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: VehicleWithRelations['status']) => {
     switch (status) {
-      case 'on-time':
+      case 'on_time':
         return { label: 'On Time', color: 'bg-secondary-container text-on-secondary-container' };
       case 'delayed':
-        return { label: 'Delayed (21m)', color: 'bg-error-container text-on-error-container' };
+        return { label: 'Delayed', color: 'bg-error-container text-on-error-container' };
       case 'maintenance':
         return { label: 'Maintenance', color: 'bg-outline text-on-surface-variant' };
       default:
@@ -155,7 +154,9 @@ export default function FleetPage() {
           <div className="flex justify-between items-end mb-lg">
             <div>
               <h2 className="text-headline-lg font-bold text-on-surface">Fleet Overview</h2>
-              <p className="text-body-md text-on-surface-variant">Real-time status of all 142 active transit units in Manta District.</p>
+              <p className="text-body-md text-on-surface-variant">
+                Real-time status of all {stats.total} registered transit units in Manta District.
+              </p>
             </div>
             <div className="flex gap-sm">
               <button className="px-md py-xs rounded-full border border-outline text-on-surface-variant font-label-lg flex items-center gap-xs hover:bg-surface-container transition-colors focus:ring-2 focus:ring-primary">
@@ -186,10 +187,14 @@ export default function FleetPage() {
               </div>
               <p className="font-label-lg text-on-surface-variant uppercase tracking-wider">Active Buses</p>
               <h3 className="text-[40px] font-bold text-on-surface mt-xs leading-none">
-                128<span className="text-headline-lg font-normal text-on-surface-variant ml-xs">/ 142</span>
+                {stats.active}
+                <span className="text-headline-lg font-normal text-on-surface-variant ml-xs">/ {stats.total}</span>
               </h3>
               <div className="w-full bg-surface-container h-1.5 rounded-full mt-lg">
-                <div className="bg-primary h-full rounded-full w-[90%]"></div>
+                <div
+                  className="bg-primary h-full rounded-full"
+                  style={{ width: `${stats.total ? (stats.active / stats.total) * 100 : 0}%` }}
+                ></div>
               </div>
             </div>
 
@@ -207,9 +212,12 @@ export default function FleetPage() {
                 </span>
               </div>
               <p className="font-label-lg text-on-surface-variant uppercase tracking-wider">On-Time Performance</p>
-              <h3 className="text-[40px] font-bold text-on-surface mt-xs leading-none">94.2%</h3>
+              <h3 className="text-[40px] font-bold text-on-surface mt-xs leading-none">{stats.onTimePercent}%</h3>
               <div className="w-full bg-surface-container h-1.5 rounded-full mt-lg">
-                <div className="bg-secondary h-full rounded-full w-[94%]"></div>
+                <div
+                  className="bg-secondary h-full rounded-full"
+                  style={{ width: `${stats.onTimePercent}%` }}
+                ></div>
               </div>
             </div>
 
@@ -224,7 +232,9 @@ export default function FleetPage() {
                 <span className="text-error font-label-lg font-bold">Requires Action</span>
               </div>
               <p className="font-label-lg text-on-error-container uppercase tracking-wider">Critical Alerts</p>
-              <h3 className="text-[40px] font-bold text-on-error-container mt-xs leading-none">06</h3>
+              <h3 className="text-[40px] font-bold text-on-error-container mt-xs leading-none">
+                {String(stats.delayed + stats.maintenance).padStart(2, '0')}
+              </h3>
             </div>
           </div>
 
@@ -266,18 +276,43 @@ export default function FleetPage() {
                   </tr>
                 </thead>
                 <tbody role="rowgroup" className="divide-y divide-outline-variant">
+                  {isLoading && (
+                    <tr role="row">
+                      <td className="px-lg py-xl text-center font-body-md text-on-surface-variant" colSpan={7} role="cell">
+                        Cargando flota…
+                      </td>
+                    </tr>
+                  )}
+                  {isError && !isLoading && (
+                    <tr role="row">
+                      <td className="px-lg py-xl text-center font-body-md text-error" colSpan={7} role="cell">
+                        No se pudo cargar la flota. Reintenta más tarde.
+                      </td>
+                    </tr>
+                  )}
+                  {!isLoading && !isError && vehicles.length === 0 && (
+                    <tr role="row">
+                      <td className="px-lg py-xl text-center font-body-md text-on-surface-variant" colSpan={7} role="cell">
+                        No hay vehículos registrados.
+                      </td>
+                    </tr>
+                  )}
                   {vehicles.map((vehicle) => {
                     const statusBadge = getStatusBadge(vehicle.status);
+                    const vehicleLabel = `#${vehicle.plate}`;
+                    const routeLabel = vehicle.route
+                      ? `${vehicle.route.code} (${vehicle.route.name})`
+                      : 'Sin ruta asignada';
                     return (
                       <tr key={vehicle.id} className="hover:bg-surface-container-low transition-colors" role="row">
                         <td className="px-lg py-md font-body-md font-bold text-primary" role="cell">
-                          {vehicle.id}
+                          {vehicleLabel}
                         </td>
                         <td className="px-lg py-md font-body-md text-on-surface" role="cell">
-                          {vehicle.route}
+                          {routeLabel}
                         </td>
                         <td className="px-lg py-md font-body-md text-on-surface" role="cell">
-                          {vehicle.driver}
+                          {vehicle.driver?.full_name ?? 'Sin conductor'}
                         </td>
                         <td className="px-lg py-md" role="cell">
                           <span
@@ -292,19 +327,19 @@ export default function FleetPage() {
                             <div className="w-12 bg-surface-container h-1.5 rounded-full">
                               <div
                                 className="bg-secondary h-full rounded-full"
-                                style={{ width: `${vehicle.load}%` }}
+                                style={{ width: `${vehicle.load_percent}%` }}
                               ></div>
                             </div>
-                            <span className="font-label-md text-on-surface-variant">{vehicle.load}%</span>
+                            <span className="font-label-md text-on-surface-variant">{vehicle.load_percent}%</span>
                           </div>
                         </td>
                         <td className="px-lg py-md font-label-md text-on-surface-variant" role="cell">
-                          {vehicle.lastUpdate}
+                          {timeAgo(vehicle.last_update)}
                         </td>
                         <td className="px-lg py-md" role="cell">
                           <button
                             className="text-on-surface-variant hover:text-primary focus:ring-2 focus:ring-primary rounded p-1"
-                            aria-label={`Más opciones para vehículo ${vehicle.id}`}
+                            aria-label={`Más opciones para vehículo ${vehicleLabel}`}
                           >
                             <span className="material-symbols-outlined">more_vert</span>
                           </button>
@@ -317,7 +352,9 @@ export default function FleetPage() {
             </div>
 
             <div className="p-md bg-surface-container-low border-t border-outline-variant flex justify-between items-center">
-              <p className="font-label-lg text-on-surface-variant">Showing 4 of 142 vehicles</p>
+              <p className="font-label-lg text-on-surface-variant">
+                Showing {vehicles.length} of {stats.total} vehicles
+              </p>
               <div className="flex gap-xs">
                 <button
                   className="p-1 rounded border border-outline-variant hover:bg-white focus:ring-2 focus:ring-primary"

@@ -1,18 +1,21 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDocumentTitle } from '../hooks/use-document-title'
+import { useAuthStore } from '../stores/auth-store'
 
 export function LoginPage() {
   useDocumentTitle('Iniciar sesión')
 
   const navigate = useNavigate()
-  const [email, setEmail] = useState('operador@manta.gov.ec')
+  const signIn = useAuthStore((state) => state.signIn)
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(true)
   const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (!email.trim()) {
@@ -26,6 +29,19 @@ export function LoginPage() {
     }
 
     setError('')
+    setSubmitting(true)
+    const { error: authError } = await signIn(email.trim(), password)
+    setSubmitting(false)
+
+    if (authError) {
+      setError(
+        authError === 'Invalid login credentials'
+          ? 'Correo o contraseña incorrectos.'
+          : authError,
+      )
+      return
+    }
+
     navigate('/')
   }
 
@@ -119,8 +135,13 @@ export function LoginPage() {
               Recordar sesión
             </label>
 
-            <button type="submit" className="w-full rounded-md bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2">
-              Iniciar sesión
+            <button
+              type="submit"
+              disabled={submitting}
+              aria-busy={submitting}
+              className="w-full rounded-md bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {submitting ? 'Iniciando sesión…' : 'Iniciar sesión'}
             </button>
 
             <div className="relative flex items-center py-1">

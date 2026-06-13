@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useRoutes, useVehicles } from '../hooks/use-transit-data';
+import type { RouteRow } from '../hooks/use-transit-data';
 
-type RouteStatus = 'on-time' | 'delayed' | 'off-line';
+type RouteStatus = RouteRow['status']; // 'on_time' | 'delayed' | 'off_line'
 
 interface PlannedRoute {
   id: string;
@@ -17,57 +19,6 @@ interface PlannedRoute {
   frequency: string;
 }
 
-const ROUTES: PlannedRoute[] = [
-  {
-    id: 'r-102a',
-    code: 'Route 102A',
-    name: 'Central Express',
-    origin: 'Central Mall',
-    destination: 'Harbor District',
-    buses: 6,
-    metric: '15m Interval',
-    metricIcon: 'schedule',
-    status: 'on-time',
-    frequency: '15m',
-  },
-  {
-    id: 'r-405',
-    code: 'Route 405',
-    name: 'Skyline Express',
-    origin: 'North Tech Park',
-    destination: 'Skyline Plaza',
-    buses: 4,
-    metric: '82% Load',
-    metricIcon: 'monitoring',
-    status: 'delayed',
-    frequency: '10m',
-  },
-  {
-    id: 'r-88',
-    code: 'Route 88',
-    name: 'Old Town Loop',
-    origin: 'Old Town Loop',
-    destination: 'University',
-    buses: 8,
-    metric: 'High Demand',
-    metricIcon: 'trending_up',
-    status: 'on-time',
-    frequency: '8m',
-  },
-  {
-    id: 'r-x1',
-    code: 'Express X-1',
-    name: 'Airport Direct',
-    origin: 'Airport Direct',
-    destination: 'Finance Square',
-    buses: 0,
-    metric: 'Maintenance',
-    metricIcon: 'build',
-    status: 'off-line',
-    frequency: '20m',
-  },
-];
-
 const SIDEBAR_LINKS = [
   { to: '/fleet', label: 'Fleet Dashboard', icon: 'dashboard' },
   { to: '/route-planning', label: 'Route Planning', icon: 'map' },
@@ -77,13 +28,124 @@ const SIDEBAR_LINKS = [
 
 function getStatusBadge(status: RouteStatus) {
   switch (status) {
-    case 'on-time':
+    case 'on_time':
       return { label: 'On Time', color: 'bg-secondary-container text-on-secondary-container' };
     case 'delayed':
-      return { label: 'Delayed (+8m)', color: 'bg-error-container text-on-error-container' };
-    case 'off-line':
+      return { label: 'Delayed', color: 'bg-error-container text-on-error-container' };
+    case 'off_line':
       return { label: 'Off-Line', color: 'bg-surface-container-highest text-on-surface-variant' };
   }
+}
+
+interface RouteEditPanelProps {
+  route: PlannedRoute;
+  onClose: () => void;
+  onUpdate: (values: { routeName: string; buses: string; frequency: string }) => void;
+  onSuspend: () => void;
+}
+
+/**
+ * Panel de edición de despliegue de una ruta. Mantiene su propio estado de
+ * formulario inicializado desde la ruta; el padre lo monta con `key={route.id}`
+ * para reiniciarlo al cambiar de ruta (en lugar de sincronizar con un efecto).
+ */
+function RouteEditPanel({ route, onClose, onUpdate, onSuspend }: RouteEditPanelProps) {
+  const [routeName, setRouteName] = useState(route.name);
+  const [buses, setBuses] = useState(String(route.buses));
+  const [frequency, setFrequency] = useState(route.frequency);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onUpdate({ routeName, buses, frequency });
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      aria-label={`Editar despliegue de ${route.code}`}
+      className="absolute right-4 top-4 w-72 rounded-xl bg-surface-bright/95 p-lg shadow-lg backdrop-blur"
+    >
+      <div className="mb-md flex items-center justify-between">
+        <h3 className="text-title-lg font-bold text-primary">{route.code}</h3>
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-full p-1 text-on-surface-variant transition-colors hover:bg-surface-container focus-visible:outline-3"
+          aria-label="Cerrar panel de edición"
+        >
+          <span className="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div className="space-y-md">
+        <div>
+          <label htmlFor="route-name" className="mb-1 block font-label-md text-on-surface-variant">
+            Route Name
+          </label>
+          <input
+            id="route-name"
+            type="text"
+            value={routeName}
+            onChange={(e) => setRouteName(e.target.value)}
+            className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 font-body-md text-on-surface focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-sm">
+          <div>
+            <label htmlFor="route-buses" className="mb-1 block font-label-md text-on-surface-variant">
+              Buses
+            </label>
+            <select
+              id="route-buses"
+              value={buses}
+              onChange={(e) => setBuses(e.target.value)}
+              className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-2 py-2 font-body-md text-on-surface focus:ring-2 focus:ring-primary"
+            >
+              <option value="0">0 Units</option>
+              <option value="2">2 Units</option>
+              <option value="4">4 Units</option>
+              <option value="6">6 Units</option>
+              <option value="8">8 Units</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="route-freq" className="mb-1 block font-label-md text-on-surface-variant">
+              Freq.
+            </label>
+            <select
+              id="route-freq"
+              value={frequency}
+              onChange={(e) => setFrequency(e.target.value)}
+              className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-2 py-2 font-body-md text-on-surface focus:ring-2 focus:ring-primary"
+            >
+              <option value="5m">5m</option>
+              <option value="8m">8m</option>
+              <option value="10m">10m</option>
+              <option value="12m">12m</option>
+              <option value="15m">15m</option>
+              <option value="20m">20m</option>
+            </select>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className="flex w-full items-center justify-center gap-sm rounded-lg bg-primary px-lg py-2.5 font-label-lg font-bold text-on-primary transition-opacity hover:opacity-90 focus-visible:outline-3"
+        >
+          <span className="material-symbols-outlined text-[18px]">save</span>
+          Update Deployment
+        </button>
+        <button
+          type="button"
+          onClick={onSuspend}
+          className="w-full rounded-lg py-1 text-center font-label-lg font-bold text-error transition-colors hover:bg-error-container focus-visible:outline-3"
+        >
+          Suspend Route
+        </button>
+      </div>
+    </form>
+  );
 }
 
 /**
@@ -94,30 +156,51 @@ function getStatusBadge(status: RouteStatus) {
  * - Paleta con contraste >= 4.5:1 (1.4.3)
  */
 export default function RoutePlanningPage() {
-  const [selectedId, setSelectedId] = useState('r-405');
+  const { data: routeRows = [], isLoading } = useRoutes();
+  const { data: vehicles = [] } = useVehicles();
+
+  // Construye el modelo de vista de rutas a partir de los datos reales,
+  // contando los buses asignados a cada ruta desde la tabla vehicles.
+  const ROUTES = useMemo<PlannedRoute[]>(() => {
+    return routeRows.map((r) => {
+      const buses = vehicles.filter((v) => v.route_id === r.id).length;
+      return {
+        id: r.id,
+        code: r.code,
+        name: r.name,
+        origin: r.origin ?? '—',
+        destination: r.destination ?? '—',
+        buses,
+        metric: `${r.frequency_minutes}m Interval`,
+        metricIcon: 'schedule',
+        status: r.status,
+        frequency: `${r.frequency_minutes}m`,
+      };
+    });
+  }, [routeRows, vehicles]);
+
+  // Selección efectiva: la elegida por el usuario o la primera ruta disponible.
+  const [selectedId, setSelectedId] = useState('');
   const selected = ROUTES.find((r) => r.id === selectedId) ?? ROUTES[0];
 
-  const [routeName, setRouteName] = useState(selected.name);
-  const [buses, setBuses] = useState(String(selected.buses));
-  const [frequency, setFrequency] = useState(selected.frequency);
   const [panelOpen, setPanelOpen] = useState(true);
   const [statusMessage, setStatusMessage] = useState('');
 
   const selectRoute = (route: PlannedRoute) => {
     setSelectedId(route.id);
-    setRouteName(route.name);
-    setBuses(String(route.buses));
-    setFrequency(route.frequency);
     setPanelOpen(true);
     setStatusMessage('');
   };
 
-  const handleUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatusMessage(`Despliegue actualizado para ${selected.code}: ${routeName}, ${buses} unidades, frecuencia ${frequency}.`);
+  const handleUpdate = (values: { routeName: string; buses: string; frequency: string }) => {
+    if (!selected) return;
+    setStatusMessage(
+      `Despliegue actualizado para ${selected.code}: ${values.routeName}, ${values.buses} unidades, frecuencia ${values.frequency}.`,
+    );
   };
 
   const handleSuspend = () => {
+    if (!selected) return;
     setStatusMessage(`Ruta ${selected.code} suspendida.`);
   };
 
@@ -274,15 +357,21 @@ export default function RoutePlanningPage() {
                 </h3>
                 <dl className="mt-md grid grid-cols-3 gap-sm text-center">
                   <div>
-                    <dd className="text-[32px] font-bold leading-none text-secondary">24</dd>
+                    <dd className="text-[32px] font-bold leading-none text-secondary">
+                      {vehicles.filter((v) => v.status === 'on_time').length}
+                    </dd>
                     <dt className="mt-xs font-label-md text-on-surface-variant">Active</dt>
                   </div>
                   <div>
-                    <dd className="text-[32px] font-bold leading-none text-[#9a5b00]">3</dd>
+                    <dd className="text-[32px] font-bold leading-none text-[#9a5b00]">
+                      {vehicles.filter((v) => v.status === 'delayed').length}
+                    </dd>
                     <dt className="mt-xs font-label-md text-on-surface-variant">Delayed</dt>
                   </div>
                   <div>
-                    <dd className="text-[32px] font-bold leading-none text-error">1</dd>
+                    <dd className="text-[32px] font-bold leading-none text-error">
+                      {vehicles.filter((v) => v.status === 'maintenance').length}
+                    </dd>
                     <dt className="mt-xs font-label-md text-on-surface-variant">Inactive</dt>
                   </div>
                 </dl>
@@ -306,6 +395,12 @@ export default function RoutePlanningPage() {
                   </button>
                 </div>
                 <ul className="divide-y divide-outline-variant" role="list">
+                  {isLoading && (
+                    <li className="px-lg py-md font-label-lg text-on-surface-variant">Cargando rutas…</li>
+                  )}
+                  {!isLoading && ROUTES.length === 0 && (
+                    <li className="px-lg py-md font-label-lg text-on-surface-variant">No hay rutas registradas.</li>
+                  )}
                   {ROUTES.map((route) => {
                     const badge = getStatusBadge(route.status);
                     const isSelected = route.id === selectedId;
@@ -372,91 +467,15 @@ export default function RoutePlanningPage() {
                   Layer: Route Telemetry
                 </div>
 
-                {/* Route edit card */}
-                {panelOpen && (
-                  <form
-                    onSubmit={handleUpdate}
-                    aria-label={`Editar despliegue de ${selected.code}`}
-                    className="absolute right-4 top-4 w-72 rounded-xl bg-surface-bright/95 p-lg shadow-lg backdrop-blur"
-                  >
-                    <div className="mb-md flex items-center justify-between">
-                      <h3 className="text-title-lg font-bold text-primary">{selected.code}</h3>
-                      <button
-                        type="button"
-                        onClick={() => setPanelOpen(false)}
-                        className="rounded-full p-1 text-on-surface-variant transition-colors hover:bg-surface-container focus-visible:outline-3"
-                        aria-label="Cerrar panel de edición"
-                      >
-                        <span className="material-symbols-outlined">close</span>
-                      </button>
-                    </div>
-
-                    <div className="space-y-md">
-                      <div>
-                        <label htmlFor="route-name" className="mb-1 block font-label-md text-on-surface-variant">
-                          Route Name
-                        </label>
-                        <input
-                          id="route-name"
-                          type="text"
-                          value={routeName}
-                          onChange={(e) => setRouteName(e.target.value)}
-                          className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 font-body-md text-on-surface focus:ring-2 focus:ring-primary"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-sm">
-                        <div>
-                          <label htmlFor="route-buses" className="mb-1 block font-label-md text-on-surface-variant">
-                            Buses
-                          </label>
-                          <select
-                            id="route-buses"
-                            value={buses}
-                            onChange={(e) => setBuses(e.target.value)}
-                            className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-2 py-2 font-body-md text-on-surface focus:ring-2 focus:ring-primary"
-                          >
-                            <option value="2">2 Units</option>
-                            <option value="4">4 Units</option>
-                            <option value="6">6 Units</option>
-                            <option value="8">8 Units</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label htmlFor="route-freq" className="mb-1 block font-label-md text-on-surface-variant">
-                            Freq.
-                          </label>
-                          <select
-                            id="route-freq"
-                            value={frequency}
-                            onChange={(e) => setFrequency(e.target.value)}
-                            className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-2 py-2 font-body-md text-on-surface focus:ring-2 focus:ring-primary"
-                          >
-                            <option value="5m">5m</option>
-                            <option value="8m">8m</option>
-                            <option value="10m">10m</option>
-                            <option value="15m">15m</option>
-                            <option value="20m">20m</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <button
-                        type="submit"
-                        className="flex w-full items-center justify-center gap-sm rounded-lg bg-primary px-lg py-2.5 font-label-lg font-bold text-on-primary transition-opacity hover:opacity-90 focus-visible:outline-3"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">save</span>
-                        Update Deployment
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleSuspend}
-                        className="w-full rounded-lg py-1 text-center font-label-lg font-bold text-error transition-colors hover:bg-error-container focus-visible:outline-3"
-                      >
-                        Suspend Route
-                      </button>
-                    </div>
-                  </form>
+                {/* Route edit card — keyed por ruta para reiniciar el formulario al cambiar */}
+                {panelOpen && selected && (
+                  <RouteEditPanel
+                    key={selected.id}
+                    route={selected}
+                    onClose={() => setPanelOpen(false)}
+                    onUpdate={handleUpdate}
+                    onSuspend={handleSuspend}
+                  />
                 )}
 
                 {/* Map controls */}

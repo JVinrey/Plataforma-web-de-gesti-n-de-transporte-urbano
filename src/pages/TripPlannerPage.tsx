@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useDocumentTitle } from '../hooks/use-document-title';
+import { useRoutes } from '../hooks/use-transit-data';
+import type { RouteRow } from '../hooks/use-transit-data';
 
 type Congestion = 'baja' | 'media' | 'alta';
 
@@ -17,29 +19,23 @@ interface RouteOption {
   recommended?: boolean;
 }
 
-const ROUTE_OPTIONS: RouteOption[] = [
-  {
-    id: 'opt-1',
-    durationMin: 22,
-    arrival: '14:42',
-    cost: '$0.35',
-    congestion: 'baja',
-    line: 'L-14',
-    lineTone: 'primary',
-    walkMin: 4,
-    recommended: true,
-  },
-  {
-    id: 'opt-2',
-    durationMin: 28,
-    arrival: '14:48',
-    cost: '$0.35',
-    congestion: 'media',
-    line: 'L-08',
-    lineTone: 'soft',
-    walkMin: 6,
-  },
-];
+/** Mapea el estado de una ruta real al nivel de congestión mostrado al pasajero. */
+function congestionFromStatus(status: RouteRow['status']): Congestion {
+  switch (status) {
+    case 'on_time':
+      return 'baja';
+    case 'delayed':
+      return 'alta';
+    default:
+      return 'media';
+  }
+}
+
+/** Formatea una hora de llegada sumando los minutos de duración a la hora actual. */
+function arrivalIn(minutes: number): string {
+  const d = new Date(Date.now() + minutes * 60000);
+  return d.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
 
 const NAV_LINKS = [
   { to: '/', label: 'Home', icon: 'home' },
@@ -65,10 +61,40 @@ const PAGE_BG = '#edf3fb';
 export default function TripPlannerPage() {
   useDocumentTitle('Planificar viaje');
 
+  const { data: routeRows = [], isLoading } = useRoutes();
+
   const [origin, setOrigin] = useState('Terminal Terrestre');
   const [destination, setDestination] = useState('');
   const [lowFloor, setLowFloor] = useState(true);
-  const [selectedRoute, setSelectedRoute] = useState('opt-1');
+  const [selectedRoute, setSelectedRoute] = useState('');
+
+  // Construye las opciones de viaje a partir de las rutas reales disponibles
+  // (se excluyen las fuera de servicio), recomendando la más rápida.
+  const routeOptions = useMemo<RouteOption[]>(() => {
+    const available = routeRows.filter((r) => r.status !== 'off_line');
+    const fastest = available.reduce<RouteRow | null>(
+      (best, r) => (!best || r.estimated_time_minutes < best.estimated_time_minutes ? r : best),
+      null,
+    );
+    return available.map((r) => ({
+      id: r.id,
+      durationMin: r.estimated_time_minutes,
+      arrival: arrivalIn(r.estimated_time_minutes),
+      cost: `$${r.cost.toFixed(2)}`,
+      congestion: congestionFromStatus(r.status),
+      line: r.code,
+      lineTone: r.id === fastest?.id ? 'primary' : 'soft',
+      walkMin: Math.max(2, Math.round(r.frequency_minutes / 3)),
+      recommended: r.id === fastest?.id,
+    }));
+  }, [routeRows]);
+
+  // Selección efectiva: la elegida por el usuario o la ruta recomendada por defecto.
+  const effectiveRoute =
+    selectedRoute ||
+    routeOptions.find((o) => o.recommended)?.id ||
+    routeOptions[0]?.id ||
+    '';
 
   const swapEnds = () => {
     setOrigin(destination);
@@ -307,10 +333,16 @@ export default function TripPlannerPage() {
 
           {/* Mejores Rutas */}
           <h2 className="mt-lg text-2xl font-bold text-on-surface">Mejores Rutas</h2>
+          {isLoading && <p className="mt-md text-body-md text-on-surface-variant">Buscando rutas…</p>}
+          {!isLoading && routeOptions.length === 0 && (
+            <p className="mt-md text-body-md text-on-surface-variant">
+              No hay rutas disponibles en este momento.
+            </p>
+          )}
           <ul className="mt-md space-y-md" role="list">
-            {ROUTE_OPTIONS.map((opt) => {
+            {routeOptions.map((opt) => {
               const badge = CONGESTION_BADGE[opt.congestion];
-              const isSelected = opt.id === selectedRoute;
+              const isSelected = opt.id === effectiveRoute;
               return (
                 <li key={opt.id} className="relative">
                   {opt.recommended && (
