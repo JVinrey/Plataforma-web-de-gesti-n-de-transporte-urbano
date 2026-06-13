@@ -1,6 +1,125 @@
 @import 'tailwindcss';
 
 /* ---------------------------------------------------------------------------
+ * Sistema de diseño "Manta Transit" (paneles de control de flota)
+ * Tokens de color/espaciado tipo Material 3 usados por las páginas de
+ * administración (FleetPage, SchedulesPage, RoutePlanningPage).
+ * Paleta verificada para cumplir contraste WCAG 1.4.3 (texto sobre su fondo).
+ * ------------------------------------------------------------------------- */
+@theme {
+  /* Colores base */
+  --color-background: #f4f6fa;
+  --color-on-background: #1a1c1e;
+
+  --color-surface: #fdfdfd;
+  --color-surface-bright: #ffffff;
+  --color-surface-variant: #dde3ea;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f7f9;
+  --color-surface-container: #eef1f5;
+  --color-surface-container-high: #e7eaef;
+  --color-surface-container-highest: #e1e4e9;
+  --color-on-surface: #1a1c1e;
+  --color-on-surface-variant: #44474b;
+
+  --color-inverse-surface: #2c2f33;
+
+  /* Primario (azul marino) */
+  --color-primary: #1b3a57;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #d4e3f5;
+  --color-on-primary-container: #0d1f33;
+
+  /* Secundario (verde de estado / éxito) */
+  --color-secondary: #0f6b32;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d3f5de;
+  --color-on-secondary-container: #04401f;
+
+  /* Error */
+  --color-error: #b3261e;
+  --color-on-error: #ffffff;
+  --color-error-container: #f9dedc;
+  --color-on-error-container: #410e0b;
+
+  /* Bordes / contornos */
+  --color-outline: #6b6f76;
+  --color-outline-variant: #c4c7cc;
+
+  /* Espaciado nombrado (escala 4px) */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2.5rem;
+  --spacing-gutter: 1.5rem;
+  --spacing-margin-desktop: 2rem;
+}
+
+/* Tipografía Material 3 — solo tamaño/interlineado; el peso se controla con
+ * font-bold / font-semibold / font-normal explícitos en cada componente. */
+@utility text-display-lg {
+  font-size: 3.25rem;
+  line-height: 3.75rem;
+  letter-spacing: -0.015em;
+}
+@utility text-headline-lg {
+  font-size: 2rem;
+  line-height: 2.5rem;
+}
+@utility text-title-lg {
+  font-size: 1.375rem;
+  line-height: 1.75rem;
+}
+@utility font-title-lg {
+  font-size: 1.375rem;
+  line-height: 1.75rem;
+}
+@utility text-body-md {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+@utility font-body-md {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+@utility text-label-lg {
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+}
+@utility font-label-lg {
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+}
+@utility text-label-md {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+@utility font-label-md {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+/* Iconografía Material Symbols (cargada desde Google Fonts en index.html) */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+/* ---------------------------------------------------------------------------
  * Preferencias de accesibilidad (WCAG 2.2)
  * El AccessibilityMenu aplica estas clases sobre <html> (document.documentElement).
  * ------------------------------------------------------------------------- */

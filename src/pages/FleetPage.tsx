@@ -18,7 +18,7 @@ interface Vehicle {
  * - Accessible data tables
  */
 export default function FleetPage() {
-  const [vehicles, setVehicles] = useState<Vehicle[]>([
+  const [vehicles] = useState<Vehicle[]>([
     { id: '#4021', route: 'Route 12B (Express)', driver: 'Marcus Thorne', status: 'delayed', load: 85, lastUpdate: '2 mins ago' },
     { id: '#3855', route: 'Route 05 (Downtown)', driver: 'Sarah Jenkins', status: 'on-time', load: 42, lastUpdate: 'Just now' },
     { id: '#5112', route: 'Route 22A (Airport)', driver: 'Elena Rodriguez', status: 'on-time', load: 15, lastUpdate: '5 mins ago' },
