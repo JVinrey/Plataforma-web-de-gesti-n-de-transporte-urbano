@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Manta Transit | Fleet Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#623c00",
+                    "on-secondary-fixed": "#00210c",
+                    "surface-container-highest": "#d3e4fe",
+                    "surface-bright": "#f8f9ff",
+                    "surface-container-low": "#eff4ff",
+                    "outline": "#727781",
+                    "secondary-fixed": "#6bfe9c",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#ffddb9",
+                    "surface-container": "#e5eeff",
+                    "background": "#f8f9ff",
+                    "surface-variant": "#d3e4fe",
+                    "inverse-surface": "#213145",
+                    "primary-container": "#1b5e9b",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#cbdbf5",
+                    "on-primary-fixed": "#001c37",
+                    "primary-fixed-dim": "#a0c9ff",
+                    "outline-variant": "#c1c7d1",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#00467b",
+                    "on-secondary-container": "#00743a",
+                    "secondary": "#006d37",
+                    "secondary-container": "#6bfe9c",
+                    "on-primary-container": "#bad7ff",
+                    "tertiary-container": "#825100",
+                    "on-primary": "#ffffff",
+                    "surface": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#00497f",
+                    "tertiary-fixed-dim": "#ffb961",
+                    "on-background": "#0b1c30",
+                    "surface-container-high": "#dce9ff",
+                    "error": "#ba1a1a",
+                    "inverse-primary": "#a0c9ff",
+                    "surface-tint": "#1f619e",
+                    "on-tertiary-container": "#ffcb90",
+                    "on-secondary": "#ffffff",
+                    "inverse-on-surface": "#eaf1ff",
+                    "primary-fixed": "#d2e4ff",
+                    "on-surface": "#0b1c30",
+                    "on-tertiary-fixed": "#2b1700",
+                    "on-surface-variant": "#414750",
+                    "on-secondary-fixed-variant": "#005228",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#4ae183",
+                    "on-tertiary-fixed-variant": "#663e00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "12px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "base": "4px",
+                    "gutter": "24px",
+                    "margin-desktop": "32px",
+                    "xl": "32px",
+                    "xs": "8px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "title-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                    "label-md": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #dce9ff; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex overflow-hidden">
+<!-- SideNavBar Component (Rail) -->
+<aside class="bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant dark:border-outline shadow-sm flex flex-col h-screen w-64 left-0 top-0 fixed z-50 py-lg px-md">
+<!-- Brand Header -->
+<div class="mb-xl flex items-center gap-md">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">directions_bus</span>
+</div>
+<div>
+<h1 class="font-title-lg text-title-lg font-bold text-primary dark:text-primary-fixed-dim leading-none">Manta Transit</h1>
+<p class="font-label-lg text-label-lg text-on-surface-variant">Fleet Control Center</p>
+</div>
+</div>
+<!-- Main Navigation -->
+<nav class="flex-1 space-y-xs">
+<a class="bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-lg font-bold flex items-center gap-md px-md py-sm transition-all scale-95 opacity-90" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-lg text-label-lg">Fleet Dashboard</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high flex items-center gap-md px-md py-sm rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-label-lg text-label-lg">Route Planning</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high flex items-center gap-md px-md py-sm rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-lg text-label-lg">Schedules</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high flex items-center gap-md px-md py-sm rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-label-lg text-label-lg">Driver Performance</span>
+</a>
+</nav>
+<!-- CTA -->
+<button class="bg-primary text-on-primary font-bold py-md px-lg rounded-xl mb-xl flex items-center justify-center gap-sm hover:opacity-90 transition-all">
+<span class="material-symbols-outlined">add</span>
+            New Route
+        </button>
+<!-- Footer Links -->
+<div class="pt-lg border-t border-outline-variant space-y-xs">
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high flex items-center gap-md px-md py-sm rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-lg text-label-lg">Settings</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high flex items-center gap-md px-md py-sm rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="font-label-lg text-label-lg">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Shell -->
+<main class="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
+<!-- TopAppBar Component -->
+<header class="bg-surface-bright dark:bg-on-background border-b border-outline-variant dark:border-outline shadow-sm flex items-center justify-between px-margin-desktop h-16 w-full shrink-0">
+<div class="flex items-center gap-lg flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container rounded-full border-none focus:ring-2 focus:ring-primary font-body-md text-body-md" placeholder="Search fleet, routes, or drivers..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="hover:bg-surface-container-low dark:hover:bg-inverse-surface rounded-full p-2 text-on-surface-variant relative transition-shadow active:shadow-md">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="hover:bg-surface-container-low dark:hover:bg-inverse-surface rounded-full p-2 text-on-surface-variant transition-shadow active:shadow-md">
+<span class="material-symbols-outlined">history</span>
+</button>
+<div class="h-8 w-px bg-outline-variant mx-sm"></div>
+<button class="flex items-center gap-sm pl-2 pr-1 py-1 rounded-full hover:bg-surface-container-low transition-all">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Admin Manager</span>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-variant border border-outline-variant">
+<img alt="Manager Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiQz8vvmmW2UYIRsxxzh2BNpa9sgzf4ITbhk2Ay8jCCNabjrDJ1nc9I7QIjm35zy9jBed8Ec4QxHTE3aGfX2nBc33nh6M_NUcgbXgdVlnPQFaIYJfmh_r6mNqcj6rZSVmccx3IPsLmTneLGgNYmggVUi7F2UNhi1-CcST3UMnPPi7pAVjnsXKLSOXi4bHjNqRXAHEJm_ug0Qg18TgEmUD9GePI9PSw4LxgXG3hLZkJsr3oGVb-9LYaatR5th-IRIKWF0KKjKnD3ko"/>
+</div>
+</button>
+</div>
+</header>
+<!-- Scrollable Dashboard Content -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-margin-desktop">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-lg">
+<div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">Fleet Overview</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Real-time status of all 142 active transit units in Manta District.</p>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-xs rounded-full border border-outline text-on-surface-variant font-label-lg flex items-center gap-xs hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                        Filter
+                    </button>
+<button class="px-md py-xs rounded-full border border-outline text-on-surface-variant font-label-lg flex items-center gap-xs hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        Export Reports
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Key Metrics Cards (Row 1) -->
+<!-- Active Buses -->
+<div class="col-span-12 md:col-span-4 bg-surface-container-lowest rounded-xl p-lg shadow-[0px_1px_3px_rgba(0,0,0,0.05)] border border-transparent hover:shadow-[0px_4px_12px_rgba(0,0,0,0.08)] transition-shadow">
+<div class="flex justify-between items-start mb-md">
+<div class="p-xs bg-primary-container/10 rounded-lg">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">directions_bus</span>
+</div>
+<span class="text-secondary font-label-lg flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+                            +3%
+                        </span>
+</div>
+<p class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Active Buses</p>
+<h3 class="font-display-lg text-[40px] font-bold text-on-surface mt-xs leading-none">128<span class="text-headline-lg font-normal text-on-surface-variant ml-xs">/ 142</span></h3>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-lg">
+<div class="bg-primary h-full rounded-full w-[90%]"></div>
+</div>
+</div>
+<!-- On-Time Performance -->
+<div class="col-span-12 md:col-span-4 bg-surface-container-lowest rounded-xl p-lg shadow-[0px_1px_3px_rgba(0,0,0,0.05)] border border-transparent hover:shadow-[0px_4px_12px_rgba(0,0,0,0.08)] transition-shadow">
+<div class="flex justify-between items-start mb-md">
+<div class="p-xs bg-secondary-container/20 rounded-lg">
+<span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">schedule</span>
+</div>
+<span class="text-secondary font-label-lg flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+                            Optimal
+                        </span>
+</div>
+<p class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">On-Time Performance</p>
+<h3 class="font-display-lg text-[40px] font-bold text-on-surface mt-xs leading-none">94.2%</h3>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-lg">
+<div class="bg-secondary h-full rounded-full w-[94%]"></div>
+</div>
+</div>
+<!-- Active Alerts -->
+<div class="col-span-12 md:col-span-4 bg-error-container rounded-xl p-lg shadow-[0px_1px_3px_rgba(0,0,0,0.05)] border border-transparent hover:shadow-[0px_4px_12px_rgba(0,0,0,0.08)] transition-shadow">
+<div class="flex justify-between items-start mb-md">
+<div class="p-xs bg-error/10 rounded-lg">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<span class="text-error font-label-lg flex items-center gap-xs font-bold">
+                            Requires Action
+                        </span>
+</div>
+<p class="font-label-lg text-label-lg text-on-error-container uppercase tracking-wider">Critical Alerts</p>
+<h3 class="font-display-lg text-[40px] font-bold text-on-error-container mt-xs leading-none">06</h3>
+<div class="flex gap-xs mt-lg">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-error border-2 border-error-container"></div>
+<div class="w-6 h-6 rounded-full bg-error border-2 border-error-container"></div>
+<div class="w-6 h-6 rounded-full bg-error opacity-50 border-2 border-error-container"></div>
+</div>
+<p class="font-label-md text-label-md text-on-error-container opacity-80 self-center">3 mechanical, 3 delays</p>
+</div>
+</div>
+<!-- Live Map Section (Row 2) -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl shadow-[0px_1px_3px_rgba(0,0,0,0.05)] border border-transparent overflow-hidden h-[500px] flex flex-col">
+<div class="p-lg flex justify-between items-center bg-white">
+<div class="flex items-center gap-sm">
+<h4 class="font-title-lg text-title-lg font-bold text-on-surface">Live Network Map</h4>
+<span class="inline-flex items-center gap-xs px-2 py-0.5 rounded bg-secondary-container/30 text-on-secondary-container font-label-md">
+<span class="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse"></span>
+                                Live Feed
+                            </span>
+</div>
+<div class="flex bg-surface-container rounded-lg p-0.5">
+<button class="px-md py-1 bg-white shadow-sm rounded-md font-label-lg text-primary">Standard</button>
+<button class="px-md py-1 text-on-surface-variant font-label-lg">Satellite</button>
+<button class="px-md py-1 text-on-surface-variant font-label-lg">Traffic</button>
+</div>
+</div>
+<div class="flex-1 relative bg-surface-dim overflow-hidden group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A clean, minimalist map of a modern urban city district with geometric street patterns. The map is styled in a corporate palette of soft grays and blues, featuring glowing blue transit lines and several small bus-shaped markers scattered throughout the routes. The aesthetic is data-driven and precise, with a light-mode background and soft ambient lighting that highlights the network's efficiency." data-location="Manta City" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAC1-aKO9m0OsjpKDABFiMwiZiiyqnbOQKA-ZsU6Xo1GuV0CncS8F7TTFVspBvup-kPcY5ngH_ho355UeTiZX-bx_QBXcXCIOl_TJrlsTGBRwGQZUwum9BTGib6TpkjNqQqVWHtL0S_TfNLCvzThjanS_d0Ipm2pns1VjR-IG4D_xLZIPOv5n7AZGNcdpx-ZNiLCsL2ro1NdH_YJ72s2F1VI4tDjOipLUBcQzJqa4hr3vzYOUmqEIgs0nXwQoK-lbrhasXMmMHgbE0"/>
+<!-- Floating Map Overlays -->
+<div class="absolute top-md right-md flex flex-col gap-sm">
+<button class="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<button class="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+</div>
+<!-- Legend Overlay -->
+<div class="absolute bottom-md left-md bg-white/90 backdrop-blur-md p-md rounded-xl border border-outline-variant shadow-lg max-w-xs">
+<p class="font-label-lg text-on-surface mb-sm border-b border-outline-variant pb-xs">Network Legend</p>
+<div class="space-y-xs">
+<div class="flex items-center gap-sm">
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+<span class="font-body-md text-on-surface-variant">Route On-Time</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="w-3 h-3 rounded-full bg-tertiary-container"></span>
+<span class="font-body-md text-on-surface-variant">Slight Delay (&lt;5m)</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="w-3 h-3 rounded-full bg-error"></span>
+<span class="font-body-md text-on-surface-variant">Heavy Congestion</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Alerts Panel (Row 2 Side) -->
+<div class="col-span-12 lg:col-span-4 bg-surface-container-lowest rounded-xl shadow-[0px_1px_3px_rgba(0,0,0,0.05)] border border-transparent flex flex-col h-[500px]">
+<div class="p-lg border-b border-outline-variant">
+<h4 class="font-title-lg text-title-lg font-bold text-on-surface">Critical Alerts</h4>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-md space-y-sm">
+<!-- Alert Item 1 -->
+<div class="p-md rounded-lg border border-error-container bg-error-container/10 hover:bg-error-container/20 transition-colors">
+<div class="flex gap-md">
+<span class="material-symbols-outlined text-error mt-0.5">error</span>
+<div>
+<p class="font-label-lg font-bold text-on-error-container">Engine Failure - Unit #4021</p>
+<p class="font-body-md text-on-surface-variant mt-xs leading-snug">Mechanical fault detected on Route 12B. Bus immobilized at Station West.</p>
+<div class="mt-md flex gap-xs">
+<button class="px-sm py-1 bg-error text-on-error font-label-md rounded shadow-sm">Dispatch Recovery</button>
+<button class="px-sm py-1 border border-outline text-on-surface-variant font-label-md rounded">Details</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Alert Item 2 -->
+<div class="p-md rounded-lg border border-tertiary-container/30 bg-tertiary-fixed/10 hover:bg-tertiary-fixed/20 transition-colors">
+<div class="flex gap-md">
+<span class="material-symbols-outlined text-tertiary mt-0.5">warning</span>
+<div>
+<p class="font-label-lg font-bold text-tertiary">Severe Delay - Route 09</p>
+<p class="font-body-md text-on-surface-variant mt-xs leading-snug">Unexpected construction at Harbor Way causing 18m delay.</p>
+<div class="mt-md flex gap-xs">
+<button class="px-sm py-1 bg-tertiary-container text-on-tertiary-container font-label-md rounded shadow-sm">Reroute</button>
+<button class="px-sm py-1 border border-outline text-on-surface-variant font-label-md rounded">Dismiss</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Alert Item 3 -->
+<div class="p-md rounded-lg border border-outline-variant hover:bg-surface-container transition-colors">
+<div class="flex gap-md">
+<span class="material-symbols-outlined text-on-surface-variant mt-0.5">info</span>
+<div>
+<p class="font-label-lg font-bold text-on-surface">Weather Advisory</p>
+<p class="font-body-md text-on-surface-variant mt-xs leading-snug">Heavy rain expected in Coastal District. Advise drivers to reduce speed.</p>
+<p class="font-label-md text-on-surface-variant opacity-60 mt-xs italic">10 minutes ago</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Vehicle Status Table (Row 3) -->
+<div class="col-span-12 bg-surface-container-lowest rounded-xl shadow-[0px_1px_3px_rgba(0,0,0,0.05)] border border-transparent overflow-hidden mb-lg">
+<div class="px-lg py-md border-b border-outline-variant flex justify-between items-center">
+<h4 class="font-title-lg text-title-lg font-bold text-on-surface">Vehicle Status Registry</h4>
+<div class="flex gap-sm">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="pl-8 pr-3 py-1.5 border border-outline-variant rounded-lg text-body-md focus:ring-1 focus:ring-primary" placeholder="Filter ID..." type="text"/>
+</div>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container/50">
+<th class="px-lg py-md font-label-lg text-on-surface-variant">VEHICLE ID</th>
+<th class="px-lg py-md font-label-lg text-on-surface-variant">ROUTE</th>
+<th class="px-lg py-md font-label-lg text-on-surface-variant">DRIVER</th>
+<th class="px-lg py-md font-label-lg text-on-surface-variant">STATUS</th>
+<th class="px-lg py-md font-label-lg text-on-surface-variant">LOAD</th>
+<th class="px-lg py-md font-label-lg text-on-surface-variant">LAST UPDATE</th>
+<th class="px-lg py-md font-label-lg text-on-surface-variant">ACTIONS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-lg py-md font-body-md font-bold text-primary">#4021</td>
+<td class="px-lg py-md font-body-md text-on-surface">Route 12B (Express)</td>
+<td class="px-lg py-md font-body-md text-on-surface">Marcus Thorne</td>
+<td class="px-lg py-md">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-error-container text-on-error-container">Delayed (21m)</span>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-sm">
+<div class="w-12 bg-surface-container h-1.5 rounded-full">
+<div class="bg-error h-full rounded-full w-[85%]"></div>
+</div>
+<span class="font-label-md text-on-surface-variant">85%</span>
+</div>
+</td>
+<td class="px-lg py-md font-label-md text-on-surface-variant">2 mins ago</td>
+<td class="px-lg py-md">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-lg py-md font-body-md font-bold text-primary">#3855</td>
+<td class="px-lg py-md font-body-md text-on-surface">Route 05 (Downtown)</td>
+<td class="px-lg py-md font-body-md text-on-surface">Sarah Jenkins</td>
+<td class="px-lg py-md">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-secondary-container text-on-secondary-container">On Time</span>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-sm">
+<div class="w-12 bg-surface-container h-1.5 rounded-full">
+<div class="bg-secondary h-full rounded-full w-[42%]"></div>
+</div>
+<span class="font-label-md text-on-surface-variant">42%</span>
+</div>
+</td>
+<td class="px-lg py-md font-label-md text-on-surface-variant">Just now</td>
+<td class="px-lg py-md">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-lg py-md font-body-md font-bold text-primary">#5112</td>
+<td class="px-lg py-md font-body-md text-on-surface">Route 22A (Airport)</td>
+<td class="px-lg py-md font-body-md text-on-surface">Elena Rodriguez</td>
+<td class="px-lg py-md">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-secondary-container text-on-secondary-container">On Time</span>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-sm">
+<div class="w-12 bg-surface-container h-1.5 rounded-full">
+<div class="bg-secondary h-full rounded-full w-[15%]"></div>
+</div>
+<span class="font-label-md text-on-surface-variant">15%</span>
+</div>
+</td>
+<td class="px-lg py-md font-label-md text-on-surface-variant">5 mins ago</td>
+<td class="px-lg py-md">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-lg py-md font-body-md font-bold text-primary">#4209</td>
+<td class="px-lg py-md font-body-md text-on-surface">Route 09 (Harbor)</td>
+<td class="px-lg py-md font-body-md text-on-surface">David Chen</td>
+<td class="px-lg py-md">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-tertiary-fixed text-on-tertiary-fixed">Slight Delay</span>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-sm">
+<div class="w-12 bg-surface-container h-1.5 rounded-full">
+<div class="bg-tertiary-container h-full rounded-full w-[60%]"></div>
+</div>
+<span class="font-label-md text-on-surface-variant">60%</span>
+</div>
+</td>
+<td class="px-lg py-md font-label-md text-on-surface-variant">8 mins ago</td>
+<td class="px-lg py-md">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-md bg-surface-container-low border-t border-outline-variant flex justify-between items-center">
+<p class="font-label-lg text-on-surface-variant">Showing 4 of 142 vehicles</p>
+<div class="flex gap-xs">
+<button class="p-1 rounded border border-outline-variant hover:bg-white"><span class="material-symbols-outlined text-[20px]">chevron_left</span></button>
+<button class="p-1 rounded border border-outline-variant hover:bg-white"><span class="material-symbols-outlined text-[20px]">chevron_right</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (Only on Home/Dashboard screens) -->
+<button class="fixed bottom-lg right-lg w-14 h-14 rounded-2xl bg-primary text-on-primary shadow-lg flex items-center justify-center hover:shadow-xl hover:scale-105 active:scale-95 transition-all z-[60]">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+<script>
+        // Micro-interactions and real-time feel simulation
+        document.addEventListener('DOMContentLoaded', () => {
+            // Simulate live updates on the performance metric
+            const perfHeading = document.querySelector('h3.font-display-lg');
+            setInterval(() => {
+                const currentVal = 94.2;
+                const variation = (Math.random() * 0.4 - 0.2).toFixed(1);
+                const newVal = (parseFloat(currentVal) + parseFloat(variation)).toFixed(1);
+                // We're just logging it as we don't want to flicker too much, but could update DOM
+                // console.log(`Performance update: ${newVal}%`);
+            }, 5000);
+
+            // Interaction for search input focus
+            const searchInput = document.querySelector('input[type="text"]');
+            searchInput.addEventListener('focus', () => {
+                searchInput.parentElement.classList.add('ring-2', 'ring-primary/20');
+            });
+            searchInput.addEventListener('blur', () => {
+                searchInput.parentElement.classList.remove('ring-2', 'ring-primary/20');
+            });
+
+            // Smooth entrance for cards
+            const cards = document.querySelectorAll('.bg-surface-container-lowest, .bg-error-container');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        });
+    </script>
+</body></html>

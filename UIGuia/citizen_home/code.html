@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Manta Transit - Citizen Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#cbdbf5",
+                    "surface-container-high": "#dce9ff",
+                    "on-tertiary-fixed": "#2b1700",
+                    "secondary-fixed": "#6bfe9c",
+                    "on-surface": "#0b1c30",
+                    "surface-container": "#e5eeff",
+                    "secondary": "#006d37",
+                    "error": "#ba1a1a",
+                    "surface-tint": "#1f619e",
+                    "surface-container-highest": "#d3e4fe",
+                    "primary": "#00467b",
+                    "inverse-surface": "#213145",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary": "#623c00",
+                    "surface-bright": "#f8f9ff",
+                    "secondary-fixed-dim": "#4ae183",
+                    "secondary-container": "#6bfe9c",
+                    "on-primary-container": "#bad7ff",
+                    "tertiary-fixed-dim": "#ffb961",
+                    "on-secondary-container": "#00743a",
+                    "inverse-on-surface": "#eaf1ff",
+                    "surface-container-low": "#eff4ff",
+                    "on-tertiary-fixed-variant": "#663e00",
+                    "primary-container": "#1b5e9b",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "outline-variant": "#c1c7d1",
+                    "on-surface-variant": "#414750",
+                    "on-primary-fixed": "#001c37",
+                    "surface-variant": "#d3e4fe",
+                    "on-primary-fixed-variant": "#00497f",
+                    "inverse-primary": "#a0c9ff",
+                    "primary-fixed-dim": "#a0c9ff",
+                    "error-container": "#ffdad6",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed-variant": "#005228",
+                    "surface": "#f8f9ff",
+                    "primary-fixed": "#d2e4ff",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#825100",
+                    "background": "#f8f9ff",
+                    "on-secondary-fixed": "#00210c",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed": "#ffddb9",
+                    "on-background": "#0b1c30",
+                    "on-tertiary-container": "#ffcb90",
+                    "outline": "#727781"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "8px",
+                    "base": "4px",
+                    "xl": "32px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "32px",
+                    "gutter": "24px",
+                    "sm": "12px",
+                    "lg": "24px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "title-lg": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"]
+            },
+            "fontSize": {
+                    "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "label-md": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c7d1; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen overflow-hidden">
+<!-- TopNavBar Shell -->
+<nav class="flex justify-between items-center w-full px-margin-desktop h-16 fixed top-0 z-50 bg-surface-container-lowest shadow-sm">
+<div class="flex items-center gap-lg">
+<span class="text-title-lg font-title-lg font-bold text-primary">Manta Transit</span>
+<div class="hidden md:flex items-center bg-surface-container-low px-md py-xs rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant mr-xs">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-64 placeholder:text-outline" placeholder="Buscar paradas, buses..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="flex items-center gap-xs px-sm py-xs rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">language</span>
+<span class="text-label-lg font-label-lg uppercase">ES/EN</span>
+</button>
+<button class="flex items-center gap-xs px-sm py-xs rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant" title="Accessibility Settings">
+<span class="material-symbols-outlined">accessibility_new</span>
+</button>
+<div class="h-6 w-[1px] bg-outline-variant mx-xs"></div>
+<button class="text-primary font-bold text-label-lg px-md py-sm hover:bg-surface-container-high rounded-lg transition-colors">Login</button>
+<button class="bg-primary-container text-on-primary-container px-lg py-sm rounded-lg font-bold text-label-lg hover:opacity-90 transition-opacity">Register</button>
+</div>
+</nav>
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 p-md flex flex-col border-r border-outline-variant bg-surface-container-low">
+<div class="mb-lg px-sm">
+<h2 class="text-title-lg font-title-lg font-black text-primary">Manta Transit</h2>
+<p class="text-body-md text-on-surface-variant">Urban Mobility</p>
+</div>
+<nav class="flex flex-col gap-xs flex-grow">
+<!-- Active Home Tab -->
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container rounded-xl px-md py-sm transition-all translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-label-lg font-label-lg">Home</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-xl px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="directions_bus">directions_bus</span>
+<span class="text-label-lg font-label-lg">Routes</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-xl px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="my_location">my_location</span>
+<span class="text-label-lg font-label-lg">Tracking</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-xl px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-label-lg font-label-lg">History</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-md">
+<button class="w-full flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-xl px-md py-sm transition-all">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-lg font-label-lg">Settings</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 mt-16 h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar">
+<!-- Alert Banner -->
+<div class="bg-[#FF9800] text-[#2b1700] px-margin-desktop py-sm flex items-center justify-between sticky top-0 z-40">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">warning</span>
+<p class="text-body-md font-medium">Actualización de Servicio: Retrasos de 15 min en la Línea Azul debido a mantenimiento preventivo.</p>
+</div>
+<button class="hover:bg-white/10 p-1 rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Hero Section -->
+<section class="relative px-margin-desktop py-xl min-h-[460px] flex items-center overflow-hidden">
+<!-- Atmospheric WebGL Shader Background -->
+
+<div class="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent -z-10"></div>
+<div class="grid grid-cols-12 gap-gutter w-full">
+<div class="col-span-12 lg:col-span-7">
+<h1 class="text-display-lg font-display-lg text-primary mb-md">Tu ciudad, <br/>en movimiento.</h1>
+<p class="text-body-lg text-on-surface-variant max-w-lg mb-xl">Planifica tu viaje en tiempo real, consulta horarios y mantente al tanto de cualquier cambio en la red de transporte de Manta.</p>
+<!-- Search Card -->
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-lg max-w-2xl border border-outline-variant/30 backdrop-blur-sm bg-white/95">
+<div class="flex flex-col md:flex-row gap-md items-end">
+<div class="flex-grow space-y-md">
+<div class="relative">
+<label class="absolute -top-2 left-3 bg-white px-1 text-label-md text-primary font-bold">Origen</label>
+<div class="flex items-center border border-outline rounded-lg p-sm">
+<span class="material-symbols-outlined text-outline mr-sm">location_on</span>
+<input class="w-full border-none focus:ring-0 p-0 text-body-md" placeholder="Ingresa punto de partida" type="text"/>
+</div>
+</div>
+<div class="relative">
+<label class="absolute -top-2 left-3 bg-white px-1 text-label-md text-primary font-bold">Destino</label>
+<div class="flex items-center border border-outline rounded-lg p-sm">
+<span class="material-symbols-outlined text-outline mr-sm">sports_score</span>
+<input class="w-full border-none focus:ring-0 p-0 text-body-md" placeholder="¿A dónde quieres ir?" type="text"/>
+</div>
+</div>
+</div>
+<button class="bg-[#1B5E9B] text-white px-xl py-4 rounded-xl font-bold flex items-center justify-center gap-md hover:shadow-xl transition-all h-[52px] group">
+<span class="text-body-lg">Buscar Ruta</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Action Cards Section -->
+<section class="px-margin-desktop py-xl bg-surface-container-low">
+<div class="flex items-center justify-between mb-lg">
+<h2 class="text-headline-lg font-headline-lg text-on-surface">Accesos Rápidos</h2>
+<button class="text-primary font-bold text-label-lg flex items-center gap-xs">
+                    Ver todo <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Modo Adulto Mayor -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant/50 hover:shadow-md transition-all group cursor-pointer">
+<div class="bg-tertiary-fixed text-on-tertiary-fixed w-14 h-14 rounded-full flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">elderly</span>
+</div>
+<h3 class="text-title-lg font-title-lg text-on-surface mb-xs">Modo Adulto Mayor</h3>
+<p class="text-body-md text-on-surface-variant mb-md">Interfaz simplificada con botones grandes y alto contraste para una navegación fácil.</p>
+<span class="text-primary font-bold text-label-lg flex items-center gap-xs">
+                        Activar ahora <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</span>
+</div>
+<!-- Turista -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant/50 hover:shadow-md transition-all group cursor-pointer">
+<div class="bg-secondary-container text-on-secondary-container w-14 h-14 rounded-full flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">map</span>
+</div>
+<h3 class="text-title-lg font-title-lg text-on-surface mb-xs">Turista</h3>
+<p class="text-body-md text-on-surface-variant mb-md">Descubre los puntos de interés de Manta y las mejores rutas para visitarlos.</p>
+<span class="text-primary font-bold text-label-lg flex items-center gap-xs">
+                        Explorar mapa <span class="material-symbols-outlined text-[16px]">explore</span>
+</span>
+</div>
+<!-- Rutas Frecuentes -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant/50 hover:shadow-md transition-all group cursor-pointer">
+<div class="bg-primary-fixed text-on-primary-fixed w-14 h-14 rounded-full flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<h3 class="text-title-lg font-title-lg text-on-surface mb-xs">Rutas Frecuentes</h3>
+<p class="text-body-md text-on-surface-variant mb-md">Guarda tus trayectos habituales para acceder a ellos con un solo toque.</p>
+<span class="text-primary font-bold text-label-lg flex items-center gap-xs">
+                        Ver favoritos <span class="material-symbols-outlined text-[16px]">bookmark_heart</span>
+</span>
+</div>
+</div>
+</section>
+<!-- Dynamic Map Section -->
+<section class="px-margin-desktop py-xl">
+<div class="bg-surface-container-high rounded-3xl overflow-hidden shadow-sm relative h-[400px]">
+<img alt="Real-time transit map" class="w-full h-full object-cover grayscale-[0.3] opacity-80" data-alt="A professional high-fidelity digital map of Manta city showing transit lines in vibrant primary blues and greens. The map is viewed on a clean modern dashboard interface with subtle data points representing buses in real-time. The lighting is bright and professional, following a light-mode corporate aesthetic with soft diffused shadows and crisp typography on floating UI elements." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJSZ2oItI3AVf0a9F4mb-Im12M5O5IfOe8iTj7llT6ugH1z5J0iSQrmkkl-hJeP6lrBCsRAAyg7klkg0UE8OsR6MwWsMkRKBGuRG7VETzJkxucD9XYPZbeA1k8oVGmVlSkYsyuWZYs5YRgf10Yh8VTgOprPO-4KlBEv9-iLF3BKeBgMXSwlQiswssbO1fRLxmVrPY1A6bkFG_WblbONcBTvQD9CRIw9-5mNuPKgmHLs20HF4vd7xEfLKa7rihrfCouWerBawww74A"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-end p-xl">
+<div class="bg-white/90 backdrop-blur-md p-lg rounded-2xl max-w-sm">
+<div class="flex items-center gap-md mb-sm">
+<span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+<h4 class="text-title-lg font-title-lg text-on-surface">Red en Vivo</h4>
+</div>
+<p class="text-body-md text-on-surface-variant mb-md">Actualmente hay 142 unidades circulando. El tráfico es moderado en el centro.</p>
+<button class="bg-primary text-white w-full py-sm rounded-lg font-bold text-label-lg hover:bg-primary/90 transition-colors">Abrir Mapa Interactivo</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant px-margin-desktop py-xl">
+<div class="flex flex-col md:flex-row justify-between items-start gap-xl">
+<div class="max-w-xs">
+<span class="text-title-lg font-title-lg font-bold text-primary block mb-sm">Manta Transit</span>
+<p class="text-body-md text-on-surface-variant">Optimizando la movilidad urbana a través de datos y tecnología de vanguardia.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-xl">
+<div class="space-y-sm">
+<span class="text-label-lg font-bold text-on-surface">Compañía</span>
+<a class="block text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Sobre Nosotros</a>
+<a class="block text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Noticias</a>
+<a class="block text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Transparencia</a>
+</div>
+<div class="space-y-sm">
+<span class="text-label-lg font-bold text-on-surface">Soporte</span>
+<a class="block text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Ayuda</a>
+<a class="block text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Contacto</a>
+<a class="block text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Tarifas</a>
+</div>
+<div class="space-y-sm">
+<span class="text-label-lg font-bold text-on-surface">Legal</span>
+<a class="block text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Privacidad</a>
+<a class="block text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Términos</a>
+</div>
+</div>
+</div>
+<div class="mt-xl pt-lg border-t border-outline-variant flex justify-between items-center text-label-md text-outline">
+<span>© 2024 Manta Transit Authority. Todos los derechos reservados.</span>
+<div class="flex gap-md">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">face_nod</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">public</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">rss_feed</span>
+</div>
+</div>
+</footer>
+</main>
+<!-- Contextual FAB (Hidden on home by default, only for urgent actions) -->
+<button class="fixed bottom-lg right-lg w-14 h-14 bg-error text-on-error rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform z-50 group" title="Emergencia">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">emergency</span>
+<span class="absolute right-16 bg-error text-white px-md py-xs rounded-lg text-label-lg font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Botón de Pánico</span>
+</button>
+<script>
+        // Simple Interaction logic for demo
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                if (link.getAttribute('href') === '#') e.preventDefault();
+            });
+        });
+
+        // Close banner logic
+        const closeBanner = () => {
+            const banner = document.querySelector('.bg-\\[\\#FF9800\\]');
+            banner.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+            banner.style.opacity = '0';
+            banner.style.transform = 'translateY(-100%)';
+            setTimeout(() => banner.remove(), 300);
+        };
+        document.querySelector('.bg-\\[\\#FF9800\\] button')?.addEventListener('click', closeBanner);
+    </script>
+</body></html>

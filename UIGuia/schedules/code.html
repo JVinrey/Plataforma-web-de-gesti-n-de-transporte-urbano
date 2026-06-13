@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Manta Transit | Schedules &amp; Dispatch</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#623c00",
+                    "on-secondary-fixed": "#00210c",
+                    "surface-container-highest": "#d3e4fe",
+                    "surface-bright": "#f8f9ff",
+                    "surface-container-low": "#eff4ff",
+                    "outline": "#727781",
+                    "secondary-fixed": "#6bfe9c",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#ffddb9",
+                    "surface-container": "#e5eeff",
+                    "background": "#f8f9ff",
+                    "surface-variant": "#d3e4fe",
+                    "inverse-surface": "#213145",
+                    "primary-container": "#1b5e9b",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#cbdbf5",
+                    "on-primary-fixed": "#001c37",
+                    "primary-fixed-dim": "#a0c9ff",
+                    "outline-variant": "#c1c7d1",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#00467b",
+                    "on-secondary-container": "#00743a",
+                    "secondary": "#006d37",
+                    "secondary-container": "#6bfe9c",
+                    "on-primary-container": "#bad7ff",
+                    "tertiary-container": "#825100",
+                    "on-primary": "#ffffff",
+                    "surface": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#00497f",
+                    "tertiary-fixed-dim": "#ffb961",
+                    "on-background": "#0b1c30",
+                    "surface-container-high": "#dce9ff",
+                    "error": "#ba1a1a",
+                    "inverse-primary": "#a0c9ff",
+                    "surface-tint": "#1f619e",
+                    "on-tertiary-container": "#ffcb90",
+                    "on-secondary": "#ffffff",
+                    "inverse-on-surface": "#eaf1ff",
+                    "primary-fixed": "#d2e4ff",
+                    "on-surface": "#0b1c30",
+                    "on-tertiary-fixed": "#2b1700",
+                    "on-surface-variant": "#414750",
+                    "on-secondary-fixed-variant": "#005228",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#4ae183",
+                    "on-tertiary-fixed-variant": "#663e00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "1rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "12px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "base": "4px",
+                    "gutter": "24px",
+                    "margin-desktop": "32px",
+                    "xl": "32px",
+                    "xs": "8px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "title-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                    "label-md": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #f8f9ff; font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .timeline-grid { display: grid; grid-template-columns: 120px repeat(24, 1fr); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c7d1; border-radius: 10px; }
+    </style>
+</head>
+<body class="overflow-hidden">
+<!-- Left Navigation Rail (SideNavBar) -->
+<aside class="fixed h-screen w-64 left-0 top-0 bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant dark:border-outline shadow-sm flex flex-col h-full py-lg px-md z-50">
+<div class="mb-xl px-xs">
+<h1 class="font-title-lg text-title-lg font-bold text-primary dark:text-primary-fixed-dim">Manta Transit</h1>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-70">Fleet Control Center</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-md p-md text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Fleet Dashboard</span>
+</a>
+<a class="flex items-center gap-md p-md text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span>Route Planning</span>
+</a>
+<!-- Active Tab: Schedules -->
+<a class="flex items-center gap-md p-md bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-lg font-bold font-body-md scale-95 opacity-90 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span>Schedules</span>
+</a>
+<a class="flex items-center gap-md p-md text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span>Driver Performance</span>
+</a>
+</nav>
+<div class="mt-auto pt-lg border-t border-outline-variant">
+<button class="w-full mb-lg py-md px-lg bg-primary-container text-on-primary-container rounded-xl font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                New Route
+            </button>
+<a class="flex items-center gap-md p-md text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-md p-md text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-colors duration-200 rounded-lg font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="contact_support">contact_support</span>
+<span>Support</span>
+</a>
+</div>
+</aside>
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full ml-64 bg-surface-bright dark:bg-on-background border-b border-outline-variant dark:border-outline shadow-sm flex items-center justify-between px-margin-desktop h-16 z-40" style="width: calc(100% - 16rem);">
+<div class="flex items-center gap-lg">
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center text-outline">
+<span class="material-symbols-outlined text-[20px]" data-icon="search">search</span>
+</span>
+<input class="bg-surface-container-lowest border-outline-variant rounded-full pl-10 pr-4 py-1.5 text-body-md w-64 focus:ring-2 focus:ring-primary focus:border-transparent outline-none" placeholder="Search routes or drivers..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="hover:bg-surface-container-low dark:hover:bg-inverse-surface rounded-full p-2 text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="hover:bg-surface-container-low dark:hover:bg-inverse-surface rounded-full p-2 text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+</button>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-sm">
+<div class="text-right">
+<p class="font-label-lg text-on-surface leading-none">Alex Rivera</p>
+<p class="text-[10px] text-on-surface-variant">Fleet Manager</p>
+</div>
+<img alt="Manager Profile" class="h-8 w-8 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtXvS2gHTHgoGkrxoEgxWeG5MpEdJwkbnEhQmYSPOg9QH5W6LB1MjdbwBd9lqi1wwyju80iudWQuiFucBzZLRoXrWMfmRJj5u51jhFN6d4fZcMuFIzP4PPKsMWBB2TZfb4tmOJ5fUHgk8-akt-p2h93F5-U7J55fuBwyXUg0j0M7DYR6aW37ZbSzwx191hlo2mkpgexKtm5TNXiQON-6hw0E2cwV34l_Q1UJmL1NDUDYt7xfRluP-Z16eKR0dDbw20vPZx3ieaocU"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-lg h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar">
+<!-- Dashboard Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-lg gap-md">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Transit Schedules</h2>
+<p class="font-body-md text-on-surface-variant">Manage and optimize real-time departures across the Manta network.</p>
+</div>
+<div class="flex gap-sm">
+<div class="bg-surface-container flex p-1 rounded-lg">
+<button class="px-lg py-1.5 bg-white shadow-sm rounded-md font-label-lg text-primary">Timeline</button>
+<button class="px-lg py-1.5 text-on-surface-variant font-label-lg hover:bg-surface-container-high rounded-md transition-colors">Calendar</button>
+</div>
+<button class="flex items-center gap-2 px-lg py-1.5 bg-surface-container-lowest border border-outline-variant rounded-lg font-label-lg text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="filter_list">filter_list</span>
+                    Filters
+                </button>
+</div>
+</div>
+<!-- Schedule Controls & Stats Bento Grid -->
+<div class="grid grid-cols-12 gap-lg mb-lg">
+<!-- Quick Stats Card -->
+<div class="col-span-12 lg:col-span-4 bg-white p-lg rounded-lg shadow-sm border border-outline-variant/30 flex flex-col justify-between">
+<div>
+<span class="text-label-md font-label-md text-primary bg-primary/10 px-2 py-1 rounded">Active Now</span>
+<h3 class="text-display-lg font-display-lg text-on-surface mt-sm">42</h3>
+<p class="text-body-md text-on-surface-variant">Buses currently in service</p>
+</div>
+<div class="mt-lg flex items-center gap-lg">
+<div class="flex items-center gap-1">
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<span class="text-label-lg text-on-surface-variant">38 On-Time</span>
+</div>
+<div class="flex items-center gap-1">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<span class="text-label-lg text-on-surface-variant">4 Delayed</span>
+</div>
+</div>
+</div>
+<!-- Route Optimization Card (Visual Atmospheric) -->
+<div class="col-span-12 lg:col-span-8 bg-inverse-surface text-white p-lg rounded-lg shadow-sm relative overflow-hidden">
+
+<div class="relative z-10 h-full flex flex-col justify-between">
+<div>
+<h3 class="font-title-lg text-title-lg text-white">System Efficiency</h3>
+<p class="text-body-md text-white/70">Optimization engine is active. Peak hour adjustments predicted for Route 102.</p>
+</div>
+<div class="flex gap-md mt-xl">
+<button class="px-lg py-2 bg-secondary-container text-on-secondary-container font-label-lg rounded-lg hover:brightness-110 transition-all">View Alerts</button>
+<button class="px-lg py-2 bg-white/10 text-white font-label-lg rounded-lg hover:bg-white/20 transition-all">Manage Logic</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline View Card -->
+<div class="bg-white rounded-lg shadow-sm border border-outline-variant/30 overflow-hidden">
+<div class="p-lg border-b border-outline-variant flex items-center justify-between bg-surface-bright">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary" data-icon="query_builder">query_builder</span>
+<h3 class="font-title-lg text-on-surface">Timeline: All Routes</h3>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container rounded-full text-on-surface-variant"><span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span></button>
+<span class="font-label-lg flex items-center px-md text-on-surface">Today, 24 Oct</span>
+<button class="p-2 hover:bg-surface-container rounded-full text-on-surface-variant"><span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span></button>
+</div>
+</div>
+<div class="overflow-x-auto custom-scrollbar">
+<div class="min-w-[1200px]">
+<!-- Timeline Header -->
+<div class="timeline-grid border-b border-outline-variant bg-surface-container-low text-[10px] font-bold text-on-surface-variant">
+<div class="p-md border-r border-outline-variant bg-surface-container-high">ROUTE</div>
+<!-- Hours -->
+<div class="flex items-center justify-center border-r border-outline-variant/30">06:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">07:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">08:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">09:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">10:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">11:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">12:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">13:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">14:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">15:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">16:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">17:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">18:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">19:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">20:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">21:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">22:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">23:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">00:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">01:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">02:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">03:00</div>
+<div class="flex items-center justify-center border-r border-outline-variant/30">04:00</div>
+<div class="flex items-center justify-center">05:00</div>
+</div>
+<!-- Timeline Rows -->
+<div class="divide-y divide-outline-variant/30">
+<!-- Route 101 -->
+<div class="timeline-grid relative group hover:bg-surface-container-lowest transition-colors h-16">
+<div class="p-md border-r border-outline-variant flex flex-col justify-center bg-surface-container-low group-hover:bg-surface-container-high transition-colors">
+<span class="font-label-lg text-primary">Route 101</span>
+<span class="text-[10px] text-on-surface-variant uppercase">Downtown Exp</span>
+</div>
+<!-- Schedule Blocks (Absolute Positioned for simplicity in UI demo) -->
+<div class="col-span-24 relative flex items-center">
+<div class="absolute left-[5%] w-[40%] h-8 bg-primary/10 border-l-4 border-primary rounded-r-md flex items-center px-md cursor-pointer hover:bg-primary/20 transition-all" title="Dispatch Shift A">
+<span class="text-[10px] font-bold text-primary truncate">A12-Manta North - On Time</span>
+</div>
+<div class="absolute left-[55%] w-[35%] h-8 bg-error-container/50 border-l-4 border-error rounded-r-md flex items-center px-md cursor-pointer hover:bg-error-container/70 transition-all" title="Delayed: Mechanical">
+<span class="text-[10px] font-bold text-on-error-container truncate">A15-Manta West - 8m Delay</span>
+</div>
+</div>
+</div>
+<!-- Route 202 -->
+<div class="timeline-grid relative group hover:bg-surface-container-lowest transition-colors h-16">
+<div class="p-md border-r border-outline-variant flex flex-col justify-center bg-surface-container-low group-hover:bg-surface-container-high transition-colors">
+<span class="font-label-lg text-primary">Route 202</span>
+<span class="text-[10px] text-on-surface-variant uppercase">Shoreline Bus</span>
+</div>
+<div class="col-span-24 relative flex items-center">
+<div class="absolute left-[15%] w-[25%] h-8 bg-secondary-container/50 border-l-4 border-secondary rounded-r-md flex items-center px-md cursor-pointer hover:bg-secondary-container transition-all">
+<span class="text-[10px] font-bold text-on-secondary-container truncate">S1-Express Loop</span>
+</div>
+<div class="absolute left-[45%] w-[45%] h-8 bg-primary/10 border-l-4 border-primary rounded-r-md flex items-center px-md cursor-pointer hover:bg-primary/20 transition-all">
+<span class="text-[10px] font-bold text-primary truncate">S2-Coastal Loop</span>
+</div>
+</div>
+</div>
+<!-- Route 305 -->
+<div class="timeline-grid relative group hover:bg-surface-container-lowest transition-colors h-16">
+<div class="p-md border-r border-outline-variant flex flex-col justify-center bg-surface-container-low group-hover:bg-surface-container-high transition-colors">
+<span class="font-label-lg text-primary">Route 305</span>
+<span class="text-[10px] text-on-surface-variant uppercase">Industrial Hub</span>
+</div>
+<div class="col-span-24 relative flex items-center">
+<div class="absolute left-[0%] w-[100%] h-4 bg-outline-variant/10 flex items-center px-md border-y border-dashed border-outline-variant/20">
+<span class="text-[9px] italic text-on-surface-variant">Scheduled: 24/7 Service Line</span>
+</div>
+<div class="absolute left-[10%] w-[15%] h-8 bg-primary/10 border-l-4 border-primary rounded-r-md flex items-center px-md"></div>
+<div class="absolute left-[30%] w-[15%] h-8 bg-primary/10 border-l-4 border-primary rounded-r-md flex items-center px-md"></div>
+<div class="absolute left-[50%] w-[15%] h-8 bg-primary/10 border-l-4 border-primary rounded-r-md flex items-center px-md"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Dispatch List -->
+<div class="mt-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+<!-- Quick Action: Delay Adjustment -->
+<div class="bg-white p-lg rounded-lg shadow-sm border border-outline-variant/30">
+<div class="flex items-center justify-between mb-md">
+<h4 class="font-label-lg text-on-surface uppercase tracking-wider">Quick Dispatch</h4>
+<span class="material-symbols-outlined text-outline" data-icon="bolt">bolt</span>
+</div>
+<div class="space-y-md">
+<div>
+<label class="block text-[10px] font-bold text-on-surface-variant mb-1 uppercase">Target Fleet ID</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md py-2 px-3 focus:ring-primary focus:border-primary">
+<option>Bus #1128 - Route 101</option>
+<option>Bus #4492 - Route 202</option>
+<option>Bus #9921 - Route 305</option>
+</select>
+</div>
+<div>
+<label class="block text-[10px] font-bold text-on-surface-variant mb-1 uppercase">Adjust Timings (Minutes)</label>
+<div class="flex gap-2">
+<button class="flex-1 py-2 bg-surface-container-high rounded-lg text-label-lg hover:bg-error-container hover:text-on-error-container transition-colors">-5</button>
+<button class="flex-1 py-2 bg-surface-container-high rounded-lg text-label-lg hover:bg-surface-container-highest transition-colors">Hold</button>
+<button class="flex-1 py-2 bg-surface-container-high rounded-lg text-label-lg hover:bg-secondary-container hover:text-on-secondary-container transition-colors">+5</button>
+</div>
+</div>
+<button class="w-full py-2 bg-primary text-white rounded-lg font-label-lg mt-md shadow-sm active:scale-95 transition-all">Execute Shift</button>
+</div>
+</div>
+<!-- Route Summary Card -->
+<div class="bg-white p-lg rounded-lg shadow-sm border border-outline-variant/30 flex flex-col">
+<div class="flex items-center justify-between mb-md">
+<h4 class="font-label-lg text-on-surface uppercase tracking-wider">Arrival Monitoring</h4>
+<span class="material-symbols-outlined text-outline" data-icon="radar">radar</span>
+</div>
+<div class="flex-1 space-y-md overflow-y-auto max-h-48 custom-scrollbar pr-2">
+<div class="flex items-center justify-between p-sm bg-surface-container-low rounded-lg">
+<div>
+<p class="font-label-lg text-on-surface">Manta Central</p>
+<p class="text-[10px] text-on-surface-variant">4 Active Arrivals</p>
+</div>
+<span class="text-secondary font-bold text-label-lg">Stable</span>
+</div>
+<div class="flex items-center justify-between p-sm bg-surface-container-low rounded-lg border-l-4 border-error">
+<div>
+<p class="font-label-lg text-on-surface">West Terminal</p>
+<p class="text-[10px] text-on-surface-variant">Congestion Warning</p>
+</div>
+<span class="text-error font-bold text-label-lg">+12m</span>
+</div>
+<div class="flex items-center justify-between p-sm bg-surface-container-low rounded-lg">
+<div>
+<p class="font-label-lg text-on-surface">Skyline Peak</p>
+<p class="text-[10px] text-on-surface-variant">2 Active Arrivals</p>
+</div>
+<span class="text-secondary font-bold text-label-lg">Stable</span>
+</div>
+</div>
+</div>
+<!-- Driver Sync Status -->
+<div class="bg-white p-lg rounded-lg shadow-sm border border-outline-variant/30">
+<div class="flex items-center justify-between mb-md">
+<h4 class="font-label-lg text-on-surface uppercase tracking-wider">Driver Comms</h4>
+<span class="material-symbols-outlined text-outline" data-icon="forum">forum</span>
+</div>
+<div class="space-y-sm">
+<div class="flex items-center gap-md">
+<div class="relative">
+<img alt="Driver 1" class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBroYpNFQ-zbLEcdBL6HbMrE_yYkGXj-zGBig0hQLjGS2tZ8ut5d72YibI-kHeUsTEH8Q-Ju3IzeBHcoGvhLIf0ZrTzOOGBtp9bLSrFlzUTvWOIQmOvQbZubfmGFOLoBI_f9fFXEzBK-QrALgyx8ib8ItyIy8dmKt39l7oNVgaWypPeV5PTSQYStAYwlzGltGMDhu5wMqNpMxpZmiXk-KkN4vGsPcxh-zyTUTC_jUSTjoW4w6trqNhQ6G9zVD1fHcOGjvzuz7aF4jc"/>
+<div class="absolute bottom-0 right-0 w-2 h-2 bg-secondary rounded-full border border-white"></div>
+</div>
+<div class="flex-1">
+<p class="text-label-lg text-on-surface">Marcus T. <span class="font-normal opacity-60 ml-2">Route 101</span></p>
+<p class="text-[10px] text-on-surface-variant">"Approaching Harbor Bridge..."</p>
+</div>
+</div>
+<div class="flex items-center gap-md opacity-60">
+<div class="relative">
+<img alt="Driver 2" class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdPtsLdkDAUz-jpvrppG5HU2O9KzoBcu5yrj-RrZ8Ab-TsWkVy6POIo1nmbAFArLrs2WeO1J597Z4dFZpSdLuPAl0PIO2izblhwIlyAw9j2ZL2EzKrIABojidOWdYNuzipEPHaqVf-u8UOjK4VV3gSKA2KZiELPB9w0wcQHtSJaOwGbwgx52AoR3J36FlOiVZK_kEcSPJWTYJzF9jDOanM0UfqB0OtWzr6frekMgX7C522q7zLwD6Cxn7H2BEUUGIjcAweNhmdFDo"/>
+<div class="absolute bottom-0 right-0 w-2 h-2 bg-outline rounded-full border border-white"></div>
+</div>
+<div class="flex-1">
+<p class="text-label-lg text-on-surface">Elena S. <span class="font-normal opacity-60 ml-2">Route 202</span></p>
+<p class="text-[10px] text-on-surface-variant">Shift complete. Returning to base.</p>
+</div>
+</div>
+<button class="w-full py-2 bg-surface-container-highest text-on-surface-variant rounded-lg font-label-lg flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all mt-lg">
+<span class="material-symbols-outlined text-[18px]" data-icon="broadcast_on_personal">broadcast_on_personal</span>
+                        Broadcast To Fleet
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interactions for interactive elements
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => el.classList.add('scale-95'));
+            el.addEventListener('mouseup', () => el.classList.remove('scale-95'));
+            el.addEventListener('mouseleave', () => el.classList.remove('scale-95'));
+        });
+
+        // Search highlight simulation
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary/20');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-primary/20');
+        });
+    </script>
+</body></html>
