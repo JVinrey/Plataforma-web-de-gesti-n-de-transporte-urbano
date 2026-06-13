@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#cbdbf5",
+                    "surface-container-high": "#dce9ff",
+                    "on-tertiary-fixed": "#2b1700",
+                    "secondary-fixed": "#6bfe9c",
+                    "on-surface": "#0b1c30",
+                    "surface-container": "#e5eeff",
+                    "secondary": "#006d37",
+                    "error": "#ba1a1a",
+                    "surface-tint": "#1f619e",
+                    "surface-container-highest": "#d3e4fe",
+                    "primary": "#00467b",
+                    "inverse-surface": "#213145",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary": "#623c00",
+                    "surface-bright": "#f8f9ff",
+                    "secondary-fixed-dim": "#4ae183",
+                    "secondary-container": "#6bfe9c",
+                    "on-primary-container": "#bad7ff",
+                    "tertiary-fixed-dim": "#ffb961",
+                    "on-secondary-container": "#00743a",
+                    "inverse-on-surface": "#eaf1ff",
+                    "surface-container-low": "#eff4ff",
+                    "on-tertiary-fixed-variant": "#663e00",
+                    "primary-container": "#1b5e9b",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "outline-variant": "#c1c7d1",
+                    "on-surface-variant": "#414750",
+                    "on-primary-fixed": "#001c37",
+                    "surface-variant": "#d3e4fe",
+                    "on-primary-fixed-variant": "#00497f",
+                    "inverse-primary": "#a0c9ff",
+                    "primary-fixed-dim": "#a0c9ff",
+                    "error-container": "#ffdad6",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed-variant": "#005228",
+                    "surface": "#f8f9ff",
+                    "primary-fixed": "#d2e4ff",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#825100",
+                    "background": "#f8f9ff",
+                    "on-secondary-fixed": "#00210c",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed": "#ffddb9",
+                    "on-background": "#0b1c30",
+                    "on-tertiary-container": "#ffcb90",
+                    "outline": "#727781"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "8px",
+                    "base": "4px",
+                    "xl": "32px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "32px",
+                    "gutter": "24px",
+                    "sm": "12px",
+                    "lg": "24px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "title-lg": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "dyslexic": ["OpenDyslexic", "sans-serif"]
+            },
+            "fontSize": {
+                    "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "label-md": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+        }
+        .elderly-high-contrast {
+            background-color: #000000 !important;
+            color: #FFFF00 !important;
+        }
+        .elderly-button {
+            background-color: #FFFF00 !important;
+            color: #000000 !important;
+            border: 4px solid #000000;
+        }
+        .transition-drawer {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .drawer-hidden {
+            transform: translateX(100%);
+        }
+        /* Custom Dyslexic Font Support */
+        @font-face {
+            font-family: 'OpenDyslexic';
+            src: url('https://cdn.jsdelivr.net/npm/opendyslexic@1.0.3/font/OpenDyslexic-Regular.otf');
+        }
+        .font-dyslexic {
+            font-family: 'OpenDyslexic', sans-serif !important;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen overflow-x-hidden">
+<!-- TOP NAVIGATION (As defined in JSON) -->
+<header class="flex justify-between items-center w-full px-margin-desktop h-16 fixed top-0 z-50 bg-surface-container-lowest shadow-sm">
+<div class="flex items-center gap-md">
+<span class="text-title-lg font-title-lg font-bold text-primary">Manta Transit</span>
+</div>
+<div class="hidden md:flex items-center gap-lg">
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors px-md py-xs rounded-lg font-label-lg text-label-lg">Explorar</button>
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors px-md py-xs rounded-lg font-label-lg text-label-lg">Rutas</button>
+<button class="text-primary font-bold border-b-2 border-primary h-16 px-md flex items-center text-label-lg font-label-lg">Accesibilidad</button>
+</div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant p-base rounded-full hover:bg-surface-variant">language</button>
+<button class="material-symbols-outlined text-primary p-base rounded-full bg-primary-fixed border border-primary" onclick="toggleDrawer()">accessibility_new</button>
+</div>
+</header>
+<!-- MAIN CONTENT: ELDERLY MODE INTERFACE -->
+<main class="pt-16 min-h-screen">
+<div class="max-w-5xl mx-auto p-lg transition-all duration-500" id="elderly-content">
+<!-- Header Section -->
+<div class="mb-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-lg">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-primary mb-xs">Bienvenido de nuevo, José</h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant">¿A dónde te gustaría ir hoy?</p>
+</div>
+<div class="flex items-center gap-md">
+<div class="bg-secondary-container text-on-secondary-container p-lg rounded-xl flex items-center gap-md shadow-sm">
+<span class="material-symbols-outlined text-[32px]">wb_sunny</span>
+<div>
+<p class="font-bold text-lg">24°C - Manta</p>
+<p class="text-sm">Cielo despejado</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Grid Layout for Elderly Mode -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-lg">
+<!-- Main Action Card: Destination -->
+<div class="md:col-span-8 bg-surface-container-lowest p-xl rounded-[2rem] shadow-sm border border-outline-variant/30 flex flex-col gap-lg">
+<div class="relative">
+<label class="block text-title-lg font-title-lg mb-md text-primary">A dónde vas?</label>
+<div class="flex items-center gap-md bg-surface-container p-md rounded-2xl border-2 border-primary">
+<span class="material-symbols-outlined text-primary text-[32px]">location_on</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-2xl font-semibold placeholder:text-outline" placeholder="Ej: Plaza Central, Hospital..." type="text"/>
+</div>
+</div>
+<div class="flex flex-wrap gap-md">
+<button class="bg-surface-variant text-on-surface p-lg rounded-2xl flex-1 flex flex-col items-center gap-xs hover:bg-primary-container hover:text-white transition-all group">
+<span class="material-symbols-outlined text-[40px] group-hover:scale-110 transition-transform">home</span>
+<span class="font-bold text-xl">Casa</span>
+</button>
+<button class="bg-surface-variant text-on-surface p-lg rounded-2xl flex-1 flex flex-col items-center gap-xs hover:bg-primary-container hover:text-white transition-all group">
+<span class="material-symbols-outlined text-[40px] group-hover:scale-110 transition-transform">medical_services</span>
+<span class="font-bold text-xl">Hospital</span>
+</button>
+<button class="bg-surface-variant text-on-surface p-lg rounded-2xl flex-1 flex flex-col items-center gap-xs hover:bg-primary-container hover:text-white transition-all group">
+<span class="material-symbols-outlined text-[40px] group-hover:scale-110 transition-transform">shopping_cart</span>
+<span class="font-bold text-xl">Super</span>
+</button>
+</div>
+</div>
+<!-- Voice Command & SOS Column -->
+<div class="md:col-span-4 flex flex-col gap-lg">
+<!-- Voice Command -->
+<button class="flex-1 bg-primary text-white rounded-[2rem] p-xl flex flex-col items-center justify-center gap-lg hover:bg-primary-container transition-all shadow-lg active:scale-95">
+<div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
+<span class="material-symbols-outlined text-[64px]" data-weight="fill">mic</span>
+</div>
+<span class="text-2xl font-black uppercase tracking-wider">Hablar</span>
+</button>
+<!-- Emergency Button -->
+<button class="bg-error text-on-error rounded-[2rem] p-xl flex items-center justify-between hover:bg-red-700 transition-all shadow-lg border-4 border-white/20">
+<div class="text-left">
+<p class="font-black text-2xl uppercase italic">Ayuda</p>
+<p class="text-sm opacity-90">Contacto de Emergencia</p>
+</div>
+<span class="material-symbols-outlined text-[48px]">emergency_share</span>
+</button>
+</div>
+<!-- Recent Activity/Alerts -->
+<div class="md:col-span-12 bg-surface-container-high p-lg rounded-[2rem]">
+<div class="flex items-center justify-between mb-lg">
+<h2 class="text-title-lg font-title-lg flex items-center gap-md">
+<span class="material-symbols-outlined text-primary">notifications_active</span>
+                            Avisos importantes
+                        </h2>
+<button class="text-primary font-bold">Ver todo</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="bg-surface-container-lowest p-md rounded-xl flex items-center gap-md border-l-8 border-secondary">
+<span class="material-symbols-outlined text-secondary text-4xl">check_circle</span>
+<div>
+<p class="font-bold text-lg">Línea Azul - Sin retrasos</p>
+<p class="text-on-surface-variant">Tu ruta usual está despejada.</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-md rounded-xl flex items-center gap-md border-l-8 border-tertiary-container">
+<span class="material-symbols-outlined text-tertiary-container text-4xl">warning</span>
+<div>
+<p class="font-bold text-lg">Clima: Vientos fuertes</p>
+<p class="text-on-surface-variant">Tenga precaución al caminar en la parada.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- ACCESSIBILITY DRAWER (As defined in JSON style_shell_layout) -->
+<div class="fixed right-0 top-0 h-full w-80 z-[60] p-lg flex flex-col shadow-xl bg-surface-container-highest transition-drawer drawer-hidden" id="accessibility-drawer">
+<div class="flex justify-between items-center mb-xl">
+<div>
+<h2 class="text-title-lg font-title-lg text-primary">Preferencias</h2>
+<p class="text-body-md font-body-md text-on-surface-variant">Personaliza tu vista</p>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-variant p-xs rounded-full" onclick="toggleDrawer()">close</button>
+</div>
+<div class="space-y-xl overflow-y-auto pr-xs">
+<!-- Elderly Mode Toggle -->
+<div class="bg-primary-container p-md rounded-xl text-on-primary-container shadow-md border border-primary/20">
+<div class="flex items-center justify-between mb-sm">
+<span class="font-bold text-lg">Modo Adulto Mayor</span>
+<span class="material-symbols-outlined">elderly</span>
+</div>
+<button class="w-full bg-secondary-container text-on-secondary-container py-md rounded-lg font-black text-sm uppercase tracking-widest hover:brightness-95 transition-all" id="btn-elderly-toggle" onclick="toggleElderlyMode()">
+                    Activar Modo Adulto Mayor
+                </button>
+</div>
+<!-- Text Size Selector -->
+<section>
+<h3 class="text-label-lg font-label-lg uppercase tracking-widest text-on-surface-variant mb-md">Tamaño del texto</h3>
+<div class="grid grid-cols-4 gap-xs">
+<button class="bg-surface-variant p-md rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition-colors">S</button>
+<button class="bg-primary text-white p-md rounded-lg text-md font-bold transition-colors">M</button>
+<button class="bg-surface-variant p-md rounded-lg text-lg font-bold hover:bg-primary hover:text-white transition-colors">L</button>
+<button class="bg-surface-variant p-md rounded-lg text-xl font-bold hover:bg-primary hover:text-white transition-colors">XL</button>
+</div>
+</section>
+<!-- Toggles Section -->
+<section class="space-y-md">
+<h3 class="text-label-lg font-label-lg uppercase tracking-widest text-on-surface-variant mb-md">Visualización</h3>
+<div class="flex items-center justify-between p-md bg-surface-variant rounded-xl group hover:bg-surface-container-low transition-colors cursor-pointer" onclick="toggleContrast()">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary">contrast</span>
+<span class="font-semibold">Alto Contraste</span>
+</div>
+<div class="w-12 h-6 bg-outline rounded-full relative transition-colors duration-300" id="toggle-contrast">
+<div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform"></div>
+</div>
+</div>
+<div class="flex items-center justify-between p-md bg-surface-variant rounded-xl group hover:bg-surface-container-low transition-colors cursor-pointer" onclick="toggleDyslexic()">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary">spellcheck</span>
+<span class="font-semibold">Fuente Dislexia</span>
+</div>
+<div class="w-12 h-6 bg-outline rounded-full relative transition-colors duration-300" id="toggle-dyslexic">
+<div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform"></div>
+</div>
+</div>
+<div class="flex items-center justify-between p-md bg-surface-variant rounded-xl group hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary">motion_photos_off</span>
+<span class="font-semibold">Reducir Movimiento</span>
+</div>
+<div class="w-12 h-6 bg-outline rounded-full relative">
+<div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full"></div>
+</div>
+</div>
+</section>
+<!-- Language Selector -->
+<section>
+<h3 class="text-label-lg font-label-lg uppercase tracking-widest text-on-surface-variant mb-md">Idioma</h3>
+<select class="w-full p-md bg-surface-variant border-none rounded-xl font-semibold text-on-surface focus:ring-2 focus:ring-primary">
+<option>Español (Ecuador)</option>
+<option>Kichwa</option>
+<option>English (UK)</option>
+<option>Português</option>
+</select>
+</section>
+</div>
+<div class="mt-auto pt-lg border-t border-outline-variant">
+<button class="flex items-center justify-center gap-md w-full py-md text-on-surface-variant font-bold hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+                Guía de accesibilidad
+            </button>
+</div>
+</div>
+<!-- Backdrop for Drawer -->
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden" id="drawer-backdrop" onclick="toggleDrawer()"></div>
+<script>
+        const drawer = document.getElementById('accessibility-drawer');
+        const backdrop = document.getElementById('drawer-backdrop');
+        const elderlyContent = document.getElementById('elderly-content');
+        let isElderlyMode = false;
+        let isHighContrast = false;
+
+        function toggleDrawer() {
+            drawer.classList.toggle('drawer-hidden');
+            backdrop.classList.toggle('hidden');
+        }
+
+        function toggleElderlyMode() {
+            isElderlyMode = !isElderlyMode;
+            const btn = document.getElementById('btn-elderly-toggle');
+            
+            if (isElderlyMode) {
+                btn.innerText = "Desactivar Modo Adulto Mayor";
+                btn.classList.replace('bg-secondary-container', 'bg-tertiary-container');
+                btn.classList.replace('text-on-secondary-container', 'text-white');
+                elderlyContent.classList.add('scale-105');
+                // Auto activate high contrast in elderly mode as per request for "yellow/black buttons"
+                if (!isHighContrast) toggleContrast();
+            } else {
+                btn.innerText = "Activar Modo Adulto Mayor";
+                btn.classList.replace('bg-tertiary-container', 'bg-secondary-container');
+                btn.classList.replace('text-white', 'text-on-secondary-container');
+                elderlyContent.classList.remove('scale-105');
+                if (isHighContrast) toggleContrast();
+            }
+        }
+
+        function toggleContrast() {
+            isHighContrast = !isHighContrast;
+            const toggle = document.getElementById('toggle-contrast');
+            const knob = toggle.querySelector('div');
+            const body = document.body;
+            const emergencyBtn = document.querySelector('.bg-error');
+
+            if (isHighContrast) {
+                toggle.classList.replace('bg-outline', 'bg-secondary');
+                knob.style.transform = 'translateX(24px)';
+                body.classList.add('elderly-high-contrast');
+                document.querySelectorAll('.bg-surface-container-lowest, .bg-surface-variant').forEach(el => {
+                    el.classList.add('elderly-high-contrast', 'border-yellow-400');
+                });
+                document.querySelectorAll('button:not(.bg-primary)').forEach(el => {
+                    el.classList.add('elderly-button');
+                });
+            } else {
+                toggle.classList.replace('bg-secondary', 'bg-outline');
+                knob.style.transform = 'translateX(0)';
+                body.classList.remove('elderly-high-contrast');
+                document.querySelectorAll('.elderly-high-contrast').forEach(el => {
+                    el.classList.remove('elderly-high-contrast', 'border-yellow-400');
+                });
+                document.querySelectorAll('.elderly-button').forEach(el => {
+                    el.classList.remove('elderly-button');
+                });
+            }
+        }
+
+        function toggleDyslexic() {
+            const toggle = document.getElementById('toggle-dyslexic');
+            const knob = toggle.querySelector('div');
+            const hasClass = document.body.classList.toggle('font-dyslexic');
+            
+            if (hasClass) {
+                toggle.classList.replace('bg-outline', 'bg-secondary');
+                knob.style.transform = 'translateX(24px)';
+            } else {
+                toggle.classList.replace('bg-secondary', 'bg-outline');
+                knob.style.transform = 'translateX(0)';
+            }
+        }
+    </script>
+</body></html>

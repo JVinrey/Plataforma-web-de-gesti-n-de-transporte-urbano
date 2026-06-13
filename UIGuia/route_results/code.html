@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Manta Transit - Búsqueda de Rutas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9ff;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        /* Custom scrollbar for data-rich panels */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c1c7d1;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#cbdbf5",
+                      "surface-container-high": "#dce9ff",
+                      "on-tertiary-fixed": "#2b1700",
+                      "secondary-fixed": "#6bfe9c",
+                      "on-surface": "#0b1c30",
+                      "surface-container": "#e5eeff",
+                      "secondary": "#006d37",
+                      "error": "#ba1a1a",
+                      "surface-tint": "#1f619e",
+                      "surface-container-highest": "#d3e4fe",
+                      "primary": "#00467b",
+                      "inverse-surface": "#213145",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary": "#623c00",
+                      "surface-bright": "#f8f9ff",
+                      "secondary-fixed-dim": "#4ae183",
+                      "secondary-container": "#6bfe9c",
+                      "on-primary-container": "#bad7ff",
+                      "tertiary-fixed-dim": "#ffb961",
+                      "on-secondary-container": "#00743a",
+                      "inverse-on-surface": "#eaf1ff",
+                      "surface-container-low": "#eff4ff",
+                      "on-tertiary-fixed-variant": "#663e00",
+                      "primary-container": "#1b5e9b",
+                      "on-error": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "outline-variant": "#c1c7d1",
+                      "on-surface-variant": "#414750",
+                      "on-primary-fixed": "#001c37",
+                      "surface-variant": "#d3e4fe",
+                      "on-primary-fixed-variant": "#00497f",
+                      "inverse-primary": "#a0c9ff",
+                      "primary-fixed-dim": "#a0c9ff",
+                      "error-container": "#ffdad6",
+                      "on-primary": "#ffffff",
+                      "on-secondary-fixed-variant": "#005228",
+                      "surface": "#f8f9ff",
+                      "primary-fixed": "#d2e4ff",
+                      "on-secondary": "#ffffff",
+                      "tertiary-container": "#825100",
+                      "background": "#f8f9ff",
+                      "on-secondary-fixed": "#00210c",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-fixed": "#ffddb9",
+                      "on-background": "#0b1c30",
+                      "on-tertiary-container": "#ffcb90",
+                      "outline": "#727781"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xs": "8px",
+                      "base": "4px",
+                      "xl": "32px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "32px",
+                      "gutter": "24px",
+                      "sm": "12px",
+                      "lg": "24px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "title-lg": ["Inter"],
+                      "label-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-lg-mobile": ["Inter"]
+              },
+              "fontSize": {
+                      "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "500"}],
+                      "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                      "label-md": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "700"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background overflow-hidden">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-margin-desktop h-16 fixed top-0 z-50 bg-surface-container-lowest shadow-sm dark:shadow-none">
+<div class="flex items-center gap-md">
+<span class="text-title-lg font-title-lg font-bold text-primary">Manta Transit</span>
+<div class="hidden md:flex ml-xl items-center bg-surface-container rounded-full px-md py-xs w-80">
+<span class="material-symbols-outlined text-outline mr-sm" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-full" placeholder="Buscar paradas o líneas..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant p-xs hover:bg-surface-container-high rounded-full transition-colors" data-icon="language">language</button>
+<button class="material-symbols-outlined text-on-surface-variant p-xs hover:bg-surface-container-high rounded-full transition-colors" data-icon="accessibility_new">accessibility_new</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-xs"></div>
+<button class="px-md py-xs text-primary font-label-lg hover:bg-surface-container-high rounded-lg transition-colors">Login</button>
+<button class="px-md py-xs bg-primary text-on-primary font-label-lg rounded-lg shadow-sm hover:opacity-90 transition-all">Register</button>
+</div>
+</header>
+<!-- SideNavBar (Desktop Rail) -->
+<nav class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 p-md flex flex-col border-r border-outline-variant bg-surface-container-low hidden md:flex">
+<div class="flex flex-col gap-xs">
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-xl px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-lg">Home</span>
+</a>
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container rounded-xl px-md py-sm translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="directions_bus">directions_bus</span>
+<span class="font-label-lg">Routes</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-xl px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="my_location">my_location</span>
+<span class="font-label-lg">Tracking</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-variant rounded-xl px-md py-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label-lg">History</span>
+</a>
+</div>
+<div class="mt-auto p-md bg-surface-container rounded-xl">
+<p class="text-label-md text-outline mb-xs">ESTADO DEL SISTEMA</p>
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 bg-secondary rounded-full animate-pulse"></span>
+<span class="text-label-lg font-bold text-on-secondary-container">Operativo</span>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-16 h-screen relative flex flex-col md:flex-row overflow-hidden">
+<!-- Left Panel: Search & Filters -->
+<aside class="w-full md:w-[400px] bg-surface-container-lowest h-full overflow-y-auto custom-scrollbar shadow-lg z-20 flex flex-col p-lg">
+<div class="mb-lg">
+<h1 class="text-headline-lg font-headline-lg text-primary mb-xs">Planificar Viaje</h1>
+<p class="text-body-md text-on-surface-variant">Encuentra la mejor ruta en Manta.</p>
+</div>
+<!-- Search Inputs -->
+<div class="flex flex-col gap-md mb-xl">
+<div class="relative">
+<label class="absolute -top-2 left-3 bg-surface-container-lowest px-1 text-label-md text-primary font-bold">Origen</label>
+<div class="flex items-center border border-outline rounded-lg px-md py-sm bg-surface">
+<span class="material-symbols-outlined text-primary mr-sm" data-icon="trip_origin">trip_origin</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-full font-medium" type="text" value="Terminal Terrestre"/>
+</div>
+</div>
+<div class="flex justify-center -my-3 z-10">
+<button class="bg-surface-container-highest p-base rounded-full shadow-md border border-outline-variant hover:rotate-180 transition-transform">
+<span class="material-symbols-outlined text-primary" data-icon="swap_vert">swap_vert</span>
+</button>
+</div>
+<div class="relative">
+<label class="absolute -top-2 left-3 bg-surface-container-lowest px-1 text-label-md text-outline">Destino</label>
+<div class="flex items-center border border-outline-variant rounded-lg px-md py-sm">
+<span class="material-symbols-outlined text-error mr-sm" data-icon="location_on">location_on</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-full" placeholder="¿A dónde vas?" type="text"/>
+</div>
+</div>
+</div>
+<!-- Filters Grid -->
+<div class="grid grid-cols-2 gap-md mb-xl">
+<div class="flex flex-col gap-xs">
+<label class="text-label-md text-outline">Fecha</label>
+<div class="flex items-center border border-outline-variant rounded-lg px-sm py-xs">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] mr-xs" data-icon="calendar_month">calendar_month</span>
+<span class="text-body-md">Hoy</span>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="text-label-md text-outline">Hora</label>
+<div class="flex items-center border border-outline-variant rounded-lg px-sm py-xs">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] mr-xs" data-icon="schedule">schedule</span>
+<span class="text-body-md">Ahora</span>
+</div>
+</div>
+</div>
+<!-- Accessibility Toggle -->
+<div class="flex items-center justify-between p-md bg-surface-container-low rounded-xl mb-xl border border-outline-variant">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="accessible">accessible</span>
+<div>
+<p class="text-label-lg text-on-surface font-bold">Piso Bajo</p>
+<p class="text-label-md text-on-surface-variant">Preferir buses accesibles</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="h-[1px] bg-outline-variant mb-lg"></div>
+<!-- Result Cards List -->
+<div class="flex flex-col gap-lg">
+<h2 class="text-title-lg font-title-lg text-on-surface">Mejores Rutas</h2>
+<!-- Recommended Card (IA) -->
+<div class="relative group cursor-pointer">
+<div class="absolute -top-3 left-4 bg-secondary text-on-secondary px-sm py-base rounded-full flex items-center gap-xs z-10 shadow-sm">
+<span class="material-symbols-outlined text-[14px]" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="text-label-md uppercase tracking-wider font-bold">Recomendada por IA</span>
+</div>
+<div class="p-lg bg-surface-container-lowest border-2 border-secondary rounded-xl shadow-md group-hover:shadow-lg transition-all">
+<div class="flex justify-between items-start mb-md">
+<div>
+<span class="text-headline-lg font-bold text-on-surface">22 min</span>
+<p class="text-body-md text-on-surface-variant">Llegada: 14:42</p>
+</div>
+<div class="text-right">
+<span class="text-title-lg font-bold text-secondary">$0.35</span>
+<div class="bg-secondary/10 px-sm py-base rounded-lg mt-base">
+<span class="text-label-md text-secondary font-bold">CONGESTIÓN BAJA</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<div class="bg-primary px-sm py-base rounded flex items-center gap-xs">
+<span class="material-symbols-outlined text-on-primary text-[18px]" data-icon="directions_bus">directions_bus</span>
+<span class="text-label-lg font-bold text-on-primary">L-14</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="directions_walk">directions_walk</span>
+<span class="text-label-lg">4 min</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Regular Card 1 -->
+<div class="p-lg bg-surface-container-lowest border border-outline-variant rounded-xl hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="flex justify-between items-start mb-md">
+<div>
+<span class="text-headline-lg font-bold text-on-surface">28 min</span>
+<p class="text-body-md text-on-surface-variant">Llegada: 14:48</p>
+</div>
+<div class="text-right">
+<span class="text-title-lg font-bold text-on-surface">$0.35</span>
+<div class="bg-tertiary-container/20 px-sm py-base rounded-lg mt-base">
+<span class="text-label-md text-on-tertiary-fixed-variant font-bold">MEDIA</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<div class="bg-surface-variant px-sm py-base rounded flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="directions_bus">directions_bus</span>
+<span class="text-label-lg font-bold text-primary">L-08</span>
+</div>
+</div>
+</div>
+<!-- Regular Card 2 -->
+<div class="p-lg bg-surface-container-lowest border border-outline-variant rounded-xl hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="flex justify-between items-start mb-md">
+<div>
+<span class="text-headline-lg font-bold text-on-surface">35 min</span>
+<p class="text-body-md text-on-surface-variant">Llegada: 14:55</p>
+</div>
+<div class="text-right">
+<span class="text-title-lg font-bold text-on-surface">$0.35</span>
+<div class="bg-error-container/40 px-sm py-base rounded-lg mt-base">
+<span class="text-label-md text-on-error-container font-bold">ALTA</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<div class="bg-surface-variant px-sm py-base rounded flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="directions_bus">directions_bus</span>
+<span class="text-label-lg font-bold text-primary">L-02</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Right Side: Interactive Map -->
+<section class="flex-1 relative bg-surface-dim">
+<!-- Map Simulation Overlay -->
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-[#e5efff] relative overflow-hidden" data-location="Manta, Ecuador" style="">
+<!-- Placeholder for Map Interface -->
+<div class="absolute inset-0 opacity-40 mix-blend-multiply" style="background-image: radial-gradient(#1f619e 1px, transparent 0); background-size: 40px 40px;"></div>
+<!-- Simulated Route Line -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" preserveaspectratio="none" viewbox="0 0 1000 1000">
+<path d="M 200 800 Q 400 700 500 500 T 800 200" fill="none" opacity="0.6" stroke="#00467b" stroke-dasharray="10 5" stroke-width="6"></path>
+<circle cx="200" cy="800" fill="#00467b" r="10"></circle>
+<circle cx="800" cy="200" fill="#ba1a1a" r="10"></circle>
+</svg>
+<!-- Dynamic Map Cards/Markers -->
+<div class="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2">
+<div class="bg-surface-container-lowest p-sm rounded-lg shadow-lg flex items-center gap-md border-2 border-secondary animate-bounce">
+<div class="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined text-[18px]" data-icon="directions_bus">directions_bus</span>
+</div>
+<div>
+<p class="text-label-lg font-bold">Línea 14</p>
+<p class="text-label-md text-secondary">A 2 min de tu ubicación</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Map Controls -->
+<div class="absolute bottom-lg right-lg flex flex-col gap-sm z-30">
+<button class="w-12 h-12 bg-surface-container-lowest rounded-full shadow-lg flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="my_location">my_location</span>
+</button>
+<div class="flex flex-col bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant">
+<button class="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-t-xl transition-colors border-b border-outline-variant">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<button class="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-b-xl transition-colors">
+<span class="material-symbols-outlined" data-icon="remove">remove</span>
+</button>
+</div>
+<button class="w-12 h-12 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="layers">layers</span>
+</button>
+</div>
+<!-- Floating Weather/Info Badge -->
+<div class="absolute top-lg right-lg glass-panel px-md py-sm rounded-full shadow-sm flex items-center gap-sm border border-white/20 z-30">
+<span class="material-symbols-outlined text-tertiary" data-icon="wb_sunny">wb_sunny</span>
+<span class="text-label-lg font-bold text-on-surface">Manta: 28°C</span>
+</div>
+</section>
+</main>
+<!-- Mobile Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 h-16 bg-surface-container-lowest border-t border-outline-variant flex items-center justify-around z-50 md:hidden">
+<button class="flex flex-col items-center gap-1 text-outline">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-[10px] font-bold">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" data-icon="directions_bus" style="font-variation-settings: 'FILL' 1;">directions_bus</span>
+<span class="text-[10px] font-bold">Rutas</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-outline">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="text-[10px] font-bold">Mapa</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-outline">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] font-bold">Perfil</span>
+</button>
+</nav>
+<script>
+        // Simple UI Interaction Logic
+        document.querySelectorAll('.cursor-pointer').forEach(card => {
+            card.addEventListener('click', () => {
+                // Remove active styling from all cards
+                document.querySelectorAll('.cursor-pointer').forEach(c => {
+                    c.classList.remove('border-primary', 'bg-surface-container-low');
+                });
+                // Add active styling to clicked card
+                if (!card.classList.contains('border-secondary')) {
+                    card.classList.add('border-primary', 'bg-surface-container-low');
+                }
+            });
+        });
+
+        // Initialize tooltips or minor animations
+        console.log("Manta Transit UI Initialized");
+    </script>
+</body></html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitUrbano - Iniciar Sesión</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#cbdbf5",
+                        "surface-container-high": "#dce9ff",
+                        "on-tertiary-fixed": "#2b1700",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-surface": "#0b1c30",
+                        "surface-container": "#e5eeff",
+                        "secondary": "#006d37",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#1f619e",
+                        "surface-container-highest": "#d3e4fe",
+                        "primary": "#00467b",
+                        "inverse-surface": "#213145",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#623c00",
+                        "surface-bright": "#f8f9ff",
+                        "secondary-fixed-dim": "#4ae183",
+                        "secondary-container": "#6bfe9c",
+                        "on-primary-container": "#bad7ff",
+                        "tertiary-fixed-dim": "#ffb961",
+                        "on-secondary-container": "#00743a",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-container-low": "#eff4ff",
+                        "on-tertiary-fixed-variant": "#663e00",
+                        "primary-container": "#1b5e9b",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c1c7d1",
+                        "on-surface-variant": "#414750",
+                        "on-primary-fixed": "#001c37",
+                        "surface-variant": "#d3e4fe",
+                        "on-primary-fixed-variant": "#00497f",
+                        "inverse-primary": "#a0c9ff",
+                        "primary-fixed-dim": "#a0c9ff",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "outline": "#727781"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "base": "4px",
+                        "xl": "32px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "gutter": "24px",
+                        "sm": "12px",
+                        "lg": "24px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "title-lg": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "500"}],
+                        "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "label-md": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9ff;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .login-gradient {
+            background: linear-gradient(135deg, #00467b 0%, #1b5e9b 100%);
+        }
+        .error-shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-0 md:p-lg">
+<main class="w-full max-w-[1200px] min-h-[700px] bg-surface-container-lowest flex flex-col md:flex-row shadow-sm rounded-none md:rounded-xl overflow-hidden overflow-y-auto md:overflow-hidden">
+<!-- Left Column: Brand & Hero -->
+<section class="hidden md:flex md:w-1/2 login-gradient p-xl flex-col justify-between relative overflow-hidden">
+<!-- Decorative Elements -->
+<div class="absolute top-[-10%] right-[-10%] w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+<div class="absolute bottom-[-5%] left-[-5%] w-80 h-80 bg-primary-container/20 rounded-full blur-3xl"></div>
+<div class="z-10">
+<div class="flex items-center gap-sm mb-xl">
+<span class="material-symbols-outlined text-white text-[40px]" data-icon="directions_bus" style="font-variation-settings: 'FILL' 1;">directions_bus</span>
+<h1 class="font-title-lg text-title-lg font-bold text-white tracking-tight">TransitUrbano</h1>
+</div>
+<h2 class="font-display-lg text-display-lg text-white mb-lg leading-[1.1]">Tu ciudad, <br/><span class="opacity-80">en movimiento.</span></h2>
+<p class="font-body-lg text-body-lg text-white/80 max-w-md">Gestiona rutas, monitorea el tráfico en tiempo real y optimiza la movilidad urbana con nuestra plataforma inteligente.</p>
+</div>
+<div class="z-10 bg-white/10 backdrop-blur-md p-lg rounded-xl border border-white/10">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div>
+<p class="font-label-lg text-label-lg text-white uppercase tracking-wider">Estado del Sistema</p>
+<p class="font-body-md text-body-md text-white">Todas las rutas operando con normalidad.</p>
+</div>
+</div>
+</div>
+<!-- Abstract background image context -->
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+<img alt="Transit Grid" class="w-full h-full object-cover" data-alt="A highly stylized, long-exposure night photograph of city bus lanes and urban transit infrastructure. Streaks of blue and white light from moving vehicles create a dynamic, technological atmosphere. The scene is framed with architectural symmetry, conveying a sense of organized urban movement and corporate reliability. The color palette is dominated by deep navy blues and brilliant highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDb3LSwxFa18FX4cQVdIY3yAWCSHZp_0RaqNJQQaG3dMCGc_zEnoGK5p7AEIsWhbqB6QxZ_-rlr2Gd9HT82PEsybZ_2G2ID4uUI75wVFLvs0rrsW7oNOw2jEFjcFJ8z9cfaT-_2RDDNXGclPMeigqabIj9AOQ0vHaHOv5v2Oj3O6q7zSP59Iv9Wo15_0GFMxyPKrqdJ2Jw2TzB7dD60LRXxkA0B4_Y4Cdhtr4Fk-9opIqg6DIyRxa-yE9x8MtgzHu4Mp17eT6QTy9M"/>
+</div>
+</section>
+<!-- Right Column: Login Form -->
+<section class="w-full md:w-1/2 p-margin-mobile md:p-xl flex flex-col justify-center bg-surface-container-lowest">
+<!-- Mobile Header Only -->
+<div class="md:hidden flex items-center gap-xs mb-xl">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="directions_bus" style="font-variation-settings: 'FILL' 1;">directions_bus</span>
+<h1 class="font-title-lg text-title-lg font-bold text-primary tracking-tight">TransitUrbano</h1>
+</div>
+<div class="max-w-[400px] mx-auto w-full">
+<div class="mb-xl">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Bienvenido de nuevo</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Ingresa tus credenciales para acceder al panel de control.</p>
+</div>
+<form class="space-y-lg" onsubmit="return false;">
+<!-- Email Field -->
+<div class="space-y-xs">
+<label class="font-label-lg text-label-lg text-on-surface-variant px-base" for="email">Correo Electrónico</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" data-icon="mail">mail</span>
+<input class="w-full pl-xl pr-md py-md bg-transparent border border-outline-variant rounded-lg font-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" id="email" placeholder="nombre@empresa.com" type="email" value="operador@manta.gov.ec"/>
+</div>
+</div>
+<!-- Password Field (Error State) -->
+<div class="space-y-xs">
+<div class="flex justify-between items-center px-base">
+<label class="font-label-lg text-label-lg text-error" for="password">Contraseña</label>
+<a class="font-label-md text-label-md text-primary hover:underline" href="#">¿Olvidaste tu contraseña?</a>
+</div>
+<div class="relative group error-shake">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-error" data-icon="lock">lock</span>
+<input class="w-full pl-xl pr-[48px] py-md bg-transparent border-2 border-error rounded-lg font-body-md focus:ring-0 outline-none transition-all" id="password" placeholder="••••••••" type="password" value="password123"/>
+<button class="absolute right-md top-1/2 -translate-y-1/2 text-outline hover:text-on-surface-variant" type="button">
+<span class="material-symbols-outlined" data-icon="visibility_off">visibility_off</span>
+</button>
+</div>
+<p class="flex items-center gap-xs font-label-md text-label-md text-error px-base">
+<span class="material-symbols-outlined text-[14px]" data-icon="error">error</span>
+                            Contraseña incorrecta
+                        </p>
+</div>
+<div class="flex items-center gap-sm pt-xs">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="remember" type="checkbox"/>
+<label class="font-body-md text-body-md text-on-surface-variant select-none cursor-pointer" for="remember">Recordar sesión</label>
+</div>
+<!-- Action Buttons -->
+<div class="space-y-md pt-md">
+<button class="w-full bg-primary hover:bg-primary-container text-white font-label-lg py-md rounded-full shadow-sm active:scale-[0.98] transition-all flex items-center justify-center gap-sm">
+                            Iniciar Sesión
+                        </button>
+<div class="relative flex items-center py-base">
+<div class="flex-grow border-t border-outline-variant"></div>
+<span class="flex-shrink mx-md font-label-md text-label-md text-outline uppercase tracking-widest">o</span>
+<div class="flex-grow border-t border-outline-variant"></div>
+</div>
+<button class="w-full bg-surface-container-low hover:bg-surface-container-high text-on-surface font-label-lg py-md rounded-full border border-outline-variant transition-all flex items-center justify-center gap-sm active:scale-[0.98]">
+<svg class="w-5 h-5" viewbox="0 0 24 24">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+                            Continúa con Google
+                        </button>
+</div>
+</form>
+<div class="mt-xl text-center space-y-md">
+<button class="font-body-md text-body-md text-primary font-semibold hover:underline">
+                        Continuar como invitado
+                    </button>
+<p class="font-label-md text-label-md text-on-surface-variant">
+                        ¿No tienes una cuenta? 
+                        <a class="text-primary font-bold hover:underline ml-xs" href="#">Regístrate ahora</a>
+</p>
+</div>
+</div>
+<!-- Footer Links -->
+<footer class="mt-auto pt-xl border-t border-outline-variant/30 flex flex-wrap justify-center gap-lg md:gap-xl">
+<a class="font-label-md text-label-md text-outline hover:text-on-surface-variant" href="#">Privacidad</a>
+<a class="font-label-md text-label-md text-outline hover:text-on-surface-variant" href="#">Términos</a>
+<a class="font-label-md text-label-md text-outline hover:text-on-surface-variant" href="#">Soporte Técnico</a>
+</footer>
+</section>
+</main>
+<script>
+        // Simple micro-interaction for input focus
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.closest('.space-y-xs').classList.add('scale-[1.01]');
+                input.parentElement.closest('.space-y-xs').style.transition = 'transform 0.2s ease';
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.closest('.space-y-xs').classList.remove('scale-[1.01]');
+            });
+        });
+    </script>
+</body></html>
