@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useFleetStats } from '../hooks/use-transit-data';
 import type { VehicleWithRelations } from '../hooks/use-transit-data';
 
@@ -63,27 +64,27 @@ export default function FleetPage() {
             <span className="material-symbols-outlined">dashboard</span>
             <span className="font-label-lg">Fleet Dashboard</span>
           </a>
-          <a
-            href="#routes"
+          <Link
+            to="/route-planning"
             className="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-md px-md py-sm rounded-lg transition-colors"
           >
             <span className="material-symbols-outlined">map</span>
             <span className="font-label-lg">Route Planning</span>
-          </a>
-          <a
-            href="#schedules"
+          </Link>
+          <Link
+            to="/schedules"
             className="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-md px-md py-sm rounded-lg transition-colors"
           >
             <span className="material-symbols-outlined">calendar_today</span>
             <span className="font-label-lg">Schedules</span>
-          </a>
-          <a
-            href="#performance"
+          </Link>
+          <Link
+            to="/driver-performance"
             className="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-md px-md py-sm rounded-lg transition-colors"
           >
             <span className="material-symbols-outlined">monitoring</span>
             <span className="font-label-lg">Driver Performance</span>
-          </a>
+          </Link>
         </nav>
 
         {/* CTA Button */}

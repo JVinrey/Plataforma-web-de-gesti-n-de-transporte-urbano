@@ -91,6 +91,67 @@ export function useRouteStops(routeId: string | null | undefined) {
   })
 }
 
+// =====================================================================
+// Desempeño de conductores (panel Driver Performance)
+// =====================================================================
+
+export type DriverMetricsRow = Tables<'driver_metrics'>
+
+/** Conductor con su tarjeta de métricas resuelta por join. */
+export interface DriverWithMetrics extends DriverMetricsRow {
+  driver: Pick<DriverRow, 'full_name' | 'avatar_url' | 'phone'> | null
+  monthlySafety: number[]
+}
+
+/**
+ * Métricas de desempeño de todos los conductores, ordenadas por puntaje de
+ * seguridad descendente (ranking del leaderboard). Datos reales de Supabase.
+ */
+export function useDriverPerformance() {
+  return useQuery({
+    queryKey: ['driver-performance'],
+    queryFn: async (): Promise<DriverWithMetrics[]> => {
+      const { data, error } = await supabase
+        .from('driver_metrics')
+        .select('*, driver:drivers(full_name, avatar_url, phone)')
+        .order('safety_score', { ascending: false })
+      if (error) throw error
+      return (data ?? []).map((row) => ({
+        ...(row as unknown as DriverWithMetrics),
+        monthlySafety: Array.isArray(row.monthly_safety)
+          ? (row.monthly_safety as number[])
+          : [],
+      }))
+    },
+  })
+}
+
+export interface PerformanceStats {
+  activeDrivers: number
+  totalDrivers: number
+  safetyAvg: number
+  attendanceAvg: number
+  safetyAlerts: number
+}
+
+/** Métricas agregadas del panel de desempeño, derivadas de los conductores. */
+export function usePerformanceStats() {
+  const query = useDriverPerformance()
+  const rows = query.data ?? []
+  const stats: PerformanceStats = {
+    totalDrivers: rows.length,
+    activeDrivers: rows.filter((r) => r.status === 'on_duty').length,
+    safetyAvg: rows.length
+      ? Math.round((rows.reduce((s, r) => s + Number(r.safety_score), 0) / rows.length) * 10) / 10
+      : 0,
+    attendanceAvg: rows.length
+      ? Math.round(rows.reduce((s, r) => s + r.attendance, 0) / rows.length)
+      : 0,
+    safetyAlerts: rows.reduce((s, r) => s + r.violations, 0),
+  }
+  return { ...query, stats }
+}
+
 export interface FleetStats {
   total: number
   active: number

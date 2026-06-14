@@ -17,6 +17,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      driver_metrics: {
+        Row: {
+          attendance: number
+          driver_id: string
+          efficiency: number
+          fuel_consumption: string
+          monthly_safety: Json
+          role_title: string
+          route_code: string | null
+          safety_score: number
+          status: string
+          total_hours: number
+          trips: number
+          updated_at: string
+          violations: number
+        }
+        Insert: {
+          attendance?: number
+          driver_id: string
+          efficiency?: number
+          fuel_consumption?: string
+          monthly_safety?: Json
+          role_title?: string
+          route_code?: string | null
+          safety_score?: number
+          status?: string
+          total_hours?: number
+          trips?: number
+          updated_at?: string
+          violations?: number
+        }
+        Update: {
+          attendance?: number
+          driver_id?: string
+          efficiency?: number
+          fuel_consumption?: string
+          monthly_safety?: Json
+          role_title?: string
+          route_code?: string | null
+          safety_score?: number
+          status?: string
+          total_hours?: number
+          trips?: number
+          updated_at?: string
+          violations?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'driver_metrics_driver_id_fkey'
+            columns: ['driver_id']
+            isOneToOne: true
+            referencedRelation: 'drivers'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       drivers: {
         Row: {
           avatar_url: string | null
@@ -43,28 +99,49 @@ export type Database = {
       }
       feedback: {
         Row: {
+          comfort: number | null
           comment: string | null
           created_at: string
+          driver_rating: number | null
+          duration_minutes: number | null
           id: string
+          punctuality: number | null
           rating: number | null
           route_id: string | null
+          safety: number | null
           user_id: string | null
+          vehicle_code: string | null
+          vehicle_type: string | null
         }
         Insert: {
+          comfort?: number | null
           comment?: string | null
           created_at?: string
+          driver_rating?: number | null
+          duration_minutes?: number | null
           id?: string
+          punctuality?: number | null
           rating?: number | null
           route_id?: string | null
+          safety?: number | null
           user_id?: string | null
+          vehicle_code?: string | null
+          vehicle_type?: string | null
         }
         Update: {
+          comfort?: number | null
           comment?: string | null
           created_at?: string
+          driver_rating?: number | null
+          duration_minutes?: number | null
           id?: string
+          punctuality?: number | null
           rating?: number | null
           route_id?: string | null
+          safety?: number | null
           user_id?: string | null
+          vehicle_code?: string | null
+          vehicle_type?: string | null
         }
         Relationships: [
           {
@@ -102,6 +179,50 @@ export type Database = {
           user_type?: Database['public']['Enums']['user_type']
         }
         Relationships: []
+      }
+      reminders: {
+        Row: {
+          active: boolean
+          client_id: string
+          created_at: string
+          days: string
+          departure_time: string
+          id: string
+          lead_minutes: number
+          route_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          active?: boolean
+          client_id: string
+          created_at?: string
+          days?: string
+          departure_time: string
+          id?: string
+          lead_minutes?: number
+          route_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          active?: boolean
+          client_id?: string
+          created_at?: string
+          days?: string
+          departure_time?: string
+          id?: string
+          lead_minutes?: number
+          route_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'reminders_route_id_fkey'
+            columns: ['route_id']
+            isOneToOne: false
+            referencedRelation: 'routes'
+            referencedColumns: ['id']
+          },
+        ]
       }
       route_stops: {
         Row: {
