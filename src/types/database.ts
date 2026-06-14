@@ -97,6 +97,32 @@ export type Database = {
         }
         Relationships: []
       }
+      favorite_routes: {
+        Row: {
+          client_id: string
+          created_at: string
+          route_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          route_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          route_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'favorite_routes_route_id_fkey'
+            columns: ['route_id']
+            isOneToOne: false
+            referencedRelation: 'routes'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       feedback: {
         Row: {
           comfort: number | null
@@ -152,6 +178,33 @@ export type Database = {
             referencedColumns: ['id']
           },
         ]
+      }
+      payment_methods: {
+        Row: {
+          brand: string
+          client_id: string
+          created_at: string
+          id: string
+          is_default: boolean
+          last4: string
+        }
+        Insert: {
+          brand?: string
+          client_id: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          last4: string
+        }
+        Update: {
+          brand?: string
+          client_id?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          last4?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -296,6 +349,33 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_locations: {
+        Row: {
+          address: string | null
+          client_id: string
+          created_at: string
+          id: string
+          kind: string
+          label: string
+        }
+        Insert: {
+          address?: string | null
+          client_id: string
+          created_at?: string
+          id?: string
+          kind?: string
+          label: string
+        }
+        Update: {
+          address?: string | null
+          client_id?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          label?: string
+        }
+        Relationships: []
+      }
       stops: {
         Row: {
           accessible: boolean
@@ -432,12 +512,67 @@ export type Database = {
           },
         ]
       }
+      wallet_transactions: {
+        Row: {
+          amount: number
+          client_id: string
+          concept: string
+          created_at: string
+          id: string
+          kind: string
+          subtitle: string | null
+        }
+        Insert: {
+          amount: number
+          client_id: string
+          concept: string
+          created_at?: string
+          id?: string
+          kind?: string
+          subtitle?: string | null
+        }
+        Update: {
+          amount?: number
+          client_id?: string
+          concept?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          subtitle?: string | null
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          balance: number
+          client_id: string
+          created_at: string
+          linked_card: string | null
+          user_id: string | null
+        }
+        Insert: {
+          balance?: number
+          client_id: string
+          created_at?: string
+          linked_card?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          balance?: number
+          client_id?: string
+          created_at?: string
+          linked_card?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       is_staff: { Args: never; Returns: boolean }
+      seed_demo_account: { Args: { p_client_id: string }; Returns: undefined }
     }
     Enums: {
       route_status: 'on_time' | 'delayed' | 'off_line'

@@ -17,6 +17,7 @@ interface ChatMessage {
   id: string
   from: 'bot' | 'user'
   text: string
+  time: string
   /** Tarjeta de ruta opcional adjunta a la respuesta del bot. */
   routeCard?: { code: string; name: string; id: string }
 }
@@ -25,6 +26,7 @@ const QUICK_REPLIES = ['¿Qué rutas hay?', 'Horarios', '¿Cuánto cuesta?', 'Ay
 
 let counter = 0
 const nextId = () => `m${counter++}`
+const nowTime = () => new Date().toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })
 
 /** Normaliza texto: minúsculas y sin acentos (regex construido en runtime). */
 const DIACRITICS = new RegExp('[' + '\u0300' + '-' + '\u036f' + ']', 'g')
@@ -33,7 +35,7 @@ function norm(text: string): string {
 }
 
 /** Genera la respuesta del asistente a partir de las rutas reales. */
-function buildReply(input: string, routes: RouteRow[]): ChatMessage {
+function buildReply(input: string, routes: RouteRow[]): Omit<ChatMessage, 'time'> {
   const q = norm(input)
 
   const available = routes.filter((r) => r.status !== 'off_line')
@@ -106,7 +108,8 @@ export default function AssistantPage() {
     {
       id: nextId(),
       from: 'bot',
-      text: '¡Hola! Soy tu asistente de TransitUrbano. ¿En qué puedo ayudarte hoy?',
+      text: '¡Hola! Soy tu Asistente de TransitUrbano. ¿En qué puedo ayudarte con tu ruta hoy?',
+      time: nowTime(),
     },
   ])
   const [draft, setDraft] = useState('')
@@ -116,8 +119,8 @@ export default function AssistantPage() {
   const send = (text: string) => {
     const trimmed = text.trim()
     if (!trimmed) return
-    const userMsg: ChatMessage = { id: nextId(), from: 'user', text: trimmed }
-    const reply = buildReply(trimmed, routes)
+    const userMsg: ChatMessage = { id: nextId(), from: 'user', text: trimmed, time: nowTime() }
+    const reply: ChatMessage = { ...buildReply(trimmed, routes), time: nowTime() }
     setMessages((prev) => [...prev, userMsg, reply])
     setDraft('')
   }
@@ -127,6 +130,7 @@ export default function AssistantPage() {
   }, [messages])
 
   const textScale = useMemo(() => (largeText ? 'text-lg' : 'font-body-md'), [largeText])
+  const lastUserIndex = useMemo(() => messages.map((m) => m.from).lastIndexOf('user'), [messages])
 
   return (
     <PassengerShell activePath="/asistente" searchPlaceholder="Buscar rutas...">
@@ -147,7 +151,7 @@ export default function AssistantPage() {
               </span>
               <div>
                 <p className="font-body-md font-bold text-on-surface">Asistente TransitUrbano</p>
-                <p className="font-label-md font-semibold text-secondary">En línea</p>
+                <p className="font-label-md font-semibold uppercase tracking-wide text-secondary">En línea</p>
               </div>
             </div>
             <button
@@ -169,7 +173,13 @@ export default function AssistantPage() {
             aria-label="Mensajes de la conversación"
             className="flex-1 space-y-md overflow-y-auto px-lg py-lg"
           >
-            {messages.map((m) =>
+            {/* Marca de tiempo de inicio de la conversación */}
+            <div className="flex justify-center">
+              <span className="rounded-full bg-surface-container px-3 py-1 font-label-md text-on-surface-variant">
+                Hoy, {messages[0]?.time}
+              </span>
+            </div>
+            {messages.map((m, i) =>
               m.from === 'bot' ? (
                 <div key={m.id} className="flex max-w-[85%] items-start gap-sm">
                   <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary">
@@ -199,13 +209,19 @@ export default function AssistantPage() {
                   </div>
                 </div>
               ) : (
-                <div key={m.id} className="flex items-start justify-end gap-sm">
-                  <div className={`max-w-[80%] rounded-2xl rounded-tr-sm bg-primary-container px-4 py-3 text-on-primary-container ${textScale}`}>
-                    {m.text}
+                <div key={m.id} className="flex flex-col items-end">
+                  <div className="flex items-start justify-end gap-sm">
+                    <div className={`max-w-[80%] rounded-2xl rounded-tr-sm bg-primary-container px-4 py-3 text-on-primary-container ${textScale}`}>
+                      {m.text}
+                    </div>
+                    <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-variant text-on-surface-variant">
+                      <span className="material-symbols-outlined text-[18px]">person</span>
+                    </span>
                   </div>
-                  <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-variant text-on-surface-variant">
-                    <span className="material-symbols-outlined text-[18px]">person</span>
-                  </span>
+                  {/* Acuse de lectura en el último mensaje del usuario */}
+                  {i === lastUserIndex && (
+                    <span className="mr-11 mt-xs font-label-md text-on-surface-variant">Visto {m.time}</span>
+                  )}
                 </div>
               ),
             )}
@@ -258,6 +274,14 @@ export default function AssistantPage() {
               title="Función de voz (demostración)"
             >
               <span className="material-symbols-outlined">mic</span>
+            </button>
+            <button
+              type="button"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-outline-variant text-on-surface-variant transition-colors hover:bg-surface-container focus-visible:outline-3"
+              aria-label="Adjuntar archivo"
+              title="Adjuntar archivo (demostración)"
+            >
+              <span className="material-symbols-outlined">attach_file</span>
             </button>
           </form>
         </section>

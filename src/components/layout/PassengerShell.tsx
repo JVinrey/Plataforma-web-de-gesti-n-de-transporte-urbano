@@ -7,6 +7,7 @@ const PRIMARY_LINKS = [
   { to: '/', label: 'Inicio', icon: 'home' },
   { to: '/planificar-viaje', label: 'Rutas', icon: 'directions_bus' },
   { to: '/seguimiento-pago', label: 'Seguimiento', icon: 'my_location' },
+  { to: '/billetera', label: 'Billetera', icon: 'account_balance_wallet' },
   { to: '/alertas', label: 'Alertas', icon: 'notifications' },
   { to: '/historial', label: 'Historial', icon: 'history' },
 ]

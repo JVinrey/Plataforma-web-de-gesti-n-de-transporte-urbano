@@ -13,6 +13,7 @@ import {
   NotFoundPage,
   ProfilePage,
   RegisterPage,
+  RouteDetailPage,
   RoutePlanningPage,
   RoutesPage,
   SchedulesPage,
@@ -20,6 +21,7 @@ import {
   TripPlannerPage,
   TripRatingPage,
   TrackingPaymentPage,
+  WalletPage,
 } from './pages'
 
 export function App() {
@@ -46,6 +48,8 @@ export function App() {
         <Route path="/asistente" element={<AssistantPage />} />
         <Route path="/alertas" element={<AlertsPage />} />
         <Route path="/calificar" element={<TripRatingPage />} />
+        <Route path="/billetera" element={<WalletPage />} />
+        <Route path="/rutas/:id" element={<RouteDetailPage />} />
 
         {/* Panel de administración de flota (layout propio a pantalla completa) */}
         <Route path="/fleet" element={<FleetPage />} />
