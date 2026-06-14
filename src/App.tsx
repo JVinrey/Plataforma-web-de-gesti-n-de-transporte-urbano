@@ -3,6 +3,8 @@ import { AppLayout } from './components/layout/AppLayout'
 import {
   FleetPage,
   HomePage,
+  ElderlyModePage,
+  HistoryNotificationsPage,
   LoginPage,
   NotFoundPage,
   ProfilePage,
@@ -12,6 +14,7 @@ import {
   SchedulesPage,
   TripPage,
   TripPlannerPage,
+  TrackingPaymentPage,
 } from './pages'
 
 export function App() {
@@ -31,6 +34,9 @@ export function App() {
 
         {/* App de pasajeros con shell propio (sidebar + mapa a pantalla completa) */}
         <Route path="/planificar-viaje" element={<TripPlannerPage />} />
+        <Route path="/adulto-mayor" element={<ElderlyModePage />} />
+        <Route path="/seguimiento-pago" element={<TrackingPaymentPage />} />
+        <Route path="/historial" element={<HistoryNotificationsPage />} />
 
         {/* Panel de administración de flota (layout propio a pantalla completa) */}
         <Route path="/fleet" element={<FleetPage />} />

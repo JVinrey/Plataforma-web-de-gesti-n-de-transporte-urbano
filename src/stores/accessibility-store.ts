@@ -9,6 +9,8 @@ export const defaultPreferences: AccessibilityPreferences = {
   increasedSpacing: false,
   dyslexiaFont: false,
   reduceMotion: false,
+  elderlyMode: false,
+  narrator: false,
   language: 'es',
 }
 
@@ -40,6 +42,7 @@ export function applyPreferencesToDocument(prefs: AccessibilityPreferences): voi
   root.classList.toggle('increased-spacing', prefs.increasedSpacing)
   root.classList.toggle('dyslexia-font', prefs.dyslexiaFont)
   root.classList.toggle('reduce-motion', prefs.reduceMotion)
+  root.classList.toggle('elderly-mode', prefs.elderlyMode)
   root.lang = prefs.language
 }
 

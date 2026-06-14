@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import { PersonStanding, X } from 'lucide-react'
+import { PersonStanding, Volume2, X } from 'lucide-react'
 import { useAccessibilityStore } from '../../stores/accessibility-store'
 import type { AccessibilityPreferences, Language, TextSize } from '../../types'
 
@@ -10,11 +10,17 @@ const TEXT_SIZES: Array<{ value: TextSize; label: string }> = [
   { value: 'xlarge', label: 'Extra grande' },
 ]
 
-const TOGGLES: Array<{ key: keyof AccessibilityPreferences; label: string }> = [
+type TogglePreferenceKey = {
+  [K in keyof AccessibilityPreferences]: AccessibilityPreferences[K] extends boolean ? K : never
+}[keyof AccessibilityPreferences]
+
+const TOGGLES: Array<{ key: TogglePreferenceKey; label: string }> = [
+  { key: 'elderlyMode', label: 'Modo adulto mayor' },
   { key: 'highContrast', label: 'Alto contraste' },
   { key: 'increasedSpacing', label: 'Espaciado aumentado' },
   { key: 'dyslexiaFont', label: 'Fuente para dislexia' },
   { key: 'reduceMotion', label: 'Reducir animaciones' },
+  { key: 'narrator', label: 'Narrador / texto a voz' },
 ]
 
 const FOCUSABLE_SELECTOR =
@@ -27,6 +33,15 @@ export function AccessibilityMenu() {
   const panelId = useId()
   const titleId = useId()
   const { preferences, setPreference, resetPreferences } = useAccessibilityStore()
+
+  const speakCurrentView = () => {
+    if (!('speechSynthesis' in window)) return
+    window.speechSynthesis.cancel()
+    const title = document.title || 'Manta Transit'
+    const heading = document.querySelector('h1')?.textContent ?? ''
+    const text = `Estas en ${title}. ${heading}`
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(text))
+  }
 
   useEffect(() => {
     if (!isOpen) return
@@ -90,18 +105,32 @@ export function AccessibilityMenu() {
           <ul className="flex flex-col gap-2">
             {TOGGLES.map(({ key, label }) => (
               <li key={key}>
-                <label className="flex cursor-pointer items-center justify-between gap-3 rounded-md px-2 py-1.5 hover:bg-gray-50">
+                <label className="flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-md px-2 py-2 hover:bg-gray-50">
                   <span>{label}</span>
                   <input
                     type="checkbox"
                     checked={preferences[key] as boolean}
-                    onChange={(event) => setPreference(key, event.target.checked)}
+                    onChange={(event) => {
+                      setPreference(key, event.target.checked)
+                      if (key === 'narrator' && event.target.checked) speakCurrentView()
+                    }}
                     className="size-5 accent-blue-700"
                   />
                 </label>
               </li>
             ))}
           </ul>
+
+          {preferences.narrator && (
+            <button
+              type="button"
+              onClick={speakCurrentView}
+              className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-blue-700 px-3 py-2 font-semibold text-white hover:bg-blue-800"
+            >
+              <Volume2 aria-hidden="true" className="size-5" />
+              Leer pantalla actual
+            </button>
+          )}
 
           <fieldset className="mt-3 border-t border-gray-200 pt-3">
             <legend className="float-left mb-2 font-medium">Tamaño de texto</legend>

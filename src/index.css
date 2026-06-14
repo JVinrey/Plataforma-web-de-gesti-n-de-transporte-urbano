@@ -151,6 +151,22 @@ body {
   --app-font-scale: 1.5;
 }
 
+/* Modo adulto mayor: objetivos tactiles amplios y lectura mas pausada. */
+.elderly-mode {
+  --app-font-scale: 1.25;
+  --app-line-height: 1.85;
+}
+.elderly-mode button,
+.elderly-mode a,
+.elderly-mode input,
+.elderly-mode select,
+.elderly-mode textarea {
+  min-height: 44px;
+}
+.elderly-mode body {
+  background-color: #f7fbff;
+}
+
 /* Espaciado de línea aumentado (1.4.12 Espaciado del texto) */
 .increased-spacing {
   --app-line-height: 1.9;

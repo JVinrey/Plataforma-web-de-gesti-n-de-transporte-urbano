@@ -51,6 +51,7 @@ export function useStops() {
 export function useVehicles() {
   return useQuery({
     queryKey: ['vehicles'],
+    refetchInterval: 10000,
     queryFn: async (): Promise<VehicleWithRelations[]> => {
       const { data, error } = await supabase
         .from('vehicles')

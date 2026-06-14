@@ -12,6 +12,8 @@ export interface AccessibilityPreferences {
   increasedSpacing: boolean
   dyslexiaFont: boolean
   reduceMotion: boolean
+  elderlyMode: boolean
+  narrator: boolean
   language: Language
 }
 

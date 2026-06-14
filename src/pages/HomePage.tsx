@@ -73,6 +73,15 @@ export function HomePage() {
             <button type="button" onClick={() => navigate('/perfil')} className="rounded-lg border border-gray-200 bg-white px-4 py-3 text-left font-medium text-gray-900 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-700">
               Mi perfil
             </button>
+            <button type="button" onClick={() => navigate('/adulto-mayor')} className="rounded-lg border border-gray-200 bg-white px-4 py-3 text-left font-medium text-gray-900 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-700">
+              Modo adulto mayor
+            </button>
+            <button type="button" onClick={() => navigate('/seguimiento-pago')} className="rounded-lg border border-gray-200 bg-white px-4 py-3 text-left font-medium text-gray-900 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-700">
+              Seguimiento y pago QR
+            </button>
+            <button type="button" onClick={() => navigate('/historial')} className="rounded-lg border border-gray-200 bg-white px-4 py-3 text-left font-medium text-gray-900 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-700">
+              Historial y notificaciones
+            </button>
             <button type="button" onClick={() => navigate('/login')} className="rounded-lg border border-gray-200 bg-white px-4 py-3 text-left font-medium text-gray-900 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-700">
               Iniciar sesión
             </button>

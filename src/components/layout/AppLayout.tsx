@@ -5,6 +5,9 @@ import { cn } from '../../utils/cn'
 const NAV_LINKS = [
   { to: '/', label: 'Inicio' },
   { to: '/rutas', label: 'Rutas' },
+  { to: '/adulto-mayor', label: 'Adulto mayor' },
+  { to: '/seguimiento-pago', label: 'Seguimiento/QR' },
+  { to: '/historial', label: 'Historial' },
   { to: '/perfil', label: 'Perfil' },
   { to: '/login', label: 'Iniciar sesión' },
 ]

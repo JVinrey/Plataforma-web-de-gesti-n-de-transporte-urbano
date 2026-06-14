@@ -5,6 +5,7 @@ import { useRoutes, useRouteStops, useStops, useVehicles } from '../hooks/use-tr
 import type { RouteRow } from '../hooks/use-transit-data';
 import { MantaMap } from '../components/map';
 import type { MapVehicle } from '../components/map';
+import { AccessibilityMenu } from '../components/accessibility/AccessibilityMenu';
 
 type Congestion = 'baja' | 'media' | 'alta';
 
@@ -42,8 +43,8 @@ function arrivalIn(minutes: number): string {
 const NAV_LINKS = [
   { to: '/', label: 'Home', icon: 'home' },
   { to: '/planificar-viaje', label: 'Routes', icon: 'directions_bus' },
-  { to: '#tracking', label: 'Tracking', icon: 'my_location' },
-  { to: '#history', label: 'History', icon: 'history' },
+  { to: '/seguimiento-pago', label: 'Tracking', icon: 'my_location' },
+  { to: '/historial', label: 'History', icon: 'history' },
 ];
 
 const CONGESTION_BADGE: Record<Congestion, { label: string; color: string }> = {
@@ -180,16 +181,6 @@ export default function TripPlannerPage() {
         <aside className="flex w-56 shrink-0 flex-col px-md pb-lg">
           <nav className="flex-1 space-y-xs" aria-label="Navegación principal">
             {NAV_LINKS.map(({ to, label, icon }) =>
-              to.startsWith('#') ? (
-                <a
-                  key={to}
-                  href={to}
-                  className="flex items-center gap-md rounded-xl px-md py-sm text-on-surface-variant transition-colors hover:bg-surface-container"
-                >
-                  <span className="material-symbols-outlined">{icon}</span>
-                  <span className="font-body-md font-medium">{label}</span>
-                </a>
-              ) : (
                 <NavLink
                   key={to}
                   to={to}
@@ -206,7 +197,6 @@ export default function TripPlannerPage() {
                   <span className="material-symbols-outlined">{icon}</span>
                   <span className="font-body-md font-medium">{label}</span>
                 </NavLink>
-              ),
             )}
           </nav>
 
@@ -475,6 +465,7 @@ export default function TripPlannerPage() {
           />
         </section>
       </div>
+      <AccessibilityMenu />
     </div>
   );
 }
