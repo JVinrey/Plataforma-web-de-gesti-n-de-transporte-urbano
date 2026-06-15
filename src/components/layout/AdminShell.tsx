@@ -2,14 +2,8 @@ import { NavLink, Navigate, Outlet } from 'react-router-dom'
 import { Spinner } from '../ui/Spinner'
 import { useProfile } from '../../hooks/use-profile'
 import { useAuthStore } from '../../stores/auth-store'
-
-// Navegación del panel de administración de flota.
-const ADMIN_LINKS = [
-  { to: '/fleet', label: 'Panel de Flota', icon: 'dashboard' },
-  { to: '/route-planning', label: 'Planificación de Rutas', icon: 'map' },
-  { to: '/schedules', label: 'Horarios', icon: 'calendar_today' },
-  { to: '/driver-performance', label: 'Desempeño de Conductores', icon: 'monitoring' },
-]
+import { useAccessibilityStore } from '../../stores/accessibility-store'
+import { getUiCopy } from '../../utils/ui-copy'
 
 /**
  * AdminShell — armazón compartido del panel de administración de flota.
@@ -19,6 +13,8 @@ const ADMIN_LINKS = [
  */
 export function AdminShell() {
   const user = useAuthStore((state) => state.user)
+  const language = useAccessibilityStore((state) => state.preferences.language)
+  const copy = getUiCopy(language).adminShell
   const { data: profile, isLoading: profileLoading } = useProfile()
   const displayName = profile?.full_name ?? user?.user_metadata?.full_name ?? user?.email ?? 'Administración'
   const isAdmin = profile?.user_type === 'admin' || user?.user_metadata?.user_type === 'admin'
@@ -30,7 +26,7 @@ export function AdminShell() {
   if (profileLoading && !profile) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background text-on-background">
-        <Spinner label="Cargando panel de administración" />
+        <Spinner label={copy.loadingLabel} />
       </div>
     )
   }
@@ -46,13 +42,13 @@ export function AdminShell() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:m-2 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-on-primary"
       >
-        Saltar al contenido principal
+        {copy.skipLink}
       </a>
 
       {/* Sidebar fija */}
       <aside
         className="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col overflow-y-auto border-r border-outline-variant bg-surface-container-low px-md py-lg shadow-sm"
-        aria-label="Panel de administración"
+        aria-label={copy.adminLabel}
       >
         <div className="mb-xl flex items-center gap-md">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-container text-on-primary-container">
@@ -61,13 +57,16 @@ export function AdminShell() {
             </span>
           </div>
           <div>
-            <p className="font-title-lg font-bold leading-none text-primary">Manta Transit</p>
+            <p className="font-title-lg font-bold leading-none text-primary">{copy.brand}</p>
             <p className="font-label-lg text-on-surface-variant">{displayName}</p>
           </div>
         </div>
 
-        <nav className="flex-1 space-y-xs" aria-label="Navegación de administración">
-          {ADMIN_LINKS.map(({ to, label, icon }) => (
+        <nav className="flex-1 space-y-xs" aria-label={copy.adminNavLabel}>
+          {(copy.adminItems ?? []).map(({ to, label }, index) => {
+            const icon = ['dashboard', 'map', 'calendar_today', 'monitoring'][index] ?? 'circle'
+
+            return (
             <NavLink
               key={to}
               to={to}
@@ -85,7 +84,8 @@ export function AdminShell() {
               </span>
               {label}
             </NavLink>
-          ))}
+            )
+          })}
         </nav>
       </aside>
 

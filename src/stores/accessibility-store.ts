@@ -52,6 +52,8 @@ interface AccessibilityState {
     key: K,
     value: AccessibilityPreferences[K],
   ) => void
+  toggleHighContrast: () => void
+  toggleLanguage: () => void
   resetPreferences: () => void
 }
 
@@ -66,6 +68,14 @@ export const useAccessibilityStore = create<AccessibilityState>((set, get) => ({
     }
     applyPreferencesToDocument(preferences)
     set({ preferences })
+  },
+  toggleHighContrast: () => {
+    const { preferences, setPreference } = get()
+    setPreference('highContrast', !preferences.highContrast)
+  },
+  toggleLanguage: () => {
+    const { preferences, setPreference } = get()
+    setPreference('language', preferences.language === 'es' ? 'en' : 'es')
   },
   resetPreferences: () => {
     try {

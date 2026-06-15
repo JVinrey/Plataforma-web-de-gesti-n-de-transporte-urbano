@@ -1,17 +1,13 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { AccessibilityMenu } from '../accessibility/AccessibilityMenu'
+import { useAccessibilityStore } from '../../stores/accessibility-store'
+import { getUiCopy } from '../../utils/ui-copy'
 import { cn } from '../../utils/cn'
-
-const NAV_LINKS = [
-  { to: '/', label: 'Inicio' },
-  { to: '/rutas', label: 'Rutas' },
-  { to: '/', label: 'Abrir App' },
-  { to: '/perfil', label: 'Perfil' },
-  { to: '/login', label: 'Iniciar sesión' },
-]
 
 export function AppLayout() {
   const location = useLocation()
+  const language = useAccessibilityStore((state) => state.preferences.language)
+  const copy = getUiCopy(language).appLayout
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register'
 
   return (
@@ -21,17 +17,17 @@ export function AppLayout() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-md focus:bg-blue-700 focus:px-4 focus:py-2 focus:text-white"
       >
-        Ir al contenido principal
+        {copy.skipLink}
       </a>
 
       <header role="banner" className="border-b border-gray-300 bg-white">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-3">
           <NavLink to="/" className="text-lg font-bold text-blue-800">
-            Transporte Urbano
+            {copy.brand}
           </NavLink>
-          <nav aria-label="Navegación principal">
+          <nav aria-label={copy.mainNavLabel}>
             <ul className="flex flex-wrap gap-2">
-              {NAV_LINKS.map(({ to, label }) => (
+              {copy.navItems.map(({ to, label }) => (
                 <li key={to}>
                   <NavLink
                     to={to}
@@ -64,7 +60,7 @@ export function AppLayout() {
 
       <footer role="contentinfo" className="border-t border-gray-300 bg-gray-50">
         <div className="mx-auto w-full max-w-6xl px-4 py-4 text-sm text-gray-700">
-          <p>Plataforma Web de Gestión de Transporte Urbano — accesible para todas las personas.</p>
+          <p>{copy.footer}</p>
         </div>
       </footer>
 

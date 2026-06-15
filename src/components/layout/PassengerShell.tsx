@@ -1,21 +1,10 @@
 import { useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { AccessibilityMenu } from '../accessibility/AccessibilityMenu'
-
-// Navegación principal de la app de pasajeros (modo invitado).
-const PRIMARY_LINKS = [
-  { to: '/', label: 'Inicio', icon: 'home' },
-  { to: '/planificar-viaje', label: 'Planificar viaje', icon: 'route' },
-  { to: '/rutas', label: 'Rutas', icon: 'directions_bus' },
-  { to: '/seguimiento-pago', label: 'Seguimiento', icon: 'my_location' },
-  { to: '/billetera', label: 'Billetera', icon: 'account_balance_wallet' },
-  { to: '/alertas', label: 'Alertas', icon: 'notifications' },
-  { to: '/historial', label: 'Historial', icon: 'history' },
-]
+import { useAccessibilityStore } from '../../stores/accessibility-store'
+import { getUiCopy } from '../../utils/ui-copy'
 
 const PAGE_BG = '#edf3fb'
-
-const SEARCH_PLACEHOLDER = 'Buscar rutas o paradas...'
 
 /**
  * PassengerShell — armazón compartido de la app de pasajeros.
@@ -28,6 +17,8 @@ export function PassengerShell() {
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const language = useAccessibilityStore((state) => state.preferences.language)
+  const copy = getUiCopy(language).passengerShell
 
   // Búsqueda funcional: navega al listado de rutas con el término aplicado.
   const submitSearch = (e: React.FormEvent) => {
@@ -46,7 +37,7 @@ export function PassengerShell() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:m-2 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-on-primary"
       >
-        Saltar al contenido principal
+        {copy.skipLink}
       </a>
 
       {/* Cabecera */}
@@ -56,7 +47,7 @@ export function PassengerShell() {
             type="button"
             onClick={() => setIsSidebarOpen((value) => !value)}
             className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container focus-visible:outline-3"
-            aria-label={isSidebarOpen ? 'Cerrar sidebar' : 'Abrir sidebar'}
+            aria-label={isSidebarOpen ? copy.sidebarToggleClose : copy.sidebarToggleOpen}
             aria-expanded={isSidebarOpen}
           >
             <span className="material-symbols-outlined text-[22px]">
@@ -64,7 +55,7 @@ export function PassengerShell() {
             </span>
           </button>
           <Link to="/" className="w-48 shrink-0 text-2xl font-bold text-primary">
-            Manta Transit
+            {copy.brand}
           </Link>
         </div>
         <form role="search" onSubmit={submitSearch} className="relative w-full max-w-md">
@@ -76,25 +67,25 @@ export function PassengerShell() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full rounded-full border-none bg-surface-container py-3 pl-11 pr-4 font-body-md focus:ring-2 focus:ring-primary"
-            placeholder={SEARCH_PLACEHOLDER}
-            aria-label={SEARCH_PLACEHOLDER}
+            placeholder={copy.searchPlaceholder}
+            aria-label={copy.searchPlaceholder}
           />
           <button type="submit" className="sr-only">
-            Buscar
+            {language === 'es' ? 'Buscar' : 'Search'}
           </button>
         </form>
         <div className="ml-auto flex items-center gap-sm">
           <button
             type="button"
             className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container focus-visible:outline-3"
-            aria-label="Cambiar idioma"
+            aria-label={copy.languageLabel}
           >
             <span className="material-symbols-outlined">language</span>
           </button>
           <Link
             to="/"
             className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container focus-visible:outline-3"
-            aria-label="Ir al inicio"
+            aria-label={copy.homeLabel}
           >
             <span className="material-symbols-outlined">home</span>
           </Link>
@@ -103,13 +94,13 @@ export function PassengerShell() {
             to="/login"
             className="rounded-lg px-3 py-2 font-label-lg font-semibold text-primary hover:bg-surface-container focus-visible:outline-3"
           >
-            Ingresar
+            {copy.loginLabel}
           </Link>
           <Link
             to="/register"
             className="rounded-lg bg-primary px-4 py-2 font-label-lg font-semibold text-on-primary transition-opacity hover:opacity-90 focus-visible:outline-3"
           >
-            Registrarse
+            {copy.registerLabel}
           </Link>
         </div>
       </header>
@@ -126,8 +117,8 @@ export function PassengerShell() {
           <div className={isSidebarOpen ? 'mb-lg px-lg' : 'mb-lg flex justify-center px-0'}>
             {isSidebarOpen ? (
               <div>
-                <p className="font-title-lg font-bold leading-none text-primary">Manta Transit</p>
-                <p className="font-label-md text-on-surface-variant">Urban Mobility</p>
+                <p className="font-title-lg font-bold leading-none text-primary">{copy.sidebarTitle}</p>
+                <p className="font-label-md text-on-surface-variant">{copy.sidebarSubtitle}</p>
               </div>
             ) : (
               <div className="flex size-12 items-center justify-center rounded-2xl bg-surface-container text-primary">
@@ -137,8 +128,11 @@ export function PassengerShell() {
               </div>
             )}
           </div>
-          <nav className="flex-1 space-y-sm" aria-label="Navegación principal">
-            {PRIMARY_LINKS.map(({ to, label, icon }) => (
+          <nav className="flex-1 space-y-sm" aria-label={copy.mainNavLabel}>
+            {copy.navItems.map(({ to, label }, index) => {
+              const icon = ['home', 'route', 'directions_bus', 'my_location', 'account_balance_wallet', 'notifications', 'history'][index] ?? 'circle'
+
+              return (
               <NavLink
                 key={to}
                 to={to}
@@ -155,7 +149,8 @@ export function PassengerShell() {
                 <span className="material-symbols-outlined">{icon}</span>
                 <span className={isSidebarOpen ? 'font-body-md font-medium' : 'sr-only'}>{label}</span>
               </NavLink>
-            ))}
+              )
+            })}
           </nav>
 
           <div className="mt-lg border-t border-outline-variant pt-lg">
@@ -172,18 +167,18 @@ export function PassengerShell() {
               }
             >
               <span className="material-symbols-outlined">smart_toy</span>
-              <span className={isSidebarOpen ? 'font-body-md font-medium' : 'sr-only'}>Asistente AI</span>
+              <span className={isSidebarOpen ? 'font-body-md font-medium' : 'sr-only'}>{copy.assistantLabel}</span>
             </NavLink>
           </div>
 
           {isSidebarOpen ? (
             <div className="mt-xl px-lg">
               <p className="font-label-md uppercase tracking-wider text-on-surface-variant">
-                Estado del sistema
+                {copy.systemStateLabel}
               </p>
               <p className="mt-xs flex items-center gap-sm font-body-md font-semibold text-secondary">
                 <span className="h-2.5 w-2.5 rounded-full bg-secondary" aria-hidden="true" />
-                Operativo
+                {copy.operationalLabel}
               </p>
             </div>
           ) : (

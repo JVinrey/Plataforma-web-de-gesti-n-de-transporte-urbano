@@ -129,3 +129,5 @@ npm run a11y         # Auditoría accesibilidad (axe-core)
 - [ ] Formularios tienen `label` asociado
 - [ ] Estados dinámicos usan `aria-live` donde aplica
 - [ ] No hay `div` o `span` con `onClick` sin `role` apropiado
+
+## Imported Claude Cowork project instructions
