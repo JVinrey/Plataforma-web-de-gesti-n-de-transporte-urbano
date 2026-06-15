@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { useRoutes, useStops } from '../hooks/use-transit-data'
@@ -6,6 +6,21 @@ import { useFavoriteRoutes } from '../hooks/use-profile-data'
 import { useAccessibilityStore } from '../stores/accessibility-store'
 import { MantaMap } from '../components/map'
 import type { MapStop } from '../components/map'
+
+const PROMO_VIDEO_URL = new URL(
+  '../../video/Manta_Transit_promotional_video_202606150117.mp4',
+  import.meta.url,
+).href
+
+const PROMO_CAPTIONS_URL = new URL(
+  '../../video/Manta_Transit_promotional_video_202606150117.es.vtt',
+  import.meta.url,
+).href
+
+const PROMO_CAPTIONS_EN_URL = new URL(
+  '../../video/Manta_Transit_promotional_video_202606150117.en.vtt',
+  import.meta.url,
+).href
 
 // =====================================================================
 // GuestHomePage — Home de la app de pasajeros "Tu ciudad, en movimiento".
@@ -46,6 +61,20 @@ const T = {
     favDesc: 'Guarda tus trayectos habituales para acceder a ellos con un solo toque.',
     favCta: 'Ver favoritos',
     favCount: (n: number) => `${n} ${n === 1 ? 'ruta guardada' : 'rutas guardadas'}`,
+    promoEyebrow: 'Video promocional',
+    promoTitle: 'Conoce Manta Transit',
+    promoSummary:
+      'Mira el anuncio oficial de la plataforma y revisa debajo su transcripción y una descripción breve del contenido visual.',
+    videoAriaLabel: 'Video promocional de Manta Transit',
+    transcriptTitle: 'Transcripción del video',
+    transcriptIntro:
+      'La transcripción se mantiene visible para que puedas consultarla sin depender del audio.',
+    transcriptText:
+      'Manta no se detiene. Presentamos Manta Transit. Planifica tu viaje. Movilidad para todos. Tu ciudad en movimiento.',
+    descriptionTitle: 'Descripción visual',
+    descriptionText:
+      'Secuencia promocional de la marca Manta Transit con un mensaje centrado en movilidad urbana, planificación de viajes y accesibilidad.',
+    videoFallback: 'Tu navegador no soporta la reproducción de video.',
     mapTitle: 'Mapa de la red de Manta',
     mapHint: 'Toca una parada para ver su nombre y accesibilidad.',
   },
@@ -76,6 +105,19 @@ const T = {
     favDesc: 'Save your usual trips to reach them with a single tap.',
     favCta: 'See favorites',
     favCount: (n: number) => `${n} ${n === 1 ? 'saved route' : 'saved routes'}`,
+    promoEyebrow: 'Promotional video',
+    promoTitle: 'Meet Manta Transit',
+    promoSummary:
+      'Watch the official platform announcement and review its transcript and a short visual description below.',
+    videoAriaLabel: 'Manta Transit promotional video',
+    transcriptTitle: 'Video transcript',
+    transcriptIntro: 'The transcript stays visible so you can read it without relying on audio.',
+    transcriptText:
+      'Manta does not stop. Introducing Manta Transit. Plan your trip. Mobility for everyone. Your city in motion.',
+    descriptionTitle: 'Visual description',
+    descriptionText:
+      'Promotional branding sequence for Manta Transit centered on urban mobility, trip planning, and accessibility.',
+    videoFallback: 'Your browser does not support video playback.',
     mapTitle: 'Manta network map',
     mapHint: 'Tap a stop to see its name and accessibility.',
   },
@@ -96,9 +138,19 @@ export default function GuestHomePage() {
   const [destination, setDestination] = useState('')
   const [bannerDismissed, setBannerDismissed] = useState(false)
   const mapRef = useRef<HTMLElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   // Banner de servicio real: primera ruta con retraso (status delayed).
   const delayedRoute = useMemo(() => routes.find((r) => r.status === 'delayed'), [routes])
+
+  useEffect(() => {
+    const tracks = videoRef.current?.textTracks
+    if (!tracks) return
+
+    for (const track of Array.from(tracks)) {
+      track.mode = track.language === lang ? 'showing' : 'disabled'
+    }
+  }, [lang])
 
   const mapStops: MapStop[] = useMemo(
     () =>
@@ -259,6 +311,148 @@ export default function GuestHomePage() {
               </span>
             </button>
           </form>
+        </section>
+
+        <section
+          aria-labelledby="promo-video-title"
+          className="relative overflow-hidden rounded-[2rem] border border-[#bfd0e6] bg-[linear-gradient(135deg,#ffffff_0%,#f5f9ff_45%,#e8f0ff_100%)] p-6 shadow-[0_22px_60px_rgba(15,23,42,0.10)]"
+        >
+          <div className="pointer-events-none absolute -left-16 top-0 h-48 w-48 rounded-full bg-[#dbeafe]/70 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 right-0 h-56 w-56 rounded-full bg-[#c7f0d3]/60 blur-3xl" />
+
+          <div className="relative z-10">
+            <div className="max-w-4xl">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#d2deee] bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary shadow-sm">
+                  {t.promoEyebrow}
+                </span>
+                <span className="inline-flex items-center rounded-full border border-[#d2deee] bg-[#eff6ff] px-3 py-1 text-xs font-semibold text-[#23405d]">
+                  10s
+                </span>
+                <span className="inline-flex items-center rounded-full border border-[#d2deee] bg-[#f0fdf4] px-3 py-1 text-xs font-semibold text-[#14532d]">
+                  {lang === 'es' ? 'Subtítulos ES / EN' : 'Captions ES / EN'}
+                </span>
+              </div>
+              <h2
+                id="promo-video-title"
+                className="mt-4 text-title-lg font-bold text-on-surface md:text-headline-lg"
+              >
+                {t.promoTitle}
+              </h2>
+              <p className="mt-3 max-w-3xl text-body-md text-on-surface-variant md:text-base">
+                {t.promoSummary}
+              </p>
+            </div>
+
+            <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.78fr)]">
+              <figure className="overflow-hidden rounded-[1.5rem] border border-white/70 bg-slate-950 shadow-[0_18px_40px_rgba(15,23,42,0.16)]">
+                <div className="border-b border-white/10 bg-slate-950 p-3">
+                  <video
+                    ref={videoRef}
+                    controls
+                    preload="metadata"
+                    className="aspect-video w-full rounded-[1.1rem] bg-black"
+                    aria-label={t.videoAriaLabel}
+                    aria-describedby="promo-video-transcript promo-video-description"
+                  >
+                    <source src={PROMO_VIDEO_URL} type="video/mp4" />
+                    <track
+                      kind="captions"
+                      src={PROMO_CAPTIONS_URL}
+                      srcLang="es"
+                      label="Español"
+                      default={lang === 'es'}
+                    />
+                    <track
+                      kind="captions"
+                      src={PROMO_CAPTIONS_EN_URL}
+                      srcLang="en"
+                      label="English"
+                      default={lang === 'en'}
+                    />
+                    {t.videoFallback}
+                  </video>
+                </div>
+
+                <figcaption
+                  id="promo-video-transcript"
+                  className="border-t border-slate-200/80 bg-white px-5 py-5"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                        {t.transcriptTitle}
+                      </p>
+                      <p className="mt-1 text-sm text-on-surface-variant">{t.transcriptIntro}</p>
+                    </div>
+                    <span className="inline-flex rounded-full bg-primary-container px-3 py-1 text-xs font-semibold text-on-primary-container">
+                      WCAG 1.2
+                    </span>
+                  </div>
+
+                  <p className="mt-4 rounded-2xl border border-outline-variant bg-surface-container-low px-4 py-4 text-body-md leading-7 text-on-surface">
+                    {t.transcriptText}
+                  </p>
+                </figcaption>
+              </figure>
+
+              <aside className="flex flex-col gap-4">
+                <div
+                  id="promo-video-description"
+                  className="rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex size-11 items-center justify-center rounded-2xl bg-primary-container text-primary">
+                      <span className="material-symbols-outlined" aria-hidden="true">
+                        campaign
+                      </span>
+                    </span>
+                    <div>
+                      <h3 className="text-title-lg font-bold text-on-surface">{t.descriptionTitle}</h3>
+                      <p className="text-sm text-on-surface-variant">
+                        {lang === 'es'
+                          ? 'Resumen visual del anuncio'
+                          : 'Visual summary of the ad'}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="mt-4 text-body-md leading-7 text-on-surface-variant">
+                    {t.descriptionText}
+                  </p>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+                  <div className="rounded-[1.25rem] border border-[#dbe3f0] bg-white/85 p-4 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                      {lang === 'es' ? 'Duración' : 'Duration'}
+                    </p>
+                    <p className="mt-2 text-2xl font-bold text-on-surface">10 s</p>
+                    <p className="mt-1 text-sm text-on-surface-variant">
+                      {lang === 'es'
+                        ? 'Formato compacto para la portada'
+                        : 'Compact format for the home screen'}
+                    </p>
+                  </div>
+
+                  <div className="rounded-[1.25rem] border border-[#dbe3f0] bg-white/85 p-4 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-secondary">
+                      {lang === 'es' ? 'Accesibilidad' : 'Accessibility'}
+                    </p>
+                    <p className="mt-2 text-lg font-bold text-on-surface">
+                      {lang === 'es'
+                        ? 'Controles + transcripción + subtítulos'
+                        : 'Controls + transcript + captions'}
+                    </p>
+                    <p className="mt-1 text-sm text-on-surface-variant">
+                      {lang === 'es'
+                        ? 'El contenido se puede consumir sin depender del audio.'
+                        : 'The content can be consumed without relying on audio.'}
+                    </p>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </div>
         </section>
 
         {/* Accesos rápidos */}
