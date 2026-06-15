@@ -1,0 +1,426 @@
+[
+  {
+    "id": "89da3239-2763-413b-a003-528c649d707e",
+    "name": "15 de Septiembre",
+    "lat": -0.9604,
+    "lng": -80.7292,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "27335c44-0f1b-41d8-9f66-c3cb5595cf99",
+    "name": "20 de Mayo",
+    "lat": -0.9728,
+    "lng": -80.7183,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "stop-3",
+    "name": "Aeropuerto de Manta",
+    "lat": -0.9469,
+    "lng": -80.6795,
+    "accessible": false,
+    "created_at": "2026-06-15T02:03:07.189Z"
+  },
+  {
+    "id": "b40c1a68-d0c0-4bb2-abfe-7352fe0eda74",
+    "name": "Altagracia",
+    "lat": -0.9689,
+    "lng": -80.6924,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "b2fd36f7-a69c-45fa-9718-737714168032",
+    "name": "Aurora",
+    "lat": -0.97,
+    "lng": -80.715,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "0a9b76b6-e57f-4d16-ae65-f1d185cc1001",
+    "name": "Autoridad Portuaria",
+    "lat": -0.941,
+    "lng": -80.7288,
+    "accessible": true,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "stop-7",
+    "name": "Avenida 113",
+    "lat": -0.9762,
+    "lng": -80.6986,
+    "accessible": false,
+    "created_at": "2026-06-15T02:03:13.936Z"
+  },
+  {
+    "id": "stop-8",
+    "name": "Avenida 4 de Noviembre",
+    "lat": -0.9759,
+    "lng": -80.699,
+    "accessible": false,
+    "created_at": "2026-06-15T02:03:15.679Z"
+  },
+  {
+    "id": "stop-9",
+    "name": "Avenida La Cultura",
+    "lat": -0.9578,
+    "lng": -80.7301,
+    "accessible": false,
+    "created_at": "2026-06-15T02:03:17.322Z"
+  },
+  {
+    "id": "67fd9d10-3dad-4947-bb80-d24498a9558b",
+    "name": "Barrio La Victoria",
+    "lat": -0.956,
+    "lng": -80.701,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "c6a30cbe-5ce1-4354-aeb7-882237707494",
+    "name": "Barrio Santa Ana",
+    "lat": -0.966,
+    "lng": -80.696,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "95305929-77d6-4da6-9cb6-5c8155da4d1c",
+    "name": "Camal",
+    "lat": -0.962,
+    "lng": -80.698,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "46f74449-bec6-4f0d-8b78-4cf2804c2cbe",
+    "name": "Cementerio General",
+    "lat": -0.944,
+    "lng": -80.7358,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "5cdea3fe-8904-4547-9653-089889fee6ad",
+    "name": "Colegio 5 de Junio",
+    "lat": -0.9549,
+    "lng": -80.7253,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "89a5d72d-77c7-4e95-ab74-b3cb0056680d",
+    "name": "Colegio Técnico",
+    "lat": -0.958,
+    "lng": -80.735,
+    "accessible": true,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "1341652d-8e5e-4868-b11c-25c89971b460",
+    "name": "Coliseo",
+    "lat": -0.9496,
+    "lng": -80.7367,
+    "accessible": true,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "808e3b0f-77aa-45ce-a7ae-4f00242e98cb",
+    "name": "Cosace",
+    "lat": -0.974,
+    "lng": -80.71,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "9863e6ea-a303-488f-8051-eef93ecffd83",
+    "name": "Costa Azul",
+    "lat": -0.9683,
+    "lng": -80.6773,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "8f701de1-477d-4bd5-aeb5-94b2fed37ce5",
+    "name": "Divino Niño",
+    "lat": -0.9658,
+    "lng": -80.684,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "9cfe3508-a5db-4626-8187-6607d539d5a7",
+    "name": "El Palmar",
+    "lat": -0.9626,
+    "lng": -80.6897,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "54170e9e-55a9-4548-b58a-822c592609cf",
+    "name": "El Prado",
+    "lat": -0.9507,
+    "lng": -80.7301,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "2c3642d0-095d-4664-91e8-7f604a383fd9",
+    "name": "FAE",
+    "lat": -0.9526,
+    "lng": -80.6782,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "29858c8e-c0cc-409d-9a60-1786f2882ca7",
+    "name": "Flavio Reyes",
+    "lat": -0.952,
+    "lng": -80.725,
+    "accessible": true,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "6634c622-971c-477f-a90a-8ac671c56aba",
+    "name": "IESS",
+    "lat": -0.9492,
+    "lng": -80.7222,
+    "accessible": true,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "5d88d174-1f7c-45ce-8809-2f2edf62f9f2",
+    "name": "Jocay",
+    "lat": -0.9599,
+    "lng": -80.7161,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "c0616d62-16d4-4f58-b1da-b1209911f440",
+    "name": "La Pradera",
+    "lat": -0.972,
+    "lng": -80.705,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "a9279cfb-8fb3-4a3c-9430-7eede6cccd7c",
+    "name": "Las Cumbres",
+    "lat": -0.968,
+    "lng": -80.7279,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "99580b66-4e45-4af0-b4ba-dd5a0ce405a8",
+    "name": "Los Esteros",
+    "lat": -0.9585,
+    "lng": -80.6847,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "84e566cf-3e4d-4116-8187-0cea8e18301c",
+    "name": "Los Gavilanes",
+    "lat": -0.975,
+    "lng": -80.718,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "0fa328cf-dd36-43bc-8b99-ca4130a71b47",
+    "name": "Los Geranios",
+    "lat": -0.9786,
+    "lng": -80.7252,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "356bed6a-766f-43b6-9d45-4da92a1996f9",
+    "name": "Malecón",
+    "lat": -0.9536,
+    "lng": -80.7177,
+    "accessible": true,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "cdb9415c-933d-4233-9a54-1d28de76b636",
+    "name": "Mall del Pacífico",
+    "lat": -0.9427,
+    "lng": -80.7324,
+    "accessible": true,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "16b4c366-bd69-4348-a906-17389e3a567e",
+    "name": "Manta 2000",
+    "lat": -0.965,
+    "lng": -80.73,
+    "accessible": true,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "86848057-842e-46da-9acc-3cbb8fcf245b",
+    "name": "Marbella",
+    "lat": -0.971,
+    "lng": -80.713,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "24964d9e-0049-415d-9c04-b7228d0f36f8",
+    "name": "Mercado Central",
+    "lat": -0.9494,
+    "lng": -80.7261,
+    "accessible": true,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "de453823-dfdf-4bf9-a3c1-eeda673bf724",
+    "name": "Montalván",
+    "lat": -0.968,
+    "lng": -80.698,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "04eb2b81-1366-476c-b492-b44596ced7d7",
+    "name": "Monterrey",
+    "lat": -0.9755,
+    "lng": -80.712,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "a2ef75a6-f531-40c5-b3fe-c16aa52fc079",
+    "name": "Nuevo Tarqui",
+    "lat": -0.9542,
+    "lng": -80.723,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "cba4cf80-83c0-4cab-b626-fd1623c64843",
+    "name": "Parque del Recuerdo",
+    "lat": -0.938,
+    "lng": -80.718,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "f01ff868-dc38-4667-a012-c7ce3bf92e71",
+    "name": "Parroquia Eloy Alfaro",
+    "lat": -0.97,
+    "lng": -80.688,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "fc10a65b-dc81-425e-8e16-932e871ca824",
+    "name": "Picapiedra",
+    "lat": -0.98,
+    "lng": -80.696,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "158f5f51-6842-4801-82a9-8716a66796e8",
+    "name": "Redondel de los Esteros",
+    "lat": -0.965,
+    "lng": -80.6688,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "ca5043f0-23d5-4e7e-aa4d-ec1a4582aae9",
+    "name": "Redondel San Juan",
+    "lat": -0.964,
+    "lng": -80.7354,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "3f61cd4c-3a16-4906-a2c7-213bfc2b3e40",
+    "name": "San Juan",
+    "lat": -0.969,
+    "lng": -80.706,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "42bad9b6-0b3a-46b7-a11a-9d0b59b1ab29",
+    "name": "San Mateo",
+    "lat": -0.945,
+    "lng": -80.802,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "5cc342f1-f3e3-419c-b36f-3d69bed2b707",
+    "name": "San Pedro",
+    "lat": -0.978,
+    "lng": -80.694,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "e42b1a03-de6e-4ac4-a2a9-d126a1b7954f",
+    "name": "Santa Martha",
+    "lat": -0.9571,
+    "lng": -80.735,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "b0d3b9f3-85cb-40a2-a4d9-49410cfa76ae",
+    "name": "Supermaxi",
+    "lat": -0.9752,
+    "lng": -80.6985,
+    "accessible": true,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "3307a750-054f-4346-b529-66fd63abc6aa",
+    "name": "Tarqui",
+    "lat": -0.9784,
+    "lng": -80.7243,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "6bf1fe00-48c4-430c-b945-83a296e4b981",
+    "name": "Terminal Terrestre",
+    "lat": -0.9597,
+    "lng": -80.6902,
+    "accessible": true,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "cb9628a1-28f9-4161-be80-2b30eaf9d202",
+    "name": "ULEAM",
+    "lat": -0.9526,
+    "lng": -80.7454,
+    "accessible": true,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "03d0a1ff-1304-4091-b82e-7245fa063d94",
+    "name": "Urbirrios",
+    "lat": -0.976,
+    "lng": -80.698,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  },
+  {
+    "id": "044a93fd-67b3-41bb-9492-410c5c0ee528",
+    "name": "Villamarina",
+    "lat": -0.9598,
+    "lng": -80.6749,
+    "accessible": false,
+    "created_at": "2026-06-13T21:58:25.674094+00:00"
+  }
+]

@@ -4,6 +4,7 @@ import { MantaMap } from '../components/map'
 import type { MapVehicle } from '../components/map'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { useRouteStops, useRoutes, useVehicles } from '../hooks/use-transit-data'
+import { useValidatedStops } from '../hooks/use-stop-validation'
 import { useFavoriteRoutes, useToggleFavorite } from '../hooks/use-profile-data'
 import { Spinner } from '../components/ui/Spinner'
 
@@ -57,7 +58,8 @@ export function RoutesPage() {
   )
 
   const selectedRoute = routes.find((r) => r.id === selectedRouteId) ?? routes[0] ?? null
-  const { data: stops = [], isLoading: stopsLoading } = useRouteStops(selectedRoute?.id ?? null)
+  const { data: rawStops = [], isLoading: stopsLoading } = useRouteStops(selectedRoute?.id ?? null)
+  const stops = useValidatedStops(rawStops)
   const { data: vehicles = [] } = useVehicles()
   const { data: favorites = [] } = useFavoriteRoutes()
   const toggleFavorite = useToggleFavorite()
@@ -210,7 +212,16 @@ export function RoutesPage() {
                             {index + 1}
                           </span>
                           <div className="min-w-0">
-                            <p className="font-semibold text-gray-900 truncate">{stop.name}</p>
+                            <div className="flex items-center gap-1">
+                              <p className="font-semibold text-gray-900 truncate">{stop.name}</p>
+                              {stop.corrected && (
+                                <span
+                                  className="inline-block w-1.5 h-1.5 bg-amber-500 rounded-full"
+                                  title="Ubicación ajustada automáticamente"
+                                  aria-label="Ubicación corregida"
+                                />
+                              )}
+                            </div>
                             <p className={`flex items-center gap-1 text-xs font-semibold ${cap.color}`}>
                               <span className="material-symbols-outlined text-[12px]">{cap.icon}</span>
                               {cap.label}
