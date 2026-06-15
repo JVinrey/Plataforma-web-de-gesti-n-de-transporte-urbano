@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
   Bell,
   Bus,
@@ -10,7 +10,6 @@ import {
   ShoppingCart,
   Siren,
 } from 'lucide-react'
-import { AccessibilityMenu } from '../components/accessibility/AccessibilityMenu'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { useRoutes } from '../hooks/use-transit-data'
 import { useAccessibilityStore } from '../stores/accessibility-store'
@@ -50,41 +49,8 @@ export function ElderlyModePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7fbff] text-gray-950">
-      <header className="border-b border-blue-100 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4">
-          <Link to="/" className="text-2xl font-black text-blue-900">
-            Manta Transit
-          </Link>
-          <nav aria-label="Navegacion de modo adulto mayor">
-            <ul className="flex flex-wrap gap-2">
-              <li>
-                <Link className="rounded-md px-4 py-3 font-semibold text-blue-900 hover:bg-blue-50" to="/">
-                  Inicio
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="rounded-md px-4 py-3 font-semibold text-blue-900 hover:bg-blue-50"
-                  to="/seguimiento-pago"
-                >
-                  Seguimiento
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="rounded-md px-4 py-3 font-semibold text-blue-900 hover:bg-blue-50"
-                  to="/historial"
-                >
-                  Historial
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
-
-      <main className="mx-auto grid max-w-6xl gap-6 px-4 py-8 lg:grid-cols-[1fr_22rem]">
+    <div className="-mx-lg -mt-lg min-h-full bg-[#f7fbff] text-gray-950">
+      <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 lg:grid-cols-[1fr_22rem]">
         <section aria-labelledby="elderly-title" className="space-y-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -206,9 +172,7 @@ export function ElderlyModePage() {
             </div>
           </div>
         </aside>
-      </main>
-
-      <AccessibilityMenu />
+      </div>
     </div>
   )
 }

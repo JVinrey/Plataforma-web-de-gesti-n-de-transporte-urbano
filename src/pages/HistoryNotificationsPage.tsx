@@ -1,7 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { Bell, CheckCircle2, Filter, Gift, Info, Route, Wallet, X } from 'lucide-react'
-import { AccessibilityMenu } from '../components/accessibility/AccessibilityMenu'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { useRoutes } from '../hooks/use-transit-data'
 
@@ -69,35 +67,8 @@ export function HistoryNotificationsPage() {
   const markAllRead = () => setReadNotifications(NOTIFICATIONS.map((notification) => notification.id))
 
   return (
-    <div className="min-h-screen bg-background text-on-background">
-      <header className="border-b border-outline-variant bg-surface-container-lowest">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3">
-          <Link to="/" className="text-xl font-black text-primary">
-            Manta Transit
-          </Link>
-          <nav aria-label="Navegacion de historial">
-            <ul className="flex flex-wrap gap-2">
-              <li>
-                <Link className="rounded-md px-3 py-2 font-semibold text-on-surface hover:bg-surface-container" to="/">
-                  Inicio
-                </Link>
-              </li>
-              <li>
-                <Link className="rounded-md px-3 py-2 font-semibold text-on-surface hover:bg-surface-container" to="/seguimiento-pago">
-                  Seguimiento
-                </Link>
-              </li>
-              <li>
-                <Link className="rounded-md bg-secondary-container px-3 py-2 font-semibold text-on-secondary-container" to="/historial">
-                  Historial
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
-
-      <main className="mx-auto grid max-w-7xl gap-6 px-4 py-6 lg:grid-cols-[1.25fr_0.75fr]">
+    <div className="text-on-background">
+      <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.25fr_0.75fr]">
         <section aria-labelledby="history-title" className="space-y-5">
           <div>
             <h1 id="history-title" className="text-3xl font-black text-on-surface">
@@ -248,9 +219,7 @@ export function HistoryNotificationsPage() {
             </dl>
           </section>
         </aside>
-      </main>
-
-      <AccessibilityMenu />
+      </div>
     </div>
   )
 }

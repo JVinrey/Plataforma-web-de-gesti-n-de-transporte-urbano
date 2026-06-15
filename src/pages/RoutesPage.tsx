@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { useRoutes } from '../hooks/use-transit-data'
 import type { RouteRow } from '../hooks/use-transit-data'
@@ -14,7 +14,17 @@ export function RoutesPage() {
   useDocumentTitle('Búsqueda de rutas')
 
   const { data: routes = [], isLoading, isError } = useRoutes()
-  const [query, setQuery] = useState('')
+  const [searchParams] = useSearchParams()
+  const urlQuery = searchParams.get('q') ?? ''
+  const [query, setQuery] = useState(urlQuery)
+
+  // Sincroniza el filtro con el parámetro ?q= (p. ej. la búsqueda de la cabecera)
+  // sin usar un efecto: patrón recomendado de ajuste de estado en render.
+  const [prevUrlQuery, setPrevUrlQuery] = useState(urlQuery)
+  if (urlQuery !== prevUrlQuery) {
+    setPrevUrlQuery(urlQuery)
+    setQuery(urlQuery)
+  }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()

@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { NavLink } from 'react-router-dom';
 import { useRoutes, useRouteStops, useStops, useVehicles } from '../hooks/use-transit-data';
 import type { RouteRow } from '../hooks/use-transit-data';
 import { MantaMap } from '../components/map';
@@ -20,13 +19,6 @@ interface PlannedRoute {
   status: RouteStatus;
   frequency: string;
 }
-
-const SIDEBAR_LINKS = [
-  { to: '/fleet', label: 'Fleet Dashboard', icon: 'dashboard' },
-  { to: '/route-planning', label: 'Route Planning', icon: 'map' },
-  { to: '/schedules', label: 'Schedules', icon: 'calendar_today' },
-  { to: '/driver-performance', label: 'Driver Performance', icon: 'monitoring' },
-];
 
 function getStatusBadge(status: RouteStatus) {
   switch (status) {
@@ -226,69 +218,7 @@ export default function RoutePlanningPage() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background text-on-background">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col overflow-y-auto border-r border-outline-variant bg-surface-container-low px-md py-lg shadow-sm">
-        <div className="mb-xl flex items-center gap-md px-xs">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-container text-on-primary-container">
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-              directions_bus
-            </span>
-          </div>
-          <div>
-            <h1 className="font-title-lg font-bold leading-none text-primary">Manta Transit</h1>
-            <p className="font-label-md text-on-surface-variant">Fleet Control Center</p>
-          </div>
-        </div>
-
-        <nav className="flex-1 space-y-xs" aria-label="Navegación principal">
-          {SIDEBAR_LINKS.map(({ to, label, icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                [
-                  'flex items-center gap-md rounded-lg px-md py-sm transition-colors',
-                  isActive
-                    ? 'bg-secondary-container font-bold text-on-secondary-container'
-                    : 'text-on-surface-variant hover:bg-surface-container-high',
-                ].join(' ')
-              }
-            >
-              <span className="material-symbols-outlined">{icon}</span>
-              <span className="font-label-lg">{label}</span>
-            </NavLink>
-          ))}
-        </nav>
-
-        <button
-          type="button"
-          className="mb-xl mt-md flex items-center justify-center gap-sm rounded-xl bg-primary px-lg py-md font-bold text-on-primary transition-opacity hover:opacity-90 focus-visible:outline-3 focus-visible:outline-offset-2"
-        >
-          <span className="material-symbols-outlined">add</span>
-          New Route
-        </button>
-
-        <div className="space-y-xs border-t border-outline-variant pt-lg">
-          <a
-            href="#settings"
-            className="flex items-center gap-md rounded-lg px-md py-sm text-on-surface-variant transition-colors hover:bg-surface-container-high"
-          >
-            <span className="material-symbols-outlined">settings</span>
-            <span className="font-label-lg">Settings</span>
-          </a>
-          <a
-            href="#support"
-            className="flex items-center gap-md rounded-lg px-md py-sm text-on-surface-variant transition-colors hover:bg-surface-container-high"
-          >
-            <span className="material-symbols-outlined">contact_support</span>
-            <span className="font-label-lg">Support</span>
-          </a>
-        </div>
-      </aside>
-
-      {/* Main */}
-      <div className="ml-64 flex h-screen flex-1 flex-col overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden">
         {/* Header */}
         <header className="flex h-16 w-full shrink-0 items-center justify-between border-b border-outline-variant bg-surface-bright px-margin-desktop shadow-sm">
           <div className="relative w-full max-w-md">
@@ -543,7 +473,6 @@ export default function RoutePlanningPage() {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Floating Action Button */}
       <button

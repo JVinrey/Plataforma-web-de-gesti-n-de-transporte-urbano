@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { PassengerShell } from '../components/layout/PassengerShell'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { useRoutes } from '../hooks/use-transit-data'
 import type { RouteRow } from '../hooks/use-transit-data'
@@ -133,8 +132,7 @@ export default function AssistantPage() {
   const lastUserIndex = useMemo(() => messages.map((m) => m.from).lastIndexOf('user'), [messages])
 
   return (
-    <PassengerShell activePath="/asistente" searchPlaceholder="Buscar rutas...">
-      <div className="mx-auto flex h-[calc(100vh-7rem)] max-w-3xl flex-col">
+    <div className="mx-auto flex h-[calc(100vh-9rem)] max-w-3xl flex-col">
         <section
           aria-label="Conversación con el asistente"
           className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest shadow-sm"
@@ -288,7 +286,6 @@ export default function AssistantPage() {
         <p className="mt-sm text-center font-label-lg text-on-surface-variant">
           Pulsa el botón rojo para hablar con el asistente
         </p>
-      </div>
-    </PassengerShell>
+    </div>
   )
 }

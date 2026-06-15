@@ -1,7 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { CreditCard, LocateFixed, QrCode, RefreshCw, Wallet } from 'lucide-react'
-import { AccessibilityMenu } from '../components/accessibility/AccessibilityMenu'
 import { MantaMap } from '../components/map'
 import type { MapVehicle } from '../components/map'
 import { useDocumentTitle } from '../hooks/use-document-title'
@@ -60,38 +58,8 @@ export function TrackingPaymentPage() {
   const balance = paid && activeRoute ? Math.max(0, 5 - activeRoute.cost) : 5
 
   return (
-    <div className="min-h-screen bg-background text-on-background">
-      <header className="border-b border-outline-variant bg-surface-container-lowest">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3">
-          <Link to="/" className="text-xl font-black text-primary">
-            Manta Transit
-          </Link>
-          <nav aria-label="Navegacion de seguimiento">
-            <ul className="flex flex-wrap gap-2">
-              <li>
-                <Link className="rounded-md px-3 py-2 font-semibold text-on-surface hover:bg-surface-container" to="/">
-                  Inicio
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="rounded-md bg-secondary-container px-3 py-2 font-semibold text-on-secondary-container"
-                  to="/seguimiento-pago"
-                >
-                  Seguimiento
-                </Link>
-              </li>
-              <li>
-                <Link className="rounded-md px-3 py-2 font-semibold text-on-surface hover:bg-surface-container" to="/historial">
-                  Historial
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
-
-      <main className="mx-auto grid max-w-7xl gap-4 px-4 py-4 lg:grid-cols-[1fr_25rem]">
+    <div className="text-on-background">
+      <div className="mx-auto grid max-w-7xl gap-4 lg:grid-cols-[1fr_25rem]">
         <section aria-labelledby="tracking-title" className="min-h-[34rem] overflow-hidden rounded-lg border border-outline-variant bg-surface-container">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant bg-white p-4">
             <div>
@@ -215,9 +183,7 @@ export function TrackingPaymentPage() {
             </p>
           </div>
         </aside>
-      </main>
-
-      <AccessibilityMenu />
+      </div>
     </div>
   )
 }

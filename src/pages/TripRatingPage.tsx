@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PassengerShell } from '../components/layout/PassengerShell'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { useRoutes } from '../hooks/use-transit-data'
 import { useSubmitFeedback } from '../hooks/use-feedback'
@@ -102,8 +101,7 @@ export default function TripRatingPage() {
   }
 
   return (
-    <PassengerShell activePath="/historial">
-      <div className="mx-auto max-w-4xl space-y-gutter">
+    <div className="mx-auto max-w-4xl space-y-gutter">
         {/* Encabezado del viaje */}
         <header className="flex items-center justify-between overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest p-lg shadow-sm">
           <div>
@@ -237,7 +235,6 @@ export default function TripRatingPage() {
             </div>
           </form>
         )}
-      </div>
-    </PassengerShell>
+    </div>
   )
 }

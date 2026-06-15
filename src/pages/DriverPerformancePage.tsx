@@ -1,23 +1,15 @@
 import { useMemo, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { useDriverPerformance, usePerformanceStats } from '../hooks/use-transit-data'
 import type { DriverWithMetrics } from '../hooks/use-transit-data'
 
 // =====================================================================
 // DriverPerformancePage — Análisis de Desempeño de Conductores.
-// Panel de administración de flota (shell propio, fuera de AppLayout).
+// Panel de administración de flota (dentro de AdminShell).
 // Datos reales desde Supabase (driver_metrics + drivers).
 // WCAG 2.2 AA: HTML semántico, tabla accesible, navegación por teclado,
 // nombres/roles en controles y contraste >= 4.5:1.
 // =====================================================================
-
-const ADMIN_LINKS = [
-  { to: '/fleet', label: 'Panel de Flota', icon: 'dashboard' },
-  { to: '/route-planning', label: 'Planificación de Rutas', icon: 'map' },
-  { to: '/schedules', label: 'Horarios', icon: 'calendar_today' },
-  { to: '/driver-performance', label: 'Desempeño de Conductores', icon: 'monitoring' },
-]
 
 /** Iniciales para el avatar de respaldo cuando no hay foto. */
 function initials(name: string): string {
@@ -61,63 +53,7 @@ export default function DriverPerformancePage() {
   const maxSafety = Math.max(100, ...drivers.flatMap((d) => d.monthlySafety))
 
   return (
-    <div className="flex min-h-screen overflow-hidden bg-background text-on-background">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-50 flex h-screen w-64 shrink-0 flex-col overflow-y-auto border-r border-outline-variant bg-surface-container-low px-md py-lg shadow-sm">
-        <div className="mb-xl flex items-center gap-md">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-container text-on-primary-container">
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-              directions_bus
-            </span>
-          </div>
-          <div>
-            <h1 className="font-title-lg font-bold leading-none text-primary">Manta Transit</h1>
-            <p className="font-label-lg text-on-surface-variant">Centro de Control de Flota</p>
-          </div>
-        </div>
-
-        <nav className="flex-1 space-y-xs" aria-label="Navegación de administración">
-          {ADMIN_LINKS.map(({ to, label, icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                [
-                  'flex items-center gap-md rounded-lg px-md py-sm transition-colors',
-                  isActive
-                    ? 'bg-secondary-container font-bold text-on-secondary-container'
-                    : 'text-on-surface-variant hover:bg-surface-container-high',
-                ].join(' ')
-              }
-            >
-              <span className="material-symbols-outlined">{icon}</span>
-              <span className="font-label-lg">{label}</span>
-            </NavLink>
-          ))}
-        </nav>
-
-        <Link
-          to="/route-planning"
-          className="mb-xl mt-lg flex items-center justify-center gap-sm rounded-xl bg-primary px-lg py-md font-bold text-on-primary transition-opacity hover:opacity-90 focus:ring-2 focus:ring-primary focus:ring-offset-2"
-        >
-          <span className="material-symbols-outlined">add</span>
-          Nueva Ruta
-        </Link>
-
-        <div className="space-y-xs border-t border-outline-variant pt-lg">
-          <span className="flex items-center gap-md rounded-lg px-md py-sm text-on-surface-variant">
-            <span className="material-symbols-outlined">settings</span>
-            <span className="font-label-lg">Ajustes</span>
-          </span>
-          <span className="flex items-center gap-md rounded-lg px-md py-sm text-on-surface-variant">
-            <span className="material-symbols-outlined">contact_support</span>
-            <span className="font-label-lg">Soporte</span>
-          </span>
-        </div>
-      </aside>
-
-      {/* Contenido */}
-      <div className="ml-64 flex min-h-screen flex-1 flex-col">
+    <div className="flex h-full flex-col overflow-hidden">
         {/* Cabecera */}
         <header className="flex h-16 w-full shrink-0 items-center justify-between border-b border-outline-variant bg-surface-bright px-margin-desktop shadow-sm">
           <div className="relative w-full max-w-md">
@@ -437,7 +373,6 @@ export default function DriverPerformancePage() {
           </div>
         </div>
       </div>
-    </div>
   )
 }
 

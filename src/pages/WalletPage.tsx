@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { PassengerShell } from '../components/layout/PassengerShell'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import {
   usePaymentMethods,
@@ -54,9 +53,8 @@ export default function WalletPage() {
   }
 
   return (
-    <PassengerShell activePath="/billetera">
-      <div className="mx-auto max-w-6xl">
-        <h1 className="sr-only">Billetera</h1>
+    <div className="mx-auto max-w-6xl">
+      <h1 className="sr-only">Billetera</h1>
 
         <div className="grid grid-cols-1 gap-gutter lg:grid-cols-[1.6fr_1fr]">
           {/* Saldo */}
@@ -221,8 +219,7 @@ export default function WalletPage() {
               </p>
             </div>
           </section>
-        </div>
       </div>
-    </PassengerShell>
+    </div>
   )
 }

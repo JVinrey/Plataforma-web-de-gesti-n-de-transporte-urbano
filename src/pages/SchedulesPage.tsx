@@ -28,74 +28,7 @@ export default function SchedulesPage() {
   };
 
   return (
-    <div className="flex h-screen bg-background text-on-background overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-64 bg-surface-container-low border-r border-outline-variant shadow-sm flex flex-col py-lg px-md fixed left-0 top-0 h-screen z-50 overflow-y-auto">
-        <div className="mb-xl px-xs">
-          <h1 className="font-title-lg font-bold text-primary">Manta Transit</h1>
-          <p className="text-body-md text-on-surface-variant opacity-70">Fleet Control Center</p>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 space-y-1" aria-label="Navegación principal">
-          <a
-            href="#fleet"
-            className="flex items-center gap-md p-md text-on-surface-variant hover:bg-surface-container-high rounded-lg font-body-md transition-colors"
-          >
-            <span className="material-symbols-outlined">dashboard</span>
-            <span>Fleet Dashboard</span>
-          </a>
-          <a
-            href="#routes"
-            className="flex items-center gap-md p-md text-on-surface-variant hover:bg-surface-container-high rounded-lg font-body-md transition-colors"
-          >
-            <span className="material-symbols-outlined">map</span>
-            <span>Route Planning</span>
-          </a>
-          <a
-            href="#schedules"
-            className="flex items-center gap-md p-md bg-secondary-container text-on-secondary-container rounded-lg font-bold font-body-md"
-            aria-current="page"
-          >
-            <span className="material-symbols-outlined">calendar_today</span>
-            <span>Schedules</span>
-          </a>
-          <a
-            href="#performance"
-            className="flex items-center gap-md p-md text-on-surface-variant hover:bg-surface-container-high rounded-lg font-body-md transition-colors"
-          >
-            <span className="material-symbols-outlined">monitoring</span>
-            <span>Driver Performance</span>
-          </a>
-        </nav>
-
-        {/* CTA Button */}
-        <button className="w-full mb-lg py-md px-lg bg-primary-container text-on-primary-container rounded-xl font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-          <span className="material-symbols-outlined">add</span>
-          New Route
-        </button>
-
-        {/* Footer Navigation */}
-        <div className="pt-lg border-t border-outline-variant space-y-1">
-          <a
-            href="#settings"
-            className="flex items-center gap-md p-md text-on-surface-variant hover:bg-surface-container-high rounded-lg font-body-md transition-colors"
-          >
-            <span className="material-symbols-outlined">settings</span>
-            <span>Settings</span>
-          </a>
-          <a
-            href="#support"
-            className="flex items-center gap-md p-md text-on-surface-variant hover:bg-surface-container-high rounded-lg font-body-md transition-colors"
-          >
-            <span className="material-symbols-outlined">contact_support</span>
-            <span>Support</span>
-          </a>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden">
         {/* Header */}
         <header className="fixed top-0 ml-64 right-0 bg-surface-bright border-b border-outline-variant shadow-sm flex items-center justify-between px-margin-desktop h-16 z-40" style={{ width: 'calc(100% - 16rem)' }}>
           <div className="flex items-center gap-lg flex-1">
@@ -324,7 +257,6 @@ export default function SchedulesPage() {
             </div>
           </div>
         </div>
-      </main>
     </div>
   );
 }

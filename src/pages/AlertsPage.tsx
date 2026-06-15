@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { PassengerShell } from '../components/layout/PassengerShell'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { useRoutes } from '../hooks/use-transit-data'
 import {
@@ -52,8 +51,7 @@ export default function AlertsPage() {
   }
 
   return (
-    <PassengerShell activePath="/alertas">
-      <div className="mx-auto max-w-6xl">
+    <div className="mx-auto max-w-6xl">
         <header className="mb-lg">
           <h1 className="text-headline-lg font-bold text-on-surface">Alertas y recordatorios</h1>
           <p className="font-body-md text-on-surface-variant">
@@ -244,7 +242,6 @@ export default function AlertsPage() {
             </div>
           </section>
         </div>
-      </div>
-    </PassengerShell>
+    </div>
   )
 }

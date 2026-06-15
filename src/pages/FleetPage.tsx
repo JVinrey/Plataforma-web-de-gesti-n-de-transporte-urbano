@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { useFleetStats } from '../hooks/use-transit-data';
 import type { VehicleWithRelations } from '../hooks/use-transit-data';
 
@@ -39,81 +38,7 @@ export default function FleetPage() {
   };
 
   return (
-    <div className="flex h-screen bg-background text-on-background overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-64 bg-surface-container-low border-r border-outline-variant shadow-sm flex flex-col py-lg px-md fixed left-0 top-0 h-screen z-50 overflow-y-auto">
-        <div className="mb-xl flex items-center gap-md">
-          <div className="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container">
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-              directions_bus
-            </span>
-          </div>
-          <div>
-            <h1 className="font-title-lg font-bold text-primary leading-none">Manta Transit</h1>
-            <p className="font-label-lg text-on-surface-variant">Fleet Control Center</p>
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 space-y-xs" aria-label="Navegación principal">
-          <a
-            href="#fleet"
-            className="bg-secondary-container text-on-secondary-container rounded-lg font-bold flex items-center gap-md px-md py-sm transition-all"
-            aria-current="page"
-          >
-            <span className="material-symbols-outlined">dashboard</span>
-            <span className="font-label-lg">Fleet Dashboard</span>
-          </a>
-          <Link
-            to="/route-planning"
-            className="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-md px-md py-sm rounded-lg transition-colors"
-          >
-            <span className="material-symbols-outlined">map</span>
-            <span className="font-label-lg">Route Planning</span>
-          </Link>
-          <Link
-            to="/schedules"
-            className="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-md px-md py-sm rounded-lg transition-colors"
-          >
-            <span className="material-symbols-outlined">calendar_today</span>
-            <span className="font-label-lg">Schedules</span>
-          </Link>
-          <Link
-            to="/driver-performance"
-            className="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-md px-md py-sm rounded-lg transition-colors"
-          >
-            <span className="material-symbols-outlined">monitoring</span>
-            <span className="font-label-lg">Driver Performance</span>
-          </Link>
-        </nav>
-
-        {/* CTA Button */}
-        <button className="bg-primary text-on-primary font-bold py-md px-lg rounded-xl mb-xl flex items-center justify-center gap-sm hover:opacity-90 transition-all focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-          <span className="material-symbols-outlined">add</span>
-          New Route
-        </button>
-
-        {/* Footer Navigation */}
-        <div className="pt-lg border-t border-outline-variant space-y-xs">
-          <a
-            href="#settings"
-            className="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-md px-md py-sm rounded-lg transition-colors"
-          >
-            <span className="material-symbols-outlined">settings</span>
-            <span className="font-label-lg">Settings</span>
-          </a>
-          <a
-            href="#support"
-            className="text-on-surface-variant hover:bg-surface-container-high flex items-center gap-md px-md py-sm rounded-lg transition-colors"
-          >
-            <span className="material-symbols-outlined">contact_support</span>
-            <span className="font-label-lg">Support</span>
-          </a>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden">
         {/* Header */}
         <header className="bg-surface-bright border-b border-outline-variant shadow-sm flex items-center justify-between px-margin-desktop h-16 w-full shrink-0">
           <div className="flex items-center gap-lg flex-1">
@@ -373,7 +298,6 @@ export default function FleetPage() {
             </div>
           </div>
         </div>
-      </main>
 
       {/* Floating Action Button */}
       <button

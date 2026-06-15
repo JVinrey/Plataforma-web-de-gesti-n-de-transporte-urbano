@@ -1,13 +1,18 @@
 import { useMemo, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useDocumentTitle } from '../hooks/use-document-title';
 import { useRoutes, useRouteStops, useStops, useVehicles } from '../hooks/use-transit-data';
 import type { RouteRow } from '../hooks/use-transit-data';
 import { MantaMap } from '../components/map';
 import type { MapVehicle } from '../components/map';
-import { AccessibilityMenu } from '../components/accessibility/AccessibilityMenu';
 
 type Congestion = 'baja' | 'media' | 'alta';
+
+/** Normaliza texto para búsqueda: minúsculas y sin acentos. */
+const DIACRITICS = new RegExp('[' + '̀' + '-' + 'ͯ' + ']', 'g');
+function norm(text: string): string {
+  return text.toLowerCase().normalize('NFD').replace(DIACRITICS, '');
+}
 
 interface RouteOption {
   id: string;
@@ -40,13 +45,6 @@ function arrivalIn(minutes: number): string {
   return d.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
-const NAV_LINKS = [
-  { to: '/', label: 'Home', icon: 'home' },
-  { to: '/planificar-viaje', label: 'Routes', icon: 'directions_bus' },
-  { to: '/seguimiento-pago', label: 'Tracking', icon: 'my_location' },
-  { to: '/historial', label: 'History', icon: 'history' },
-];
-
 const CONGESTION_BADGE: Record<Congestion, { label: string; color: string }> = {
   baja: { label: 'Congestión Baja', color: 'bg-secondary-container text-on-secondary-container' },
   media: { label: 'Media', color: 'bg-[#f3e6c4] text-[#6b4e00]' },
@@ -65,21 +63,36 @@ export default function TripPlannerPage() {
   useDocumentTitle('Planificar viaje');
 
   const { data: routeRows = [], isLoading } = useRoutes();
+  const [searchParams] = useSearchParams();
 
-  const [origin, setOrigin] = useState('Terminal Terrestre');
-  const [destination, setDestination] = useState('');
+  const [origin, setOrigin] = useState(() => searchParams.get('origen') ?? 'Terminal Terrestre');
+  const [destination, setDestination] = useState(() => searchParams.get('destino') ?? '');
   const [lowFloor, setLowFloor] = useState(true);
   const [selectedRoute, setSelectedRoute] = useState('');
 
   // Construye las opciones de viaje a partir de las rutas reales disponibles
-  // (se excluyen las fuera de servicio), recomendando la más rápida.
+  // (se excluyen las fuera de servicio) y FILTRA por el destino escrito
+  // (¿a dónde quieres ir?), recomendando la más rápida de las que coinciden.
   const routeOptions = useMemo<RouteOption[]>(() => {
     const available = routeRows.filter((r) => r.status !== 'off_line');
-    const fastest = available.reduce<RouteRow | null>(
+
+    // Términos de búsqueda del destino con más de 2 caracteres.
+    const terms = norm(destination)
+      .split(/[\s,]+/)
+      .filter((w) => w.length > 2);
+
+    const matches = (r: RouteRow) => {
+      if (terms.length === 0) return true;
+      const hay = norm(`${r.code} ${r.name} ${r.origin ?? ''} ${r.destination ?? ''}`);
+      return terms.some((w) => hay.includes(w));
+    };
+
+    const filtered = available.filter(matches);
+    const fastest = filtered.reduce<RouteRow | null>(
       (best, r) => (!best || r.estimated_time_minutes < best.estimated_time_minutes ? r : best),
       null,
     );
-    return available.map((r) => ({
+    return filtered.map((r) => ({
       id: r.id,
       durationMin: r.estimated_time_minutes,
       arrival: arrivalIn(r.estimated_time_minutes),
@@ -90,7 +103,7 @@ export default function TripPlannerPage() {
       walkMin: Math.max(2, Math.round(r.frequency_minutes / 3)),
       recommended: r.id === fastest?.id,
     }));
-  }, [routeRows]);
+  }, [routeRows, destination]);
 
   // Selección efectiva: la elegida por el usuario o la ruta recomendada por defecto.
   const effectiveRoute =
@@ -127,90 +140,12 @@ export default function TripPlannerPage() {
   };
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden text-on-background" style={{ backgroundColor: PAGE_BG }}>
-      {/* Top bar */}
-      <header className="flex h-20 shrink-0 items-center gap-lg px-lg">
-        <Link to="/" className="w-48 shrink-0 text-2xl font-bold text-primary">
-          Manta Transit
-        </Link>
-        <div className="relative w-full max-w-md">
-          <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-on-surface-variant">
-            <span className="material-symbols-outlined text-[20px]">search</span>
-          </span>
-          <input
-            type="search"
-            className="w-full rounded-full border-none bg-surface-container py-3 pl-11 pr-4 font-body-md focus:ring-2 focus:ring-primary"
-            placeholder="Buscar paradas o líneas..."
-            aria-label="Buscar paradas o líneas"
-          />
-        </div>
-        <div className="ml-auto flex items-center gap-sm">
-          <button
-            type="button"
-            className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container focus-visible:outline-3"
-            aria-label="Cambiar idioma"
-          >
-            <span className="material-symbols-outlined">language</span>
-          </button>
-          <button
-            type="button"
-            className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container focus-visible:outline-3"
-            aria-label="Opciones de accesibilidad"
-          >
-            <span className="material-symbols-outlined">accessibility_new</span>
-          </button>
-          <div className="mx-sm h-7 w-px bg-outline-variant" aria-hidden="true" />
-          <Link
-            to="/login"
-            className="rounded-lg px-3 py-2 font-label-lg font-semibold text-primary hover:bg-surface-container focus-visible:outline-3"
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="rounded-lg bg-primary px-4 py-2 font-label-lg font-semibold text-on-primary transition-opacity hover:opacity-90 focus-visible:outline-3"
-          >
-            Register
-          </Link>
-        </div>
-      </header>
-
-      {/* Body */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <aside className="flex w-56 shrink-0 flex-col px-md pb-lg">
-          <nav className="flex-1 space-y-xs" aria-label="Navegación principal">
-            {NAV_LINKS.map(({ to, label, icon }) =>
-                <NavLink
-                  key={to}
-                  to={to}
-                  end={to === '/'}
-                  className={({ isActive }) =>
-                    [
-                      'flex items-center gap-md rounded-xl px-md py-sm transition-colors',
-                      isActive
-                        ? 'bg-[#7fe0a6] font-semibold text-[#0b4429]'
-                        : 'text-on-surface-variant hover:bg-surface-container',
-                    ].join(' ')
-                  }
-                >
-                  <span className="material-symbols-outlined">{icon}</span>
-                  <span className="font-body-md font-medium">{label}</span>
-                </NavLink>
-            )}
-          </nav>
-
-          <div className="mt-lg">
-            <p className="font-label-md uppercase tracking-wider text-on-surface-variant">Estado del sistema</p>
-            <p className="mt-xs flex items-center gap-sm font-body-md font-semibold text-secondary">
-              <span className="h-2.5 w-2.5 rounded-full bg-secondary" aria-hidden="true" />
-              Operativo
-            </p>
-          </div>
-        </aside>
-
+    <div
+      className="-mx-lg -mt-lg flex h-[calc(100vh-5rem)] overflow-hidden text-on-background"
+      style={{ backgroundColor: PAGE_BG }}
+    >
         {/* Trip planner form */}
-        <main className="w-[26rem] shrink-0 overflow-y-auto px-lg pb-lg">
+        <div className="w-[26rem] shrink-0 overflow-y-auto px-lg py-lg">
           <h1 className="text-4xl font-bold text-primary">Planificar Viaje</h1>
           <p className="mt-1 text-body-md text-on-surface-variant">Encuentra la mejor ruta en Manta.</p>
 
@@ -346,11 +281,21 @@ export default function TripPlannerPage() {
           </form>
 
           {/* Mejores Rutas */}
-          <h2 className="mt-lg text-2xl font-bold text-on-surface">Mejores Rutas</h2>
+          <div className="mt-lg flex items-baseline justify-between gap-sm">
+            <h2 className="text-2xl font-bold text-on-surface">Mejores Rutas</h2>
+            {!isLoading && (
+              <p className="font-label-lg text-on-surface-variant" role="status" aria-live="polite">
+                {routeOptions.length}{' '}
+                {routeOptions.length === 1 ? 'ruta encontrada' : 'rutas encontradas'}
+              </p>
+            )}
+          </div>
           {isLoading && <p className="mt-md text-body-md text-on-surface-variant">Buscando rutas…</p>}
           {!isLoading && routeOptions.length === 0 && (
-            <p className="mt-md text-body-md text-on-surface-variant">
-              No hay rutas disponibles en este momento.
+            <p className="mt-md rounded-xl bg-surface-container px-md py-lg text-body-md text-on-surface-variant">
+              {destination.trim()
+                ? `No encontramos rutas hacia “${destination.trim()}”. Prueba con otro destino o un punto de referencia (Terminal, Playa, ULEAM…).`
+                : 'No hay rutas disponibles en este momento.'}
             </p>
           )}
           <ul className="mt-md space-y-md" role="list">
@@ -419,7 +364,7 @@ export default function TripPlannerPage() {
               );
             })}
           </ul>
-        </main>
+        </div>
 
         {/* Map — Leaflet real centrado en Manta con el recorrido seleccionado */}
         <section
@@ -464,8 +409,6 @@ export default function TripPlannerPage() {
             }
           />
         </section>
-      </div>
-      <AccessibilityMenu />
     </div>
   );
 }

@@ -1,301 +1,362 @@
-import { useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { useMemo, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { useRoutes, useStops } from '../hooks/use-transit-data'
+import { useFavoriteRoutes } from '../hooks/use-profile-data'
 import { useAccessibilityStore } from '../stores/accessibility-store'
 import { MantaMap } from '../components/map'
 import type { MapStop } from '../components/map'
-import { AccessibilityMenu } from '../components/accessibility/AccessibilityMenu'
 
 // =====================================================================
-// GuestHomePage — Modo Invitado "Welcome to Manta".
-// Bienvenida sin registro: mapa real de Manta, selector ES/EN, pasos del
-// trayecto, destinos sugeridos (paradas reales) y Ticket QR digital.
-// WCAG 2.2 AA: HTML semántico, contraste, navegación por teclado y
-// nombres/roles en controles custom. Idioma vía accessibility-store.
+// GuestHomePage — Home de la app de pasajeros "Tu ciudad, en movimiento".
+// Banner de servicio en vivo (ruta con retraso real), buscador de viaje
+// funcional (navega al planificador con origen/destino), accesos rápidos
+// y mapa real de Manta. WCAG 2.2 AA: HTML semántico, labels, navegación
+// por teclado, nombres/roles en controles y contraste >= 4.5:1. i18n ES/EN.
 // =====================================================================
 
 type Lang = 'es' | 'en'
 
 const T = {
   es: {
-    guest: 'Modo Invitado',
-    welcome: 'Bienvenido a Manta',
-    searchPlaceholder: '¿A dónde quieres ir?',
-    preferences: 'Preferencias',
-    customize: 'Personaliza tu vista',
-    accessibility: 'Opciones de Accesibilidad',
-    highContrast: 'Alto Contraste',
-    currentJourney: 'TRAYECTO ACTUAL',
-    step1: 'Paso 1: Llegar a la estación',
-    step2: 'Paso 2: Caminar a la Parada A',
-    step3: 'Paso 3: Abordar la',
-    estimated: 'Estimado',
-    mins: 'min',
-    away: 'de distancia',
-    directLine: 'Línea directa',
-    highFreq: 'Alta frecuencia',
-    qrTicket: 'Ticket QR Digital',
-    suggested: 'Destinos sugeridos',
-    location: 'Manta, Ecuador',
+    serviceUpdate: 'Actualización de Servicio',
+    serviceDelay: (line: string) =>
+      `Retrasos de 15 min en la ${line} debido a mantenimiento preventivo.`,
+    dismiss: 'Cerrar aviso de servicio',
+    heroLine1: 'Tu ciudad,',
+    heroLine2: 'en movimiento.',
+    heroSubtitle:
+      'Planifica tu viaje en tiempo real, consulta horarios y mantente al tanto de cualquier cambio en la red de transporte de Manta.',
+    origin: 'Origen',
+    originPlaceholder: 'Ingresa punto de partida',
+    destination: 'Destino',
+    destinationPlaceholder: '¿A dónde quieres ir?',
+    searchRoute: 'Buscar Ruta',
+    swap: 'Intercambiar origen y destino',
+    quickAccess: 'Accesos Rápidos',
+    seeAll: 'Ver todo',
+    elderlyTitle: 'Modo Adulto Mayor',
+    elderlyDesc:
+      'Interfaz simplificada con botones grandes y alto contraste para una navegación fácil.',
+    elderlyCta: 'Activar ahora',
+    touristTitle: 'Turista',
+    touristDesc: 'Descubre los puntos de interés de Manta y las mejores rutas para visitarlos.',
+    touristCta: 'Explorar mapa',
+    favTitle: 'Rutas Frecuentes',
+    favDesc: 'Guarda tus trayectos habituales para acceder a ellos con un solo toque.',
+    favCta: 'Ver favoritos',
+    favCount: (n: number) => `${n} ${n === 1 ? 'ruta guardada' : 'rutas guardadas'}`,
+    mapTitle: 'Mapa de la red de Manta',
+    mapHint: 'Toca una parada para ver su nombre y accesibilidad.',
   },
   en: {
-    guest: 'Guest Mode',
-    welcome: 'Welcome to Manta',
-    searchPlaceholder: 'Where do you want to go?',
-    preferences: 'Preferences',
-    customize: 'Customize your view',
-    accessibility: 'Accessibility Settings',
-    highContrast: 'High Contrast',
-    currentJourney: 'CURRENT JOURNEY',
-    step1: 'Step 1: Arrive at Station',
-    step2: 'Step 2: Walk to Stop A',
-    step3: 'Step 3: Board',
-    estimated: 'Estimated',
-    mins: 'mins',
-    away: 'away',
-    directLine: 'Direct Line',
-    highFreq: 'High Frequency',
-    qrTicket: 'Digital QR Ticket',
-    suggested: 'Suggested destinations',
-    location: 'Manta, Ecuador',
+    serviceUpdate: 'Service Update',
+    serviceDelay: (line: string) =>
+      `15 min delays on ${line} due to preventive maintenance.`,
+    dismiss: 'Dismiss service notice',
+    heroLine1: 'Your city,',
+    heroLine2: 'in motion.',
+    heroSubtitle:
+      'Plan your trip in real time, check schedules and stay up to date with any change in the Manta transit network.',
+    origin: 'Origin',
+    originPlaceholder: 'Enter starting point',
+    destination: 'Destination',
+    destinationPlaceholder: 'Where do you want to go?',
+    searchRoute: 'Search Route',
+    swap: 'Swap origin and destination',
+    quickAccess: 'Quick Access',
+    seeAll: 'See all',
+    elderlyTitle: 'Senior Mode',
+    elderlyDesc: 'Simplified interface with large buttons and high contrast for easy navigation.',
+    elderlyCta: 'Activate now',
+    touristTitle: 'Tourist',
+    touristDesc: 'Discover Manta points of interest and the best routes to visit them.',
+    touristCta: 'Explore map',
+    favTitle: 'Frequent Routes',
+    favDesc: 'Save your usual trips to reach them with a single tap.',
+    favCta: 'See favorites',
+    favCount: (n: number) => `${n} ${n === 1 ? 'saved route' : 'saved routes'}`,
+    mapTitle: 'Manta network map',
+    mapHint: 'Tap a stop to see its name and accessibility.',
   },
-} satisfies Record<Lang, Record<string, string>>
-
-/** Iconos para las tarjetas de destino según palabras clave del nombre. */
-function destinationIcon(name: string): string {
-  const n = name.toLowerCase()
-  if (n.includes('playa')) return 'beach_access'
-  if (n.includes('terminal')) return 'directions_bus'
-  if (n.includes('aeropuerto')) return 'flights'
-  if (n.includes('hospital')) return 'local_hospital'
-  if (n.includes('universidad') || n.includes('uleam')) return 'school'
-  if (n.includes('centro') || n.includes('mall')) return 'apartment'
-  return 'place'
-}
+} satisfies Record<Lang, Record<string, unknown>>
 
 export default function GuestHomePage() {
-  useDocumentTitle('Bienvenido a Manta')
+  useDocumentTitle('Tu ciudad, en movimiento')
+  const navigate = useNavigate()
   const { preferences, setPreference } = useAccessibilityStore()
   const lang = (preferences.language as Lang) ?? 'es'
   const t = T[lang]
 
   const { data: routes = [] } = useRoutes()
   const { data: stops = [] } = useStops()
+  const { data: favorites = [] } = useFavoriteRoutes()
 
-  // Destinos sugeridos a partir de paradas reales (landmarks de Manta).
-  const destinations = useMemo(() => {
-    const keywords = ['Playa', 'Terminal', 'Centro', 'ULEAM', 'Aeropuerto']
-    const picks: typeof stops = []
-    for (const kw of keywords) {
-      const found = stops.find(
-        (s) => s.name.toLowerCase().includes(kw.toLowerCase()) && !picks.includes(s),
-      )
-      if (found) picks.push(found)
-      if (picks.length >= 3) break
-    }
-    while (picks.length < 3 && stops[picks.length]) picks.push(stops[picks.length])
-    return picks
-  }, [stops])
+  const [origin, setOrigin] = useState('')
+  const [destination, setDestination] = useState('')
+  const [bannerDismissed, setBannerDismissed] = useState(false)
+  const mapRef = useRef<HTMLElement>(null)
 
-  const mapStops: MapStop[] = stops.map((s) => ({
-    id: s.id,
-    name: s.name,
-    lat: s.lat,
-    lng: s.lng,
-    accessible: s.accessible,
-  }))
+  // Banner de servicio real: primera ruta con retraso (status delayed).
+  const delayedRoute = useMemo(() => routes.find((r) => r.status === 'delayed'), [routes])
 
-  const boardRoute = routes.find((r) => r.status !== 'off_line') ?? routes[0]
+  const mapStops: MapStop[] = useMemo(
+    () =>
+      stops.map((s) => ({
+        id: s.id,
+        name: s.name,
+        lat: s.lat,
+        lng: s.lng,
+        accessible: s.accessible,
+      })),
+    [stops],
+  )
+
+  // Búsqueda funcional: lleva el origen/destino al planificador vía query params.
+  const submitSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    const params = new URLSearchParams()
+    if (origin.trim()) params.set('origen', origin.trim())
+    if (destination.trim()) params.set('destino', destination.trim())
+    navigate(`/planificar-viaje${params.toString() ? `?${params.toString()}` : ''}`)
+  }
+
+  const swapEnds = () => {
+    setOrigin(destination)
+    setDestination(origin)
+  }
+
+  // "Activar ahora": activa el modo adulto mayor real y abre su vista.
+  const activateElderly = () => {
+    setPreference('elderlyMode', true)
+    setPreference('textSize', 'large')
+    setPreference('increasedSpacing', true)
+    navigate('/adulto-mayor')
+  }
+
+  const scrollToMap = () => {
+    mapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-on-background">
-      {/* Cabecera */}
-      <header className="flex h-16 items-center justify-between border-b border-outline-variant bg-surface-bright px-lg">
-        <div className="flex items-center gap-md">
-          <Link to="/" className="text-xl font-bold text-secondary">
-            Manta Transit
-          </Link>
-          <span className="flex items-center gap-xs rounded-full bg-secondary-container px-3 py-1 font-label-md font-semibold text-on-secondary-container">
-            <span className="material-symbols-outlined text-[16px]">person</span>
-            {t.guest}
+    <div className="flex w-full flex-col gap-10 pb-xl">
+      {/* Banner de servicio (en vivo, descartable) */}
+      {delayedRoute && !bannerDismissed && (
+        <div
+          role="status"
+          className="flex items-center gap-md rounded-2xl border border-amber-300 bg-[#f59e0b] px-5 py-4 text-[#3d2c00] shadow-sm"
+        >
+          <span className="material-symbols-outlined shrink-0" aria-hidden="true">
+            warning
           </span>
-        </div>
-        <div className="flex items-center gap-sm">
-          {/* Selector de idioma EN/ES */}
-          <div className="flex items-center rounded-full bg-surface-container p-0.5" role="group" aria-label="Idioma / Language">
-            {(['en', 'es'] as const).map((l) => (
-              <button
-                key={l}
-                type="button"
-                onClick={() => setPreference('language', l)}
-                aria-pressed={lang === l}
-                className={[
-                  'rounded-full px-3 py-1 font-label-lg font-semibold uppercase transition-colors',
-                  lang === l ? 'bg-primary-container text-on-primary-container' : 'text-on-surface-variant',
-                ].join(' ')}
-              >
-                {l}
-              </button>
-            ))}
-          </div>
+          <p className="flex-1 font-body-md font-semibold leading-6">
+            <span className="font-bold">{t.serviceUpdate}:</span>{' '}
+            {t.serviceDelay(`${delayedRoute.code} (${delayedRoute.name})`)}
+          </p>
           <button
             type="button"
-            className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container focus-visible:outline-3"
-            aria-label="Cambiar idioma"
+            onClick={() => setBannerDismissed(true)}
+            aria-label={t.dismiss}
+            className="rounded-full p-1 transition-colors hover:bg-black/10 focus-visible:outline-3"
           >
-            <span className="material-symbols-outlined">language</span>
-          </button>
-          <span className="rounded-full p-2 text-secondary" aria-hidden="true">
-            <span className="material-symbols-outlined">accessibility_new</span>
-          </span>
-        </div>
-      </header>
-
-      <div className="flex flex-1 flex-col lg:flex-row">
-        {/* Panel de preferencias */}
-        <aside className="w-full shrink-0 border-b border-outline-variant bg-surface-container-low px-lg py-lg lg:w-72 lg:border-b-0 lg:border-r">
-          <h2 className="font-title-lg font-bold text-on-surface">{t.preferences}</h2>
-          <p className="font-body-md text-on-surface-variant">{t.customize}</p>
-
-          <Link
-            to="/inicio"
-            className="mt-lg flex items-center gap-sm rounded-xl bg-secondary px-md py-3 font-body-md font-semibold text-on-secondary transition-opacity hover:opacity-90 focus-visible:outline-3"
-          >
-            <span className="material-symbols-outlined">accessibility_new</span>
-            {t.accessibility}
-          </Link>
-
-          <button
-            type="button"
-            onClick={() => setPreference('highContrast', !preferences.highContrast)}
-            role="switch"
-            aria-checked={preferences.highContrast}
-            className="mt-md flex w-full items-center gap-sm rounded-xl px-md py-3 text-left transition-colors hover:bg-surface-container focus-visible:outline-3"
-          >
-            <span className="material-symbols-outlined text-on-surface">contrast</span>
-            <span className="flex-1 font-body-md font-medium text-on-surface">{t.highContrast}</span>
-            <span
-              className={[
-                'relative h-6 w-11 shrink-0 rounded-full transition-colors',
-                preferences.highContrast ? 'bg-secondary' : 'bg-outline',
-              ].join(' ')}
-            >
-              <span
-                className={[
-                  'absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all',
-                  preferences.highContrast ? 'left-[1.375rem]' : 'left-0.5',
-                ].join(' ')}
-                aria-hidden="true"
-              />
+            <span className="material-symbols-outlined" aria-hidden="true">
+              close
             </span>
           </button>
+        </div>
+      )}
 
-          {/* Trayecto actual (guía paso a paso) */}
-          <section aria-label={t.currentJourney} className="mt-lg rounded-xl border border-outline-variant bg-surface-container-lowest p-md">
-            <p className="font-label-md font-bold uppercase tracking-wide text-secondary">{t.currentJourney}</p>
-            <ol className="mt-sm space-y-md">
-              <li className="flex items-start gap-sm">
-                <span className="mt-1 h-3 w-3 shrink-0 rounded-full bg-outline" aria-hidden="true" />
-                <span className="font-body-md text-on-surface-variant line-through">{t.step1}</span>
-              </li>
-              <li className="flex items-start gap-sm">
-                <span className="mt-1 h-3 w-3 shrink-0 rounded-full bg-secondary ring-4 ring-secondary-container" aria-hidden="true" />
-                <span>
-                  <span className="block font-body-md font-bold text-secondary">{t.step2}</span>
-                  <span className="block font-label-lg text-on-surface-variant">
-                    {t.estimated} 4 {t.mins}
-                  </span>
-                </span>
-              </li>
-              <li className="flex items-start gap-sm">
-                <span className="mt-1 h-3 w-3 shrink-0 rounded-full border-2 border-outline bg-surface-container-lowest" aria-hidden="true" />
-                <span className="font-body-md text-on-surface-variant">
-                  {t.step3} {boardRoute ? `${boardRoute.code} · ${boardRoute.name}` : '#402'}
-                </span>
-              </li>
-            </ol>
-          </section>
-
-          <div className="mt-lg flex items-center gap-sm rounded-xl bg-primary-container px-md py-3 text-on-primary-container">
-            <span className="material-symbols-outlined">person_pin_circle</span>
-            <span className="font-label-lg font-semibold">{t.location}</span>
+      <div className="flex w-full flex-col gap-10 px-lg">
+        {/* Hero + buscador de viaje */}
+        <section aria-labelledby="home-hero" className="pt-md">
+          <div className="max-w-4xl">
+            <h1 id="home-hero" className="text-5xl font-extrabold leading-[0.98] text-primary md:text-6xl lg:text-7xl">
+              {t.heroLine1}
+              <br />
+              {t.heroLine2}
+            </h1>
+            <p className="mt-lg max-w-2xl text-base leading-7 text-on-surface-variant md:text-lg">
+              {t.heroSubtitle}
+            </p>
           </div>
-        </aside>
 
-        {/* Contenido principal */}
-        <main className="flex-1 px-lg py-lg">
-          <h1 className="text-center text-headline-lg font-bold text-on-surface">{t.welcome}</h1>
-
-          {/* Buscador */}
+          {/* Buscador funcional */}
           <form
-            className="mx-auto mt-lg max-w-3xl"
+            onSubmit={submitSearch}
             role="search"
-            onSubmit={(e) => e.preventDefault()}
+            aria-label={t.searchRoute}
+            className="mt-lg grid w-full gap-md rounded-2xl border border-outline-variant bg-surface-bright p-lg shadow-md md:grid-cols-[minmax(0,1fr)_auto] md:items-end"
           >
-            <label htmlFor="guest-search" className="sr-only">
-              {t.searchPlaceholder}
-            </label>
-            <div className="relative">
-              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-on-surface-variant">
-                <span className="material-symbols-outlined">search</span>
-              </span>
-              <input
-                id="guest-search"
-                type="search"
-                placeholder={t.searchPlaceholder}
-                className="w-full rounded-full border border-outline-variant bg-surface-bright py-4 pl-14 pr-5 font-body-md shadow-sm focus:ring-2 focus:ring-secondary"
-              />
+            <div className="flex min-w-0 flex-col gap-sm">
+              {/* Origen */}
+              <div className="relative rounded-xl border border-outline-variant bg-surface-container-lowest px-md py-3">
+                <label
+                  htmlFor="home-origin"
+                  className="absolute -top-2 left-3 bg-surface-bright px-1 font-label-md font-semibold text-primary"
+                >
+                  {t.origin}
+                </label>
+                <div className="flex items-center gap-sm">
+                  <span className="material-symbols-outlined text-primary" aria-hidden="true">
+                    my_location
+                  </span>
+                  <input
+                    id="home-origin"
+                    type="text"
+                    value={origin}
+                    onChange={(e) => setOrigin(e.target.value)}
+                    placeholder={t.originPlaceholder}
+                    className="w-full bg-transparent font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Swap */}
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={swapEnds}
+                  aria-label={t.swap}
+                  className="-my-1 flex h-9 w-9 items-center justify-center rounded-full bg-primary-container text-primary shadow-sm transition-colors hover:brightness-95 focus-visible:outline-3"
+                >
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+                    swap_vert
+                  </span>
+                </button>
+              </div>
+
+              {/* Destino */}
+              <div className="relative rounded-xl border border-outline-variant bg-surface-container-lowest px-md py-3">
+                <label
+                  htmlFor="home-destination"
+                  className="absolute -top-2 left-3 bg-surface-bright px-1 font-label-md font-semibold text-on-surface-variant"
+                >
+                  {t.destination}
+                </label>
+                <div className="flex items-center gap-sm">
+                  <span className="material-symbols-outlined text-error" aria-hidden="true">
+                    flag
+                  </span>
+                  <input
+                    id="home-destination"
+                    type="text"
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                    placeholder={t.destinationPlaceholder}
+                    className="w-full bg-transparent font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none"
+                  />
+                </div>
+              </div>
             </div>
+
+            <button
+              type="submit"
+              className="flex min-h-14 items-center justify-center gap-sm rounded-xl bg-primary px-lg py-4 font-body-md font-bold text-on-primary transition-opacity hover:opacity-90 focus-visible:outline-3"
+            >
+              {t.searchRoute}
+              <span className="material-symbols-outlined" aria-hidden="true">
+                arrow_forward
+              </span>
+            </button>
           </form>
+        </section>
 
-          {/* Mapa real de Manta */}
-          <section
-            aria-label="Mapa de la red de transporte de Manta"
-            className="mx-auto mt-lg h-[22rem] max-w-5xl overflow-hidden rounded-2xl border border-outline-variant shadow-sm"
-          >
-            <MantaMap stops={mapStops} ariaLabel="Mapa de la red de transporte de Manta" />
-          </section>
+        {/* Accesos rápidos */}
+        <section aria-labelledby="quick-access">
+          <div className="flex items-center justify-between">
+            <h2 id="quick-access" className="text-headline-lg font-bold text-on-surface">
+              {t.quickAccess}
+            </h2>
+            <Link
+              to="/lineas"
+              className="flex items-center gap-xs font-label-lg font-bold text-primary hover:underline focus-visible:outline-3"
+            >
+              {t.seeAll}
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                chevron_right
+              </span>
+            </Link>
+          </div>
 
-          {/* Destinos sugeridos */}
-          <h2 className="mx-auto mt-lg max-w-5xl font-title-lg font-bold text-on-surface">{t.suggested}</h2>
-          <ul className="mx-auto mt-md grid max-w-5xl grid-cols-1 gap-gutter sm:grid-cols-2 lg:grid-cols-3" role="list">
-            {destinations.map((dest, i) => {
-              const isTicket = i === destinations.length - 1
-              return (
-                <li key={dest.id}>
-                  <Link
-                    to="/planificar-viaje"
-                    className="relative block h-full rounded-2xl border border-outline-variant bg-surface-container-lowest p-lg shadow-sm transition-shadow hover:shadow-md focus-visible:outline-3"
-                  >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary-container text-on-secondary-container">
-                      <span className="material-symbols-outlined">{destinationIcon(dest.name)}</span>
-                    </span>
-                    <h3 className="mt-md font-body-md font-bold text-on-surface">{dest.name}</h3>
-                    <p className="mt-xs flex items-center gap-sm">
-                      <span className="rounded-md bg-[#f3e6c4] px-2 py-0.5 font-label-md font-bold text-[#6b4e00]">
-                        {8 + i * 4} {t.mins} {t.away}
-                      </span>
-                      <span className="font-label-lg text-on-surface-variant">
-                        {i === 0 ? t.directLine : t.highFreq}
-                      </span>
-                    </p>
-                    {isTicket && (
-                      <span className="mt-md flex items-center justify-center gap-sm rounded-full bg-[#e8820e] px-4 py-2 font-body-md font-bold text-white">
-                        <span className="material-symbols-outlined text-[20px]">qr_code_2</span>
-                        {t.qrTicket}
-                        <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                      </span>
-                    )}
-                  </Link>
-                </li>
-              )
-            })}
+          <ul className="mt-lg grid grid-cols-1 gap-gutter lg:grid-cols-3" role="list">
+            {/* Modo Adulto Mayor */}
+            <li className="flex h-full flex-col rounded-2xl border border-outline-variant bg-surface-container-lowest p-lg shadow-sm">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fde2c4] text-[#9a5b00]">
+                <span className="material-symbols-outlined" aria-hidden="true">
+                  elderly
+                </span>
+              </span>
+              <h3 className="mt-md text-title-lg font-bold text-on-surface">{t.elderlyTitle}</h3>
+              <p className="mt-xs flex-1 font-body-md text-on-surface-variant">{t.elderlyDesc}</p>
+              <button
+                type="button"
+                onClick={activateElderly}
+                className="mt-md inline-flex items-center gap-xs self-start font-label-lg font-bold text-primary hover:underline focus-visible:outline-3"
+              >
+                {t.elderlyCta}
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                  open_in_new
+                </span>
+              </button>
+            </li>
+
+            {/* Turista */}
+            <li className="flex h-full flex-col rounded-2xl border border-outline-variant bg-surface-container-lowest p-lg shadow-sm">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#7fe0a6] text-[#0b4429]">
+                <span className="material-symbols-outlined" aria-hidden="true">
+                  map
+                </span>
+              </span>
+              <h3 className="mt-md text-title-lg font-bold text-on-surface">{t.touristTitle}</h3>
+              <p className="mt-xs flex-1 font-body-md text-on-surface-variant">{t.touristDesc}</p>
+              <button
+                type="button"
+                onClick={scrollToMap}
+                className="mt-md inline-flex items-center gap-xs self-start font-label-lg font-bold text-primary hover:underline focus-visible:outline-3"
+              >
+                {t.touristCta}
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                  explore
+                </span>
+              </button>
+            </li>
+
+            {/* Rutas Frecuentes */}
+            <li className="flex h-full flex-col rounded-2xl border border-outline-variant bg-surface-container-lowest p-lg shadow-sm">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
+                <span className="material-symbols-outlined" aria-hidden="true">
+                  star
+                </span>
+              </span>
+              <h3 className="mt-md text-title-lg font-bold text-on-surface">{t.favTitle}</h3>
+              <p className="mt-xs flex-1 font-body-md text-on-surface-variant">{t.favDesc}</p>
+              <p className="mt-sm font-label-md font-semibold text-on-surface-variant">
+                {t.favCount(favorites.length)}
+              </p>
+              <Link
+                to="/lineas"
+                className="mt-md inline-flex items-center gap-xs self-start font-label-lg font-bold text-primary hover:underline focus-visible:outline-3"
+              >
+                {t.favCta}
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                  bookmark
+                </span>
+              </Link>
+            </li>
           </ul>
-        </main>
-      </div>
+        </section>
 
-      <AccessibilityMenu />
+        {/* Mapa real de Manta */}
+        <section ref={mapRef} aria-labelledby="home-map" className="scroll-mt-4">
+          <h2 id="home-map" className="text-headline-lg font-bold text-on-surface">
+            {t.mapTitle}
+          </h2>
+          <p className="mt-xs font-body-md text-on-surface-variant">{t.mapHint}</p>
+          <div className="mt-md h-[24rem] w-full overflow-hidden rounded-2xl border border-outline-variant shadow-sm">
+            <MantaMap stops={mapStops} ariaLabel={t.mapTitle} />
+          </div>
+        </section>
+      </div>
     </div>
   )
 }

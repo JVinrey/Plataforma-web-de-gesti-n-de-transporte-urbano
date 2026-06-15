@@ -12,6 +12,7 @@ interface AuthState {
   loading: boolean
   signIn: (email: string, password: string) => Promise<AuthResult>
   signUp: (email: string, password: string, fullName: string) => Promise<AuthResult>
+  resetPassword: (email: string) => Promise<AuthResult>
   signOut: () => Promise<void>
 }
 
@@ -35,6 +36,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     })
     if (error) return { error: error.message }
     set({ user: data.user, session: data.session })
+    return { error: null }
+  },
+
+  resetPassword: async (email) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/login`,
+    })
+    if (error) return { error: error.message }
     return { error: null }
   },
 

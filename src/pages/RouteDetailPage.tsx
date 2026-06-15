@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { PassengerShell } from '../components/layout/PassengerShell'
 import { MantaMap } from '../components/map'
 import type { MapVehicle } from '../components/map'
 import { useDocumentTitle } from '../hooks/use-document-title'
@@ -68,16 +67,11 @@ export default function RouteDetailPage() {
   const isOnline = route?.status !== 'off_line'
 
   if (!route) {
-    return (
-      <PassengerShell activePath="/planificar-viaje">
-        <p className="mt-lg font-body-md text-on-surface-variant">Cargando ruta…</p>
-      </PassengerShell>
-    )
+    return <p className="mt-lg font-body-md text-on-surface-variant">Cargando ruta…</p>
   }
 
   return (
-    <PassengerShell activePath="/planificar-viaje" searchPlaceholder="Buscar paradas o líneas...">
-      <div className="flex flex-col gap-lg lg:h-[calc(100vh-9rem)] lg:flex-row">
+    <div className="flex flex-col gap-lg lg:h-[calc(100vh-9rem)] lg:flex-row">
         {/* Panel de la ruta */}
         <section
           aria-label={`Detalle de la línea ${route.code}`}
@@ -189,7 +183,6 @@ export default function RouteDetailPage() {
             </p>
           </div>
         </section>
-      </div>
-    </PassengerShell>
+    </div>
   )
 }

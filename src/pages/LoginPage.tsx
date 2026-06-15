@@ -8,11 +8,12 @@ export function LoginPage() {
 
   const navigate = useNavigate()
   const signIn = useAuthStore((state) => state.signIn)
+  const resetPassword = useAuthStore((state) => state.resetPassword)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(true)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -29,6 +30,7 @@ export function LoginPage() {
     }
 
     setError('')
+    setSuccess('')
     setSubmitting(true)
     const { error: authError } = await signIn(email.trim(), password)
     setSubmitting(false)
@@ -45,152 +47,220 @@ export function LoginPage() {
     navigate('/')
   }
 
+  const handlePasswordReset = async () => {
+    if (!email.trim()) {
+      setError('Ingresa tu correo electrónico para recuperar la contraseña.')
+      return
+    }
+
+    setError('')
+    setSuccess('')
+    setSubmitting(true)
+    const { error: resetError } = await resetPassword(email.trim())
+    setSubmitting(false)
+
+    if (resetError) {
+      setError(resetError)
+      return
+    }
+
+    setSuccess('Te enviamos un enlace de recuperación a tu correo electrónico.')
+  }
+
   return (
-    <section aria-labelledby="login-title" className="space-y-8">
-      <div className="space-y-3">
-        <h1 id="login-title" className="text-3xl font-bold text-gray-900 md:text-4xl">
-          Iniciar sesión
-        </h1>
-        <p className="max-w-2xl text-gray-700">
-          Accede al panel del sistema para gestionar rutas, seguimiento y tus preferencias.
-        </p>
-      </div>
+    <section aria-labelledby="login-title" className="w-full py-0">
+      <div className="grid min-h-[calc(100vh-10rem)] w-full overflow-hidden rounded-[1.75rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.10)] lg:grid-cols-[1fr_1fr] xl:min-h-[calc(100vh-11rem)]">
+        <aside className="relative isolate flex min-h-[22rem] flex-col justify-between overflow-hidden bg-[radial-gradient(circle_at_top_right,_rgba(56,189,248,0.28),_transparent_28%),linear-gradient(135deg,_#0b4f8a_0%,_#133d72_55%,_#0f5d9a_100%)] px-8 py-8 text-white sm:px-10 sm:py-10 lg:px-12 lg:py-12 xl:px-14 xl:py-14">
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center opacity-12" aria-hidden="true" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-transparent to-black/15" aria-hidden="true" />
 
-      <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <article className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="mb-6">
-            <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">Acceso seguro</p>
-            <h2 className="mt-1 text-2xl font-bold text-gray-900">Bienvenido de nuevo</h2>
-            <p className="mt-2 text-gray-700">Ingresa tus credenciales para acceder al panel de control.</p>
+          <div className="relative flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-full border border-white/30 bg-white/10">
+              <span className="material-symbols-outlined text-[20px]">directions_bus</span>
+            </div>
+            <span className="text-lg font-bold tracking-tight">TransitUrbano</span>
           </div>
 
-          {error && (
-            <div className="mb-5 rounded-md border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-800" role="alert" aria-live="polite">
-              {error}
-            </div>
-          )}
-
-          <form className="space-y-5" onSubmit={handleSubmit} noValidate>
-            <div>
-              <label htmlFor="email" className="mb-2 block text-sm font-semibold text-gray-900">
-                Correo electrónico
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="operador@manta.gov.ec"
-                autoComplete="email"
-                aria-required="true"
-                className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
-              />
-            </div>
-
-            <div>
-              <div className="mb-2 flex items-center justify-between gap-3">
-                <label htmlFor="password" className="block text-sm font-semibold text-gray-900">
-                  Contraseña
-                </label>
-                <button
-                  type="button"
-                  onClick={() => navigate('/register')}
-                  className="rounded text-sm font-medium text-blue-700 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-700"
-                >
-                  ¿Olvidaste tu contraseña?
-                </button>
-              </div>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  aria-required="true"
-                  className="w-full rounded-md border border-gray-300 px-4 py-3 pr-16 outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((value) => !value)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-700"
-                  aria-pressed={showPassword}
-                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                >
-                  {showPassword ? 'Ocultar' : 'Mostrar'}
-                </button>
-              </div>
-            </div>
-
-            <label className="flex items-center gap-3 text-sm font-medium text-gray-700">
-              <input
-                id="remember"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(event) => setRememberMe(event.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-blue-700 focus:ring-blue-700"
-                aria-label="Recordar sesión"
-              />
-              Recordar sesión
-            </label>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              aria-busy={submitting}
-              className="w-full rounded-md bg-blue-700 px-5 py-3 font-semibold text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {submitting ? 'Iniciando sesión…' : 'Iniciar sesión'}
-            </button>
-
-            <div className="relative flex items-center py-1">
-              <div className="flex-grow border-t border-gray-300" />
-              <span className="mx-3 text-sm font-semibold uppercase tracking-widest text-gray-500">o</span>
-              <div className="flex-grow border-t border-gray-300" />
-            </div>
-
-            <button type="button" onClick={() => navigate('/')} className="flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-5 py-3 font-semibold text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2" aria-label="Continuar con Google">
-              <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-              </svg>
-              Continúa con Google
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <button type="button" onClick={() => navigate('/')} className="rounded text-sm font-semibold text-blue-700 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-700">
-              Continuar como invitado
-            </button>
-          </div>
-        </article>
-
-        <aside className="rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm">
-          <div className="space-y-3">
-            <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">Consejos de acceso</p>
-            <h2 className="text-xl font-bold text-gray-900">Mantén tu sesión segura</h2>
-            <p className="text-gray-700">
-              Usa tu cuenta institucional para guardar preferencias, consultar rutas y revisar actividad reciente.
+          <div className="relative max-w-2xl space-y-6 xl:space-y-8">
+            <h1 id="login-title" className="max-w-2xl text-5xl font-black leading-[0.95] tracking-tight sm:text-6xl xl:text-7xl">
+              Tu ciudad,
+              <span className="block text-white/85">en movimiento.</span>
+            </h1>
+            <p className="max-w-2xl text-sm leading-7 text-white/85 sm:text-base xl:text-lg">
+              Gestiona rutas, monitorea el tráfico en tiempo real y optimiza la movilidad urbana con nuestra plataforma inteligente.
             </p>
           </div>
 
-          <div className="mt-6 space-y-3">
-            <div className="rounded-lg border border-gray-200 bg-white p-4">
-              <p className="text-sm font-semibold text-gray-900">Correo institucional</p>
-              <p className="mt-1 text-sm text-gray-700">Usa tu usuario de operador o administrador.</p>
+          <div className="relative rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm sm:p-5">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-full bg-[#78f0a4] text-[#0a5c2d]">
+                <span className="material-symbols-outlined text-[20px]">bolt</span>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/80">Estado del sistema</p>
+                <p className="text-sm text-white/90">Todas las rutas operando con normalidad.</p>
+              </div>
             </div>
-            <div className="rounded-lg border border-gray-200 bg-white p-4">
-              <p className="text-sm font-semibold text-gray-900">Acceso rápido</p>
-              <p className="mt-1 text-sm text-gray-700">Si solo quieres revisar información, vuelve al inicio o entra a rutas.</p>
-            </div>
-            <button type="button" onClick={() => navigate('/rutas')} className="w-full rounded-md bg-gray-900 px-4 py-3 font-semibold text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2">
-              Ir a rutas
-            </button>
           </div>
         </aside>
+
+        <article className="flex flex-col justify-center px-8 py-8 sm:px-10 lg:px-12 lg:py-12 xl:px-16">
+          <div className="mx-auto w-full max-w-3xl">
+            <div className="mb-8 space-y-2">
+              <h2 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">Bienvenido de nuevo</h2>
+              <p className="max-w-none text-sm leading-6 text-slate-600 sm:text-base">
+                Ingresa tus credenciales para acceder al panel de control.
+              </p>
+            </div>
+
+            {error && (
+              <div
+                className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
+                role="alert"
+                aria-live="polite"
+              >
+                {error}
+              </div>
+            )}
+
+            {success && (
+              <div
+                className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800"
+                role="status"
+                aria-live="polite"
+              >
+                {success}
+              </div>
+            )}
+
+            <form className="space-y-6" onSubmit={handleSubmit} noValidate>
+              <div className="space-y-2">
+                <label htmlFor="email" className="block text-sm font-semibold uppercase tracking-[0.15em] text-slate-700">
+                  Correo electrónico
+                </label>
+                <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-slate-300 bg-white px-5 py-4 transition-colors focus-within:border-blue-700 focus-within:ring-4 focus-within:ring-blue-100">
+                  <span className="material-symbols-outlined text-[22px] text-slate-500" aria-hidden="true">
+                    mail
+                  </span>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="operador@manta.gov.ec"
+                    autoComplete="email"
+                    aria-required="true"
+                    className="w-full bg-transparent text-base text-slate-950 outline-none placeholder:text-slate-400"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-3">
+                  <label htmlFor="password" className="block text-sm font-semibold uppercase tracking-[0.15em] text-red-600">
+                    Contraseña
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handlePasswordReset}
+                    className="text-sm font-semibold text-blue-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-2"
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </button>
+                </div>
+                <div className={`flex min-h-14 items-center gap-3 rounded-2xl border bg-white px-5 py-4 transition-colors focus-within:ring-4 ${error ? 'border-red-500 ring-red-100 focus-within:border-red-500 focus-within:ring-red-100' : 'border-slate-300 focus-within:border-blue-700 focus-within:ring-blue-100'}`}>
+                  <span className="material-symbols-outlined text-[22px] text-red-600" aria-hidden="true">
+                    lock
+                  </span>
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="••••••••••"
+                    autoComplete="current-password"
+                    aria-required="true"
+                    aria-invalid={Boolean(error)}
+                    className="w-full bg-transparent text-base text-slate-950 outline-none placeholder:text-slate-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((value) => !value)}
+                    className="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-2"
+                    aria-pressed={showPassword}
+                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  >
+                    <span className="material-symbols-outlined text-[22px]" aria-hidden="true">
+                      {showPassword ? 'visibility_off' : 'visibility'}
+                    </span>
+                  </button>
+                </div>
+                {error && (
+                  <p className="flex items-center gap-2 text-sm font-medium text-red-600">
+                    <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                      error
+                    </span>
+                    {error}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between gap-4">
+                <label className="flex items-center gap-3 text-sm text-slate-700">
+                  <input
+                    id="remember"
+                    type="checkbox"
+                    checked
+                    readOnly
+                    className="size-4 rounded border-slate-300 text-blue-700 focus:ring-blue-700"
+                    aria-label="Recordar sesión"
+                  />
+                  Recordar sesión
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                disabled={submitting}
+                aria-busy={submitting}
+                className="flex min-h-14 w-full items-center justify-center rounded-full bg-[#0e4f89] px-6 py-4 text-base font-semibold text-white shadow-sm transition-opacity hover:opacity-95 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {submitting ? 'Iniciando sesión…' : 'Iniciar sesión'}
+              </button>
+
+              <div className="relative flex items-center py-1">
+                <div className="flex-grow border-t border-slate-300" />
+                <span className="mx-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">o</span>
+                <div className="flex-grow border-t border-slate-300" />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="flex w-full items-center justify-center rounded-full border border-blue-100 bg-slate-50 px-6 py-4 text-sm font-semibold text-[#0e4f89] transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"
+              >
+                Continuar como invitado
+              </button>
+
+              <div className="border-t border-slate-200 pt-4 text-center text-sm text-slate-600">
+                ¿No tienes una cuenta?{' '}
+                <button
+                  type="button"
+                  onClick={() => navigate('/register')}
+                  className="font-semibold text-blue-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-2"
+                >
+                  Regístrate ahora
+                </button>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-6 pt-2 text-xs text-slate-500">
+                <span>Privacidad</span>
+                <span>Términos</span>
+                <span>Soporte Técnico</span>
+              </div>
+            </form>
+          </div>
+        </article>
       </div>
     </section>
   )
