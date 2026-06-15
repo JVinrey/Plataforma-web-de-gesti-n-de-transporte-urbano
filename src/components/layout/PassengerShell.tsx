@@ -6,7 +6,7 @@ import { AccessibilityMenu } from '../accessibility/AccessibilityMenu'
 const PRIMARY_LINKS = [
   { to: '/', label: 'Inicio', icon: 'home' },
   { to: '/planificar-viaje', label: 'Planificar viaje', icon: 'route' },
-  { to: '/lineas', label: 'Rutas', icon: 'directions_bus' },
+  { to: '/rutas', label: 'Rutas', icon: 'directions_bus' },
   { to: '/seguimiento-pago', label: 'Seguimiento', icon: 'my_location' },
   { to: '/billetera', label: 'Billetera', icon: 'account_balance_wallet' },
   { to: '/alertas', label: 'Alertas', icon: 'notifications' },
@@ -33,7 +33,7 @@ export function PassengerShell() {
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault()
     const q = search.trim()
-    navigate(q ? `/lineas?q=${encodeURIComponent(q)}` : '/lineas')
+    navigate(q ? `/rutas?q=${encodeURIComponent(q)}` : '/rutas')
   }
 
   return (

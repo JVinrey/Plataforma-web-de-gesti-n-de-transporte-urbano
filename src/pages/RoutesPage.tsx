@@ -1,33 +1,47 @@
 import { useMemo, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
+import { MantaMap } from '../components/map'
+import type { MapVehicle } from '../components/map'
 import { useDocumentTitle } from '../hooks/use-document-title'
-import { useRoutes } from '../hooks/use-transit-data'
-import type { RouteRow } from '../hooks/use-transit-data'
+import { useRouteStops, useRoutes, useVehicles } from '../hooks/use-transit-data'
+import { useFavoriteRoutes, useToggleFavorite } from '../hooks/use-profile-data'
+import { Spinner } from '../components/ui/Spinner'
 
-const STATUS_LABEL: Record<RouteRow['status'], { label: string; color: string }> = {
-  on_time: { label: 'A tiempo', color: 'bg-green-100 text-green-800' },
+type Capacity = 'low' | 'medium' | 'high'
+
+const CAPACITY: Record<Capacity, { label: string; color: string; icon: string }> = {
+  low: { label: 'Baja Ocupación', color: 'text-green-600', icon: 'group' },
+  medium: { label: 'Ocupación Media', color: 'text-amber-600', icon: 'groups' },
+  high: { label: 'Alta Ocupación', color: 'text-red-600', icon: 'groups_2' },
+}
+
+const STATUS_LABEL: Record<string, { label: string; color: string }> = {
+  on_time: { label: 'Servicio Normal', color: 'bg-green-100 text-green-800' },
   delayed: { label: 'Con retraso', color: 'bg-amber-100 text-amber-900' },
   off_line: { label: 'Fuera de servicio', color: 'bg-gray-200 text-gray-700' },
 }
 
+function capacityFromLoad(load: number): Capacity {
+  if (load < 50) return 'low'
+  if (load < 80) return 'medium'
+  return 'high'
+}
+
+function etaAt(minutesFromNow: number): string {
+  const d = new Date(Date.now() + minutesFromNow * 60000)
+  return d.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })
+}
+
 export function RoutesPage() {
-  useDocumentTitle('Búsqueda de rutas')
+  useDocumentTitle('Rutas disponibles')
 
   const { data: routes = [], isLoading, isError } = useRoutes()
   const [searchParams] = useSearchParams()
   const urlQuery = searchParams.get('q') ?? ''
-  const [query, setQuery] = useState(urlQuery)
 
-  // Sincroniza el filtro con el parámetro ?q= (p. ej. la búsqueda de la cabecera)
-  // sin usar un efecto: patrón recomendado de ajuste de estado en render.
-  const [prevUrlQuery, setPrevUrlQuery] = useState(urlQuery)
-  if (urlQuery !== prevUrlQuery) {
-    setPrevUrlQuery(urlQuery)
-    setQuery(urlQuery)
-  }
-
+  // Obtener la primera ruta del filtro o la primera disponible
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
+    const q = urlQuery.trim().toLowerCase()
     if (!q) return routes
     return routes.filter(
       (r) =>
@@ -36,105 +50,196 @@ export function RoutesPage() {
         (r.origin ?? '').toLowerCase().includes(q) ||
         (r.destination ?? '').toLowerCase().includes(q),
     )
-  }, [routes, query])
+  }, [routes, urlQuery])
 
-  return (
-    <section aria-labelledby="routes-title" className="space-y-6">
-      <div className="space-y-3">
-        <h1 id="routes-title" className="text-3xl font-bold text-gray-900 md:text-4xl">
-          Búsqueda de rutas
-        </h1>
-        <p className="max-w-2xl text-gray-700">
-          Consulta todas las rutas de la red de transporte de Manta y su estado en tiempo real.
-        </p>
+  const [selectedRouteId, setSelectedRouteId] = useState<string | null>(
+    filtered.length > 0 ? filtered[0].id : null,
+  )
+
+  const selectedRoute = routes.find((r) => r.id === selectedRouteId) ?? routes[0] ?? null
+  const { data: stops = [], isLoading: stopsLoading } = useRouteStops(selectedRoute?.id ?? null)
+  const { data: vehicles = [] } = useVehicles()
+  const { data: favorites = [] } = useFavoriteRoutes()
+  const toggleFavorite = useToggleFavorite()
+
+  const routeVehicles = selectedRoute ? vehicles.filter((v) => v.route_id === selectedRoute.id) : []
+  const avgLoad = routeVehicles.length
+    ? Math.round(routeVehicles.reduce((s, v) => s + v.load_percent, 0) / routeVehicles.length)
+    : 45
+
+  const mapVehicles = useMemo<MapVehicle[]>(
+    () =>
+      routeVehicles.map((v) => ({
+        id: v.id,
+        plate: v.plate,
+        lat: v.lat,
+        lng: v.lng,
+        status: v.status,
+        routeLabel: v.route ? `${v.route.code} · ${v.route.name}` : undefined,
+      })),
+    [routeVehicles],
+  )
+
+  const isFavorite = selectedRoute ? favorites.includes(selectedRoute.id) : false
+
+  if (isLoading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Spinner />
       </div>
+    )
+  }
 
-      <div className="max-w-md">
-        <label htmlFor="route-search" className="mb-2 block text-sm font-semibold text-gray-900">
-          Filtrar rutas
-        </label>
-        <input
-          id="route-search"
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Busca por código, nombre, origen o destino"
-          className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
-        />
-      </div>
-
-      {isLoading && (
-        <p className="text-gray-700" role="status" aria-live="polite">
-          Cargando rutas…
-        </p>
-      )}
-
-      {isError && (
+  if (isError || !selectedRoute) {
+    return (
+      <div className="space-y-6">
         <p className="text-red-800" role="alert">
           No se pudieron cargar las rutas. Inténtalo de nuevo más tarde.
         </p>
-      )}
+      </div>
+    )
+  }
 
-      {!isLoading && !isError && (
-        <>
-          <p className="text-sm text-gray-600" role="status" aria-live="polite">
+  return (
+    <div className="flex flex-col gap-6 lg:h-[calc(100vh-9rem)] lg:flex-row">
+      {/* Panel lateral izquierdo */}
+      <section
+        aria-label="Selector y detalle de ruta"
+        className="flex w-full shrink-0 flex-col lg:w-96"
+      >
+        {/* Selector de línea/ruta */}
+        <div className="space-y-3">
+          <label htmlFor="route-selector" className="block text-sm font-semibold text-gray-900">
+            Selecciona una línea
+          </label>
+          <select
+            id="route-selector"
+            value={selectedRouteId ?? ''}
+            onChange={(e) => setSelectedRouteId(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            aria-describedby="route-count"
+          >
+            <option value="">-- Selecciona una ruta --</option>
+            {filtered.map((route) => (
+              <option key={route.id} value={route.id}>
+                {route.code} · {route.name}
+              </option>
+            ))}
+          </select>
+          <p id="route-count" className="text-sm text-gray-600">
             {filtered.length} {filtered.length === 1 ? 'ruta encontrada' : 'rutas encontradas'}
           </p>
-          <ul className="grid gap-4 md:grid-cols-2" role="list">
-            {filtered.map((route) => {
-              const badge = STATUS_LABEL[route.status]
-              return (
-                <li key={route.id}>
-                  <article className="h-full rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">
-                          {route.code}
-                        </p>
-                        <h2 className="mt-1 text-xl font-bold text-gray-900">{route.name}</h2>
-                      </div>
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badge.color}`}>
-                        {badge.label}
-                      </span>
-                    </div>
+        </div>
 
-                    <p className="mt-3 text-gray-700">
-                      {route.origin ?? '—'} <span aria-hidden="true">→</span> {route.destination ?? '—'}
-                    </p>
+        {/* Información de la ruta seleccionada */}
+        {selectedRoute && (
+          <div className="mt-6 space-y-4 overflow-y-auto flex-1">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <span className="inline-block rounded-full bg-blue-100 px-3 py-1 text-sm font-bold text-blue-700">
+                  {selectedRoute.code}
+                </span>
+                <h2 className="mt-2 text-2xl font-bold text-gray-900">{selectedRoute.name}</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => toggleFavorite.mutate({ routeId: selectedRoute.id, isFavorite })}
+                aria-pressed={isFavorite}
+                aria-label={isFavorite ? 'Quitar de favoritas' : 'Guardar como favorita'}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white text-blue-700 transition-colors hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-blue-500"
+              >
+                <span
+                  className="material-symbols-outlined text-[20px]"
+                  style={isFavorite ? { fontVariationSettings: "'FILL' 1" } : undefined}
+                >
+                  star
+                </span>
+              </button>
+            </div>
 
-                    <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-700">
-                      <div>
-                        <dt className="inline font-semibold">Frecuencia: </dt>
-                        <dd className="inline">cada {route.frequency_minutes} min</dd>
-                      </div>
-                      <div>
-                        <dt className="inline font-semibold">Duración: </dt>
-                        <dd className="inline">{route.estimated_time_minutes} min</dd>
-                      </div>
-                      <div>
-                        <dt className="inline font-semibold">Tarifa: </dt>
-                        <dd className="inline">${route.cost.toFixed(2)}</dd>
-                      </div>
-                    </dl>
+            <p className="text-gray-700">
+              {selectedRoute.origin ?? '—'} <span aria-hidden="true">→</span> {selectedRoute.destination ?? '—'}
+            </p>
 
-                    <Link
-                      to={`/rutas/${route.id}`}
-                      className="mt-4 inline-block rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2"
-                    >
-                      Ver ruta y mapa
-                    </Link>
-                  </article>
-                </li>
-              )
-            })}
-            {filtered.length === 0 && (
-              <li className="text-gray-700">No hay rutas que coincidan con tu búsqueda.</li>
-            )}
-          </ul>
-        </>
-      )}
-    </section>
+            <div className={`rounded-lg px-4 py-3 font-semibold ${STATUS_LABEL[selectedRoute.status]?.color || ''}`}>
+              {STATUS_LABEL[selectedRoute.status]?.label || 'Estado desconocido'}
+            </div>
+
+            <dl className="grid grid-cols-2 gap-4 text-sm text-gray-700">
+              <div>
+                <dt className="font-semibold">Frecuencia</dt>
+                <dd>cada {selectedRoute.frequency_minutes} min</dd>
+              </div>
+              <div>
+                <dt className="font-semibold">Duración</dt>
+                <dd>{selectedRoute.estimated_time_minutes} min</dd>
+              </div>
+              <div>
+                <dt className="font-semibold">Tarifa</dt>
+                <dd>${selectedRoute.cost.toFixed(2)}</dd>
+              </div>
+              <div>
+                <dt className="font-semibold">Ocupación</dt>
+                <dd className="flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[16px]">groups</span>
+                  {avgLoad}%
+                </dd>
+              </div>
+            </dl>
+
+            {/* Paradas */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-bold uppercase tracking-wide text-gray-600">
+                Próximas paradas
+              </h3>
+              {stopsLoading ? (
+                <div className="flex justify-center py-4">
+                  <Spinner />
+                </div>
+              ) : (
+                <ol className="space-y-2" aria-label="Paradas del recorrido">
+                  {stops.map((stop, index) => {
+                    const cap = CAPACITY[capacityFromLoad(avgLoad + index * 5)]
+                    return (
+                      <li
+                        key={stop.id}
+                        className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white p-3"
+                      >
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
+                            {index + 1}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="font-semibold text-gray-900 truncate">{stop.name}</p>
+                            <p className={`flex items-center gap-1 text-xs font-semibold ${cap.color}`}>
+                              <span className="material-symbols-outlined text-[12px]">{cap.icon}</span>
+                              {cap.label}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="shrink-0 rounded bg-gray-100 px-2 py-1 text-xs font-bold text-gray-900">
+                          {etaAt(index * selectedRoute.frequency_minutes + 5)}
+                        </span>
+                      </li>
+                    )
+                  })}
+                  {stops.length === 0 && (
+                    <li className="text-gray-700 text-sm">Cargando paradas…</li>
+                  )}
+                </ol>
+              )}
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* Mapa a la derecha */}
+      <section aria-label="Mapa de la ruta" className="hidden flex-1 lg:block">
+        <MantaMap vehicles={mapVehicles} stops={stops} routePath={stops} />
+      </section>
+    </div>
   )
 }
 
 export default RoutesPage
+

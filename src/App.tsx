@@ -14,7 +14,6 @@ import {
   NotFoundPage,
   ProfilePage,
   RegisterPage,
-  RouteDetailPage,
   RoutePlanningPage,
   RoutesPage,
   SchedulesPage,
@@ -35,7 +34,7 @@ export function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/planificar-viaje" element={<TripPlannerPage />} />
-          <Route path="/lineas" element={<RoutesPage />} />
+          <Route path="/rutas" element={<RoutesPage />} />
           <Route path="/adulto-mayor" element={<ElderlyModePage />} />
           <Route path="/seguimiento-pago" element={<TrackingPaymentPage />} />
           <Route path="/historial" element={<HistoryNotificationsPage />} />
@@ -43,7 +42,6 @@ export function App() {
           <Route path="/alertas" element={<AlertsPage />} />
           <Route path="/calificar" element={<TripRatingPage />} />
           <Route path="/billetera" element={<WalletPage />} />
-          <Route path="/rutas/:id" element={<RouteDetailPage />} />
         </Route>
 
         {/* ZONE 2 — Sitio público (cabecera + nav superior) */}
