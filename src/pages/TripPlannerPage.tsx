@@ -1,18 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useDocumentTitle } from '../hooks/use-document-title';
 import { useRoutes, useRouteStops, useStops, useVehicles } from '../hooks/use-transit-data';
 import type { RouteRow } from '../hooks/use-transit-data';
+import { useAiContext, useAiRecommend } from '../hooks/use-ai';
+import { fastestRoute, filterRoutesByDestination } from '../utils/route-matching';
 import { MantaMap } from '../components/map';
 import type { MapVehicle } from '../components/map';
 
 type Congestion = 'baja' | 'media' | 'alta';
-
-/** Normaliza texto para búsqueda: minúsculas y sin acentos. */
-const DIACRITICS = new RegExp('[' + '̀' + '-' + 'ͯ' + ']', 'g');
-function norm(text: string): string {
-  return text.toLowerCase().normalize('NFD').replace(DIACRITICS, '');
-}
 
 interface RouteOption {
   id: string;
@@ -55,7 +51,10 @@ const PAGE_BG = '#edf3fb';
 
 /**
  * TripPlannerPage — Planificar Viaje (app de pasajeros)
- * Pantalla pública para buscar y comparar rutas en Manta.
+ * Pantalla pública para buscar y comparar rutas en Manta. Los candidatos se
+ * calculan de forma determinista (filtro por destino) y la Edge Function
+ * `ai-recommend` PRIORIZA y JUSTIFICA la mejor según tiempo, congestión,
+ * frecuencia y accesibilidad. Si la IA no responde, se recomienda la más rápida.
  * WCAG 2.2 AA: HTML semántico (1.3.1), navegable por teclado (2.1.1),
  * nombres/roles en controles custom (4.1.2) y contraste >= 4.5:1 (1.4.3).
  */
@@ -64,53 +63,81 @@ export default function TripPlannerPage() {
 
   const { data: routeRows = [], isLoading } = useRoutes();
   const [searchParams] = useSearchParams();
+  const context = useAiContext();
+  const recommend = useAiRecommend();
 
   const [origin, setOrigin] = useState(() => searchParams.get('origen') ?? 'Terminal Terrestre');
   const [destination, setDestination] = useState(() => searchParams.get('destino') ?? '');
   const [lowFloor, setLowFloor] = useState(true);
   const [selectedRoute, setSelectedRoute] = useState('');
+  // Recomendación de la IA: id elegido + justificación en lenguaje natural.
+  const [aiRec, setAiRec] = useState<{ id: string; reason: string } | null>(null);
 
-  // Construye las opciones de viaje a partir de las rutas reales disponibles
-  // (se excluyen las fuera de servicio) y FILTRA por el destino escrito
-  // (¿a dónde quieres ir?), recomendando la más rápida de las que coinciden.
-  const routeOptions = useMemo<RouteOption[]>(() => {
-    const available = routeRows.filter((r) => r.status !== 'off_line');
+  // Candidatos deterministas: rutas disponibles que coinciden con el destino.
+  const filtered = useMemo(
+    () => filterRoutesByDestination(routeRows, destination),
+    [routeRows, destination],
+  );
+  const filteredKey = useMemo(() => filtered.map((r) => r.id).join(','), [filtered]);
+  const localFastestId = useMemo(() => fastestRoute(filtered)?.id ?? '', [filtered]);
 
-    // Términos de búsqueda del destino con más de 2 caracteres.
-    const terms = norm(destination)
-      .split(/[\s,]+/)
-      .filter((w) => w.length > 2);
-
-    const matches = (r: RouteRow) => {
-      if (terms.length === 0) return true;
-      const hay = norm(`${r.code} ${r.name} ${r.origin ?? ''} ${r.destination ?? ''}`);
-      return terms.some((w) => hay.includes(w));
-    };
-
-    const filtered = available.filter(matches);
-    const fastest = filtered.reduce<RouteRow | null>(
-      (best, r) => (!best || r.estimated_time_minutes < best.estimated_time_minutes ? r : best),
-      null,
-    );
-    return filtered.map((r) => ({
+  // Pide a la IA que priorice/justifique entre los candidatos (con debounce).
+  useEffect(() => {
+    setAiRec(null);
+    const term = destination.trim();
+    if (!term || filtered.length < 2) return;
+    const candidates = filtered.map((r) => ({
       id: r.id,
+      code: r.code,
+      name: r.name,
       durationMin: r.estimated_time_minutes,
-      arrival: arrivalIn(r.estimated_time_minutes),
-      cost: `$${r.cost.toFixed(2)}`,
+      cost: r.cost,
       congestion: congestionFromStatus(r.status),
-      line: r.code,
-      lineTone: r.id === fastest?.id ? 'primary' : 'soft',
-      walkMin: Math.max(2, Math.round(r.frequency_minutes / 3)),
-      recommended: r.id === fastest?.id,
+      frequencyMin: r.frequency_minutes,
     }));
-  }, [routeRows, destination]);
+    const handle = setTimeout(() => {
+      recommend.mutate(
+        { origin, destination: term, candidates, lowFloorPreferred: lowFloor, context },
+        {
+          onSuccess: (res) => {
+            if (candidates.some((c) => c.id === res.recommendedId)) {
+              setAiRec({ id: res.recommendedId, reason: res.reason });
+            }
+          },
+          onError: () => setAiRec(null),
+        },
+      );
+    }, 600);
+    return () => clearTimeout(handle);
+    // origin/lowFloor/context se leen al disparar; el efecto se reevalúa con el destino y los candidatos.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [destination, filteredKey, lowFloor]);
+
+  // Id recomendado efectivo: el de la IA si sigue siendo válido, o el más rápido.
+  const recommendedId =
+    aiRec && filtered.some((r) => r.id === aiRec.id) ? aiRec.id : localFastestId;
+
+  const routeOptions = useMemo<RouteOption[]>(
+    () =>
+      filtered
+        .map((r) => ({
+          id: r.id,
+          durationMin: r.estimated_time_minutes,
+          arrival: arrivalIn(r.estimated_time_minutes),
+          cost: `$${r.cost.toFixed(2)}`,
+          congestion: congestionFromStatus(r.status),
+          line: r.code,
+          lineTone: r.id === recommendedId ? 'primary' : 'soft',
+          walkMin: Math.max(2, Math.round(r.frequency_minutes / 3)),
+          recommended: r.id === recommendedId,
+        }))
+        // La ruta recomendada por la IA siempre va de primera.
+        .sort((a, b) => Number(b.recommended) - Number(a.recommended)),
+    [filtered, recommendedId],
+  );
 
   // Selección efectiva: la elegida por el usuario o la ruta recomendada por defecto.
-  const effectiveRoute =
-    selectedRoute ||
-    routeOptions.find((o) => o.recommended)?.id ||
-    routeOptions[0]?.id ||
-    '';
+  const effectiveRoute = selectedRoute || recommendedId || routeOptions[0]?.id || '';
 
   // Datos reales para el mapa: paradas del recorrido seleccionado, toda la
   // red (cuando no hay selección) y vehículos en vivo de esa línea.
@@ -298,10 +325,19 @@ export default function TripPlannerPage() {
                 : 'No hay rutas disponibles en este momento.'}
             </p>
           )}
+          {recommend.isPending && (
+            <p className="mt-md flex items-center gap-xs text-body-md text-on-surface-variant" role="status" aria-live="polite">
+              <span className="material-symbols-outlined animate-spin text-[18px]" aria-hidden="true">
+                progress_activity
+              </span>
+              La IA está analizando la mejor ruta…
+            </p>
+          )}
           <ul className="mt-md space-y-md" role="list">
             {routeOptions.map((opt) => {
               const badge = CONGESTION_BADGE[opt.congestion];
               const isSelected = opt.id === effectiveRoute;
+              const showReason = opt.recommended && aiRec?.id === opt.id && aiRec.reason;
               return (
                 <li key={opt.id} className="relative">
                   {opt.recommended && (
@@ -359,6 +395,15 @@ export default function TripPlannerPage() {
                         {opt.walkMin} min
                       </span>
                     </div>
+                    {/* Justificación en lenguaje natural generada por la IA */}
+                    {showReason && (
+                      <p className="mt-md flex items-start gap-xs rounded-lg bg-secondary-container px-3 py-2 font-label-lg text-on-secondary-container">
+                        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                          auto_awesome
+                        </span>
+                        <span>{aiRec.reason}</span>
+                      </p>
+                    )}
                   </button>
                 </li>
               );

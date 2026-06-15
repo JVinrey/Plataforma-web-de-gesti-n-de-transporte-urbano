@@ -2,14 +2,17 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { useRoutes } from '../hooks/use-transit-data'
-import type { RouteRow } from '../hooks/use-transit-data'
+import { useAiChat, useAiContext } from '../hooks/use-ai'
+import { localChatFallback } from '../utils/chat-reply'
+import type { ChatTurn } from '../types/ai'
 
 // =====================================================================
 // AssistantPage — Asistente TransitUrbano (chat).
-// Asistente basado en reglas que consulta las RUTAS REALES de Supabase
-// para responder sobre líneas, tarifas, horarios y frecuencias en Manta.
-// WCAG 2.2 AA: región de log con aria-live, controles etiquetados,
-// navegación por teclado y contraste >= 4.5:1.
+// Asistente con IA REAL: envía el mensaje a la Edge Function `ai-chat`
+// (Hugging Face + datos reales de Supabase) y muestra la respuesta. Si el
+// backend no responde, cae a una respuesta determinista local.
+// WCAG 2.2 AA: región de log con aria-live, estado "escribiendo" anunciado,
+// controles etiquetados, navegación por teclado y contraste >= 4.5:1.
 // =====================================================================
 
 interface ChatMessage {
@@ -27,82 +30,11 @@ let counter = 0
 const nextId = () => `m${counter++}`
 const nowTime = () => new Date().toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })
 
-/** Normaliza texto: minúsculas y sin acentos (regex construido en runtime). */
-const DIACRITICS = new RegExp('[' + '\u0300' + '-' + '\u036f' + ']', 'g')
-function norm(text: string): string {
-  return text.toLowerCase().normalize('NFD').replace(DIACRITICS, '')
-}
-
-/** Genera la respuesta del asistente a partir de las rutas reales. */
-function buildReply(input: string, routes: RouteRow[]): Omit<ChatMessage, 'time'> {
-  const q = norm(input)
-
-  const available = routes.filter((r) => r.status !== 'off_line')
-
-  // Coincidencia por código de línea o por nombre/destino mencionado.
-  const matched = routes.find((r) => {
-    const hay = norm(`${r.code} ${r.name} ${r.origin ?? ''} ${r.destination ?? ''}`)
-    const words = q.split(/\s+/).filter((w) => w.length > 3)
-    return words.some((w) => hay.includes(w))
-  })
-
-  if (/cuanto|tarifa|precio|cuesta|valor|pasaje/.test(q)) {
-    const cost = available[0]?.cost ?? 0.35
-    return {
-      id: nextId(),
-      from: 'bot',
-      text: `El pasaje urbano en Manta cuesta $${cost.toFixed(2)}. Puedes pagarlo en efectivo o con tu Ticket QR digital desde la app.`,
-    }
-  }
-
-  if (/horario|frecuencia|cada cuanto|hora|sale|llega/.test(q)) {
-    const r = matched ?? available[0]
-    if (r) {
-      return {
-        id: nextId(),
-        from: 'bot',
-        text: `La línea ${r.code} (${r.name}) pasa cada ${r.frequency_minutes} minutos aprox. y el recorrido completo toma unos ${r.estimated_time_minutes} minutos. El servicio opera de 05:30 a 22:00.`,
-        routeCard: { code: r.code, name: r.name, id: r.id },
-      }
-    }
-  }
-
-  if (/que rutas|cuales rutas|lineas|rutas hay|listado|lista/.test(q)) {
-    const top = available.slice(0, 6).map((r) => `${r.code} (${r.name})`).join(', ')
-    return {
-      id: nextId(),
-      from: 'bot',
-      text: `Actualmente operan ${available.length} líneas en Manta. Algunas son: ${top}. Escríbeme el nombre de un lugar y te digo qué bus tomar.`,
-    }
-  }
-
-  if (/ayuda|help|que puedes|como funciona/.test(q)) {
-    return {
-      id: nextId(),
-      from: 'bot',
-      text: 'Puedo ayudarte a encontrar rutas, ver tarifas y horarios. Prueba con: "¿Qué bus me lleva al Terminal Terrestre?", "¿Cuánto cuesta el pasaje?" o "Horarios de la línea L1".',
-    }
-  }
-
-  if (matched) {
-    return {
-      id: nextId(),
-      from: 'bot',
-      text: `La mejor opción es la línea ${matched.code} (${matched.name}). El recorrido dura aprox. ${matched.estimated_time_minutes} minutos y pasa cada ${matched.frequency_minutes} minutos. ¿Quieres ver el recorrido en el mapa?`,
-      routeCard: { code: matched.code, name: matched.name, id: matched.id },
-    }
-  }
-
-  return {
-    id: nextId(),
-    from: 'bot',
-    text: 'No encontré una línea para ese destino. Intenta con un punto de referencia conocido (Terminal Terrestre, Playa El Murciélago, ULEAM, Tarqui...) o pregunta "¿Qué rutas hay?".',
-  }
-}
-
 export default function AssistantPage() {
   useDocumentTitle('Asistente AI')
   const { data: routes = [] } = useRoutes()
+  const chat = useAiChat()
+  const context = useAiContext()
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: nextId(),
@@ -114,19 +46,54 @@ export default function AssistantPage() {
   const [draft, setDraft] = useState('')
   const [largeText, setLargeText] = useState(false)
   const logRef = useRef<HTMLDivElement>(null)
+  const pending = chat.isPending
 
-  const send = (text: string) => {
+  const send = async (text: string) => {
     const trimmed = text.trim()
-    if (!trimmed) return
+    if (!trimmed || pending) return
     const userMsg: ChatMessage = { id: nextId(), from: 'user', text: trimmed, time: nowTime() }
-    const reply: ChatMessage = { ...buildReply(trimmed, routes), time: nowTime() }
-    setMessages((prev) => [...prev, userMsg, reply])
+    // Historial previo (sin el mensaje recién agregado) para dar contexto al modelo.
+    const history: ChatTurn[] = messages
+      .slice(-6)
+      .map((m) => ({ from: m.from, text: m.text }))
+    setMessages((prev) => [...prev, userMsg])
     setDraft('')
+
+    try {
+      const res = await chat.mutateAsync({ message: trimmed, history, context })
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: nextId(),
+          from: 'bot',
+          text: res.reply,
+          time: nowTime(),
+          routeCard: res.routeCard
+            ? { code: res.routeCard.code, name: res.routeCard.name, id: res.routeCard.id }
+            : undefined,
+        },
+      ])
+    } catch {
+      // Última red de seguridad: respuesta local determinista.
+      const fb = localChatFallback(trimmed, routes)
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: nextId(),
+          from: 'bot',
+          text: fb.reply,
+          time: nowTime(),
+          routeCard: fb.routeCard
+            ? { code: fb.routeCard.code, name: fb.routeCard.name, id: fb.routeCard.id }
+            : undefined,
+        },
+      ])
+    }
   }
 
   useEffect(() => {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: 'smooth' })
-  }, [messages])
+  }, [messages, pending])
 
   const textScale = useMemo(() => (largeText ? 'text-lg' : 'font-body-md'), [largeText])
   const lastUserIndex = useMemo(() => messages.map((m) => m.from).lastIndexOf('user'), [messages])
@@ -149,7 +116,9 @@ export default function AssistantPage() {
               </span>
               <div>
                 <p className="font-body-md font-bold text-on-surface">Asistente TransitUrbano</p>
-                <p className="font-label-md font-semibold uppercase tracking-wide text-secondary">En línea</p>
+                <p className="font-label-md font-semibold uppercase tracking-wide text-secondary">
+                  {pending ? 'Escribiendo…' : 'En línea'}
+                </p>
               </div>
             </div>
             <button
@@ -223,6 +192,19 @@ export default function AssistantPage() {
                 </div>
               ),
             )}
+            {/* Indicador "escribiendo" mientras el asistente responde */}
+            {pending && (
+              <div className="flex max-w-[85%] items-start gap-sm" aria-hidden="true">
+                <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary">
+                  <span className="material-symbols-outlined text-[18px]">smart_toy</span>
+                </span>
+                <div className="flex items-center gap-1 rounded-2xl rounded-tl-sm bg-primary px-4 py-3 text-on-primary">
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-on-primary [animation-delay:-0.3s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-on-primary [animation-delay:-0.15s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-on-primary" />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Sugerencias rápidas */}
@@ -232,7 +214,8 @@ export default function AssistantPage() {
                 key={q}
                 type="button"
                 onClick={() => send(q)}
-                className="rounded-full bg-primary-container px-4 py-2 font-label-lg font-medium text-on-primary-container transition-opacity hover:opacity-90 focus-visible:outline-3"
+                disabled={pending}
+                className="rounded-full bg-primary-container px-4 py-2 font-label-lg font-medium text-on-primary-container transition-opacity hover:opacity-90 focus-visible:outline-3 disabled:opacity-50"
               >
                 {q}
               </button>
@@ -260,7 +243,8 @@ export default function AssistantPage() {
             />
             <button
               type="submit"
-              className="flex h-11 w-11 items-center justify-center rounded-full text-primary transition-colors hover:bg-surface-container focus-visible:outline-3"
+              disabled={pending}
+              className="flex h-11 w-11 items-center justify-center rounded-full text-primary transition-colors hover:bg-surface-container focus-visible:outline-3 disabled:opacity-50"
               aria-label="Enviar mensaje"
             >
               <span className="material-symbols-outlined">send</span>
