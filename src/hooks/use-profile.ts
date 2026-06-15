@@ -11,12 +11,23 @@ export type ProfileRow = Tables<'profiles'>
  */
 export function useProfile() {
   const userId = useAuthStore((state) => state.user?.id)
+  const isDemoAdmin = userId === 'demo-admin'
 
   return useQuery({
     queryKey: ['profile', userId],
     enabled: Boolean(userId),
     queryFn: async (): Promise<ProfileRow | null> => {
       if (!userId) return null
+      if (isDemoAdmin) {
+        return {
+          id: userId,
+          full_name: 'Administradora General',
+          email: 'admin@manta.gov.ec',
+          user_type: 'admin',
+          accessibility_preferences: {},
+          created_at: new Date().toISOString(),
+        }
+      }
       const { data, error } = await supabase
         .from('profiles')
         .select('*')

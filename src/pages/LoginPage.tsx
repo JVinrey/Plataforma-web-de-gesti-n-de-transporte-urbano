@@ -1,13 +1,14 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDocumentTitle } from '../hooks/use-document-title'
-import { useAuthStore } from '../stores/auth-store'
+import { ADMIN_DEMO, useAuthStore } from '../stores/auth-store'
 
 export function LoginPage() {
   useDocumentTitle('Iniciar sesión')
 
   const navigate = useNavigate()
   const signIn = useAuthStore((state) => state.signIn)
+  const signUp = useAuthStore((state) => state.signUp)
   const resetPassword = useAuthStore((state) => state.resetPassword)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -15,6 +16,10 @@ export function LoginPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [submitting, setSubmitting] = useState(false)
+
+  const goToDestination = (userType?: string | null) => {
+    navigate(userType === 'admin' ? '/fleet' : '/')
+  }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -32,7 +37,7 @@ export function LoginPage() {
     setError('')
     setSuccess('')
     setSubmitting(true)
-    const { error: authError } = await signIn(email.trim(), password)
+    const { error: authError, userType } = await signIn(email.trim(), password)
     setSubmitting(false)
 
     if (authError) {
@@ -44,7 +49,53 @@ export function LoginPage() {
       return
     }
 
-    navigate('/')
+    goToDestination(userType)
+  }
+
+  const handleAdminAccess = async () => {
+    setError('')
+    setSuccess('')
+    setSubmitting(true)
+
+    const { error: signInError, userType } = await signIn(ADMIN_DEMO.email, ADMIN_DEMO.password)
+
+    if (!signInError) {
+      setSubmitting(false)
+      goToDestination(userType)
+      return
+    }
+
+    if (signInError !== 'Invalid login credentials') {
+      setSubmitting(false)
+      setError(signInError)
+      return
+    }
+
+    const { error: signUpError, userType: createdType } = await signUp(
+      ADMIN_DEMO.email,
+      ADMIN_DEMO.password,
+      ADMIN_DEMO.fullName,
+      ADMIN_DEMO.userType,
+    )
+
+    if (signUpError) {
+      setSubmitting(false)
+      setError(signUpError)
+      return
+    }
+
+    const { error: retryError, userType: retryType } = await signIn(
+      ADMIN_DEMO.email,
+      ADMIN_DEMO.password,
+    )
+    setSubmitting(false)
+
+    if (retryError) {
+      setSuccess('La cuenta administradora se creó en Supabase. Si el proveedor exige confirmación de email, revisa la bandeja antes de volver a entrar.')
+      return
+    }
+
+    goToDestination(retryType ?? createdType)
   }
 
   const handlePasswordReset = async () => {
@@ -111,6 +162,37 @@ export function LoginPage() {
               <p className="max-w-none text-sm leading-6 text-slate-600 sm:text-base">
                 Ingresa tus credenciales para acceder al panel de control.
               </p>
+            </div>
+
+            <div className="mb-6 rounded-2xl border border-blue-100 bg-blue-50/80 p-4 text-sm text-slate-700">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-slate-950">Acceso administrador demo</p>
+                  <p className="mt-1 text-slate-600">
+                    {ADMIN_DEMO.email} / {ADMIN_DEMO.password}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail(ADMIN_DEMO.email)
+                      setPassword(ADMIN_DEMO.password)
+                    }}
+                    className="rounded-full border border-blue-200 bg-white px-4 py-2 font-semibold text-blue-700 transition-colors hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-2"
+                  >
+                    Usar credenciales
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleAdminAccess}
+                    disabled={submitting}
+                    className="rounded-full bg-blue-700 px-4 py-2 font-semibold text-white transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {submitting ? 'Preparando admin…' : 'Crear/entrar como admin'}
+                  </button>
+                </div>
+              </div>
             </div>
 
             {error && (

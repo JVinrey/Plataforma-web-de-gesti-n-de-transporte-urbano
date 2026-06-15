@@ -2,6 +2,9 @@ import { useMemo, useState } from 'react'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { useDriverPerformance, usePerformanceStats } from '../hooks/use-transit-data'
 import type { DriverWithMetrics } from '../hooks/use-transit-data'
+import { useAuthStore } from '../stores/auth-store'
+import { useProfile } from '../hooks/use-profile'
+import { downloadCsv } from '../utils/download-csv'
 
 // =====================================================================
 // DriverPerformancePage — Análisis de Desempeño de Conductores.
@@ -43,14 +46,49 @@ export default function DriverPerformancePage() {
   useDocumentTitle('Desempeño de conductores')
   const { data: drivers = [], isLoading, isError } = useDriverPerformance()
   const { stats } = usePerformanceStats()
+  const user = useAuthStore((state) => state.user)
+  const { data: profile } = useProfile()
+  const [query, setQuery] = useState('')
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
+  const currentName = profile?.full_name ?? user?.user_metadata?.full_name ?? user?.email ?? 'Administración'
+
+  const filteredDrivers = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase()
+    if (!normalizedQuery) return drivers
+    return drivers.filter((driver) => {
+      const name = driver.driver?.full_name ?? ''
+      return (
+        name.toLowerCase().includes(normalizedQuery) ||
+        driver.driver_id.toLowerCase().includes(normalizedQuery) ||
+        (driver.route_code ?? '').toLowerCase().includes(normalizedQuery) ||
+        driver.role_title.toLowerCase().includes(normalizedQuery)
+      )
+    })
+  }, [drivers, query])
+
   const selected = useMemo<DriverWithMetrics | null>(
-    () => drivers.find((d) => d.driver_id === selectedId) ?? drivers[0] ?? null,
-    [drivers, selectedId],
+    () => filteredDrivers.find((d) => d.driver_id === selectedId) ?? filteredDrivers[0] ?? null,
+    [filteredDrivers, selectedId],
   )
 
-  const maxSafety = Math.max(100, ...drivers.flatMap((d) => d.monthlySafety))
+  const maxSafety = Math.max(100, ...filteredDrivers.flatMap((d) => d.monthlySafety))
+
+  const handleExport = () => {
+    downloadCsv(
+      'driver-performance.csv',
+      ['Driver', 'Route', 'Safety', 'Trips', 'Attendance', 'Status', 'Violations'],
+      filteredDrivers.map((driver) => [
+        driver.driver?.full_name ?? 'Conductor',
+        driver.route_code ?? 'Sin ruta',
+        driver.safety_score,
+        driver.trips,
+        `${driver.attendance}%`,
+        driver.status,
+        driver.violations,
+      ]),
+    )
+  }
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -65,6 +103,8 @@ export default function DriverPerformancePage() {
               placeholder="Buscar conductores, rutas o IDs..."
               type="search"
               aria-label="Buscar conductores, rutas o IDs"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
             />
           </div>
           <div className="flex items-center gap-md">
@@ -77,13 +117,13 @@ export default function DriverPerformancePage() {
             </button>
             <div className="mx-sm h-8 w-px bg-outline-variant" aria-hidden="true" />
             <div className="text-right">
-              <p className="font-label-lg font-semibold leading-tight text-on-surface">Alex Rivera</p>
+              <p className="font-label-lg font-semibold leading-tight text-on-surface">{currentName}</p>
               <p className="font-label-md uppercase tracking-wide text-on-surface-variant">
-                Gerente de Flota
+                {profile?.user_type ?? 'Administrador'}
               </p>
             </div>
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-container font-label-lg font-bold text-on-primary-container">
-              AR
+              {(currentName || 'AD').slice(0, 2).toUpperCase()}
             </div>
           </div>
         </header>
@@ -100,11 +140,19 @@ export default function DriverPerformancePage() {
           <div className="mb-lg flex flex-wrap items-end justify-between gap-md">
             <h2 className="text-headline-lg font-bold text-on-surface">Análisis de Desempeño</h2>
             <div className="flex gap-sm">
-              <button className="flex items-center gap-xs rounded-full border border-outline px-md py-xs font-label-lg text-on-surface-variant transition-colors hover:bg-surface-container focus:ring-2 focus:ring-primary">
+              <button
+                type="button"
+                className="flex items-center gap-xs rounded-full border border-outline px-md py-xs font-label-lg text-on-surface-variant transition-colors hover:bg-surface-container focus:ring-2 focus:ring-primary"
+                onClick={handleExport}
+              >
                 <span className="material-symbols-outlined text-[18px]">filter_list</span>
                 Todas las flotas
               </button>
-              <button className="flex items-center gap-xs rounded-lg bg-primary px-md py-sm font-label-lg font-semibold text-on-primary transition-opacity hover:opacity-90 focus:ring-2 focus:ring-primary focus:ring-offset-2">
+              <button
+                type="button"
+                onClick={handleExport}
+                className="flex items-center gap-xs rounded-lg bg-primary px-md py-sm font-label-lg font-semibold text-on-primary transition-opacity hover:opacity-90 focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              >
                 <span className="material-symbols-outlined text-[18px]">download</span>
                 Exportar Reporte
               </button>
@@ -190,7 +238,7 @@ export default function DriverPerformancePage() {
                       </tr>
                     )}
                     {!isLoading &&
-                      drivers.map((d, index) => {
+                      filteredDrivers.map((d, index) => {
                         const isSelected = selected?.driver_id === d.driver_id
                         const name = d.driver?.full_name ?? 'Conductor'
                         return (

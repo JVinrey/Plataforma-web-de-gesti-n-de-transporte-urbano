@@ -3,6 +3,9 @@ import { useRoutes, useRouteStops, useStops, useVehicles } from '../hooks/use-tr
 import type { RouteRow } from '../hooks/use-transit-data';
 import { MantaMap } from '../components/map';
 import type { MapVehicle } from '../components/map';
+import { useAuthStore } from '../stores/auth-store';
+import { useProfile } from '../hooks/use-profile';
+import { downloadCsv } from '../utils/download-csv';
 
 type RouteStatus = RouteRow['status']; // 'on_time' | 'delayed' | 'off_line'
 
@@ -152,6 +155,9 @@ function RouteEditPanel({ route, onClose, onUpdate, onSuspend }: RouteEditPanelP
 export default function RoutePlanningPage() {
   const { data: routeRows = [], isLoading } = useRoutes();
   const { data: vehicles = [] } = useVehicles();
+  const user = useAuthStore((state) => state.user);
+  const { data: profile } = useProfile();
+  const currentName = profile?.full_name ?? user?.user_metadata?.full_name ?? user?.email ?? 'Transit Manager'
 
   // Construye el modelo de vista de rutas a partir de los datos reales,
   // contando los buses asignados a cada ruta desde la tabla vehicles.
@@ -217,6 +223,30 @@ export default function RoutePlanningPage() {
     setStatusMessage(`Ruta ${selected.code} suspendida.`);
   };
 
+  const handleExport = () => {
+    downloadCsv(
+      'route-planning.csv',
+      ['Code', 'Name', 'Origin', 'Destination', 'Buses', 'Frequency', 'Status'],
+      ROUTES.map((route) => [
+        route.code,
+        route.name,
+        route.origin,
+        route.destination,
+        route.buses,
+        route.frequency,
+        route.status,
+      ]),
+    )
+  }
+
+  const handleAnalyzeCoverage = () => {
+    const totalVehicles = vehicles.length
+    const selectedVehicles = selected ? vehicles.filter((vehicle) => vehicle.route_id === selected.id).length : 0
+    setStatusMessage(
+      `Cobertura calculada: ${ROUTES.length} rutas, ${totalVehicles} vehículos y ${selectedVehicles} unidades en ${selected?.code ?? 'la selección actual'}.`,
+    )
+  }
+
   return (
     <div className="flex h-full flex-col overflow-hidden">
         {/* Header */}
@@ -249,11 +279,11 @@ export default function RoutePlanningPage() {
             </button>
             <div className="mx-sm h-8 w-px bg-outline-variant" aria-hidden="true" />
             <div className="flex items-center gap-sm">
-              <span className="font-label-lg font-semibold text-on-surface">Transit Manager</span>
+              <span className="font-label-lg font-semibold text-on-surface">{currentName}</span>
               <img
-                alt="Foto de perfil de la persona gestora de tránsito"
+                alt={`Foto de perfil de ${currentName}`}
                 className="h-8 w-8 rounded-full border border-outline-variant bg-surface-variant"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiQz8vvmmW2UYIRsxxzh2BNpa9sgzf4ITbhk2Ay8jCCNabjrDJ1nc9I7QIjm35zy9jBed8Ec4QxHTE3aGfX2nBc33nh6M_NUcgbXgdVlnPQFaIYJfmh_r6mNqcj6rZSVmccx3IPsLmTneLGgNYmggVUi7F2UNhi1-CcST3UMnPPi7pAVjnsXKLSOXi4bHjNqRXAHEJm_ug0Qg18TgEmUD9GePI9PSw4LxgXG3hLZkJsr3oGVb-9LYaatR5th-IRIKWF0KKjKnD3ko"
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(currentName)}&background=0B4F8A&color=fff`}
               />
             </div>
           </div>
@@ -278,12 +308,14 @@ export default function RoutePlanningPage() {
               <button
                 type="button"
                 className="flex items-center gap-xs rounded-lg border border-outline px-lg py-2 font-label-lg text-on-surface-variant transition-colors hover:bg-surface-container focus-visible:outline-3"
+                onClick={handleExport}
               >
                 <span className="material-symbols-outlined text-[18px]">download</span>
                 Export CSV
               </button>
               <button
                 type="button"
+                onClick={handleAnalyzeCoverage}
                 className="flex items-center gap-xs rounded-lg bg-primary px-lg py-2 font-label-lg text-on-primary transition-opacity hover:opacity-90 focus-visible:outline-3"
               >
                 <span className="material-symbols-outlined text-[18px]">insights</span>

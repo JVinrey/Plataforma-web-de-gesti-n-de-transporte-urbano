@@ -1,4 +1,7 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Navigate, Outlet } from 'react-router-dom'
+import { Spinner } from '../ui/Spinner'
+import { useProfile } from '../../hooks/use-profile'
+import { useAuthStore } from '../../stores/auth-store'
 
 // Navegación del panel de administración de flota.
 const ADMIN_LINKS = [
@@ -15,6 +18,27 @@ const ADMIN_LINKS = [
  * teclado, nombres/roles en controles y contraste >= 4.5:1.
  */
 export function AdminShell() {
+  const user = useAuthStore((state) => state.user)
+  const { data: profile, isLoading: profileLoading } = useProfile()
+  const displayName = profile?.full_name ?? user?.user_metadata?.full_name ?? user?.email ?? 'Administración'
+  const isAdmin = profile?.user_type === 'admin' || user?.user_metadata?.user_type === 'admin'
+
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  if (profileLoading && !profile) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background text-on-background">
+        <Spinner label="Cargando panel de administración" />
+      </div>
+    )
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/perfil" replace />
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-background text-on-background">
       {/* Skip-link WCAG 2.4.1 */}
@@ -38,7 +62,7 @@ export function AdminShell() {
           </div>
           <div>
             <p className="font-title-lg font-bold leading-none text-primary">Manta Transit</p>
-            <p className="font-label-lg text-on-surface-variant">Fleet Control Center</p>
+            <p className="font-label-lg text-on-surface-variant">{displayName}</p>
           </div>
         </div>
 

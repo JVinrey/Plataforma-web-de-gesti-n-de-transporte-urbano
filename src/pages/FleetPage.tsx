@@ -1,5 +1,9 @@
+import { useMemo, useState } from 'react';
 import { useFleetStats } from '../hooks/use-transit-data';
 import type { VehicleWithRelations } from '../hooks/use-transit-data';
+import { useAuthStore } from '../stores/auth-store';
+import { useProfile } from '../hooks/use-profile';
+import { downloadCsv } from '../utils/download-csv';
 
 /** Tiempo relativo legible a partir de una marca ISO. */
 function timeAgo(iso: string): string {
@@ -23,6 +27,41 @@ function timeAgo(iso: string): string {
  */
 export default function FleetPage() {
   const { data: vehicles = [], isLoading, isError, stats } = useFleetStats();
+  const user = useAuthStore((state) => state.user);
+  const { data: profile } = useProfile();
+  const [query, setQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | VehicleWithRelations['status']>('all');
+
+  const currentName = profile?.full_name ?? user?.user_metadata?.full_name ?? user?.email ?? 'Administrador';
+
+  const filteredVehicles = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    return vehicles.filter((vehicle) => {
+      const matchesQuery =
+        !normalizedQuery ||
+        vehicle.plate.toLowerCase().includes(normalizedQuery) ||
+        (vehicle.route?.code ?? '').toLowerCase().includes(normalizedQuery) ||
+        (vehicle.route?.name ?? '').toLowerCase().includes(normalizedQuery) ||
+        (vehicle.driver?.full_name ?? '').toLowerCase().includes(normalizedQuery);
+      const matchesStatus = statusFilter === 'all' || vehicle.status === statusFilter;
+      return matchesQuery && matchesStatus;
+    });
+  }, [query, statusFilter, vehicles]);
+
+  const handleExport = () => {
+    downloadCsv(
+      'fleet-registry.csv',
+      ['Vehicle ID', 'Route', 'Driver', 'Status', 'Load %', 'Last Update'],
+      filteredVehicles.map((vehicle) => [
+        `#${vehicle.plate}`,
+        vehicle.route ? `${vehicle.route.code} (${vehicle.route.name})` : 'Sin ruta asignada',
+        vehicle.driver?.full_name ?? 'Sin conductor',
+        vehicle.status,
+        vehicle.load_percent,
+        vehicle.last_update,
+      ]),
+    );
+  };
 
   const getStatusBadge = (status: VehicleWithRelations['status']) => {
     switch (status) {
@@ -51,6 +90,8 @@ export default function FleetPage() {
                 placeholder="Search fleet, routes, or drivers..."
                 type="text"
                 aria-label="Buscar flota, rutas o conductores"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
               />
             </div>
           </div>
@@ -64,12 +105,13 @@ export default function FleetPage() {
             </button>
             <div className="h-8 w-px bg-outline-variant mx-sm"></div>
             <div className="flex items-center gap-sm">
-              <span className="font-label-lg text-on-surface font-semibold">Admin Manager</span>
-              <img
-                alt="Manager Profile"
-                className="w-8 h-8 rounded-full bg-surface-variant border border-outline-variant"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiQz8vvmmW2UYIRsxxzh2BNpa9sgzf4ITbhk2Ay8jCCNabjrDJ1nc9I7QIjm35zy9jBed8Ec4QxHTE3aGfX2nBc33nh6M_NUcgbXgdVlnPQFaIYJfmh_r6mNqcj6rZSVmccx3IPsLmTneLGgNYmggVUi7F2UNhi1-CcST3UMnPPi7pAVjnsXKLSOXi4bHjNqRXAHEJm_ug0Qg18TgEmUD9GePI9PSw4LxgXG3hLZkJsr3oGVb-9LYaatR5th-IRIKWF0KKjKnD3ko"
-              />
+              <div className="text-right">
+                <p className="font-label-lg text-on-surface font-semibold">{currentName}</p>
+                <p className="text-[10px] uppercase tracking-wide text-on-surface-variant">{profile?.user_type ?? 'admin'}</p>
+              </div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-container text-xs font-bold text-on-primary-container">
+                {(currentName || 'AD').slice(0, 2).toUpperCase()}
+              </div>
             </div>
           </div>
         </header>
@@ -85,11 +127,23 @@ export default function FleetPage() {
               </p>
             </div>
             <div className="flex gap-sm">
-              <button className="px-md py-xs rounded-full border border-outline text-on-surface-variant font-label-lg flex items-center gap-xs hover:bg-surface-container transition-colors focus:ring-2 focus:ring-primary">
+              <button
+                className="px-md py-xs rounded-full border border-outline text-on-surface-variant font-label-lg flex items-center gap-xs hover:bg-surface-container transition-colors focus:ring-2 focus:ring-primary"
+                onClick={() => {
+                  const filters: Array<'all' | VehicleWithRelations['status']> = ['all', 'on_time', 'delayed', 'maintenance']
+                  const nextIndex = (filters.indexOf(statusFilter) + 1) % filters.length
+                  setStatusFilter(filters[nextIndex])
+                }}
+                type="button"
+              >
                 <span className="material-symbols-outlined text-[18px]">filter_list</span>
-                Filter
+                {statusFilter === 'all' ? 'Filter' : `Filter: ${statusFilter}`}
               </button>
-              <button className="px-md py-xs rounded-full border border-outline text-on-surface-variant font-label-lg flex items-center gap-xs hover:bg-surface-container transition-colors focus:ring-2 focus:ring-primary">
+              <button
+                className="px-md py-xs rounded-full border border-outline text-on-surface-variant font-label-lg flex items-center gap-xs hover:bg-surface-container transition-colors focus:ring-2 focus:ring-primary"
+                onClick={handleExport}
+                type="button"
+              >
                 <span className="material-symbols-outlined text-[18px]">download</span>
                 Export Reports
               </button>
@@ -223,7 +277,7 @@ export default function FleetPage() {
                       </td>
                     </tr>
                   )}
-                  {vehicles.map((vehicle) => {
+                  {filteredVehicles.map((vehicle) => {
                     const statusBadge = getStatusBadge(vehicle.status);
                     const vehicleLabel = `#${vehicle.plate}`;
                     const routeLabel = vehicle.route
@@ -279,7 +333,7 @@ export default function FleetPage() {
 
             <div className="p-md bg-surface-container-low border-t border-outline-variant flex justify-between items-center">
               <p className="font-label-lg text-on-surface-variant">
-                Showing {vehicles.length} of {stats.total} vehicles
+                Showing {filteredVehicles.length} of {stats.total} vehicles
               </p>
               <div className="flex gap-xs">
                 <button
@@ -303,6 +357,7 @@ export default function FleetPage() {
       <button
         className="fixed bottom-lg right-lg w-14 h-14 rounded-2xl bg-primary text-on-primary shadow-lg flex items-center justify-center hover:shadow-xl hover:scale-105 active:scale-95 transition-all z-[60] focus:ring-2 focus:ring-offset-2 focus:ring-primary"
         aria-label="Agregar nuevo vehículo"
+        type="button"
       >
         <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>
           add
