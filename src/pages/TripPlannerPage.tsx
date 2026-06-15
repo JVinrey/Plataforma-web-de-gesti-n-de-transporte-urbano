@@ -71,7 +71,9 @@ export default function TripPlannerPage() {
   const [lowFloor, setLowFloor] = useState(true);
   const [selectedRoute, setSelectedRoute] = useState('');
   // Recomendación de la IA: id elegido + justificación en lenguaje natural.
-  const [aiRec, setAiRec] = useState<{ id: string; reason: string } | null>(null);
+  const [aiRec, setAiRec] = useState<{ id: string; reason: string; destination: string } | null>(
+    null,
+  );
 
   // Candidatos deterministas: rutas disponibles que coinciden con el destino.
   const filtered = useMemo(
@@ -83,7 +85,6 @@ export default function TripPlannerPage() {
 
   // Pide a la IA que priorice/justifique entre los candidatos (con debounce).
   useEffect(() => {
-    setAiRec(null);
     const term = destination.trim();
     if (!term || filtered.length < 2) return;
     const candidates = filtered.map((r) => ({
@@ -101,7 +102,7 @@ export default function TripPlannerPage() {
         {
           onSuccess: (res) => {
             if (candidates.some((c) => c.id === res.recommendedId)) {
-              setAiRec({ id: res.recommendedId, reason: res.reason });
+              setAiRec({ id: res.recommendedId, reason: res.reason, destination: term });
             }
           },
           onError: () => setAiRec(null),
@@ -115,12 +116,14 @@ export default function TripPlannerPage() {
 
   // Id recomendado efectivo: el de la IA si sigue siendo válido, o el más rápido.
   const recommendedId =
-    aiRec && filtered.some((r) => r.id === aiRec.id) ? aiRec.id : localFastestId;
+    aiRec && aiRec.destination === destination.trim() && filtered.some((r) => r.id === aiRec.id)
+      ? aiRec.id
+      : localFastestId;
 
   const routeOptions = useMemo<RouteOption[]>(
     () =>
       filtered
-        .map((r) => ({
+        .map((r): RouteOption => ({
           id: r.id,
           durationMin: r.estimated_time_minutes,
           arrival: arrivalIn(r.estimated_time_minutes),

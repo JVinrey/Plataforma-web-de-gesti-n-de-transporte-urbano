@@ -111,6 +111,7 @@ export const UI_COPY: Record<Language, UiCopy> = {
       skipLink: 'Saltar al contenido principal',
       brand: 'Manta Transit',
       mainNavLabel: 'Navegación de administración',
+      navItems: [],
       adminLabel: 'Panel de administración',
       adminNavLabel: 'Navegación de administración',
       adminItems: [
@@ -193,6 +194,7 @@ export const UI_COPY: Record<Language, UiCopy> = {
       skipLink: 'Skip to main content',
       brand: 'Manta Transit',
       mainNavLabel: 'Administration navigation',
+      navItems: [],
       adminLabel: 'Administration panel',
       adminNavLabel: 'Administration navigation',
       adminItems: [
