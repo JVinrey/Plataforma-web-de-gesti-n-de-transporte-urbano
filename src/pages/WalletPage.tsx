@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useDocumentTitle } from '../hooks/use-document-title'
+import { Modal } from '../components/ui/Modal'
 import {
   usePaymentMethods,
   useTopUp,
@@ -43,8 +44,20 @@ export default function WalletPage() {
   const { data: methods = [] } = usePaymentMethods()
   const topUp = useTopUp()
   const [status, setStatus] = useState<string | null>(null)
+  // WCAG 3.3.4: el usuario revisa y confirma antes de ejecutar la recarga.
+  const [pendingAmount, setPendingAmount] = useState<number | null>(null)
 
+  // Pide confirmación en lugar de ejecutar la transacción directamente.
   const recharge = (amount: number) => {
+    setStatus(null)
+    setPendingAmount(amount)
+  }
+
+  // Ejecuta la recarga ya confirmada por el usuario.
+  const confirmRecharge = () => {
+    if (pendingAmount === null) return
+    const amount = pendingAmount
+    setPendingAmount(null)
     topUp.mutate(amount, {
       onSuccess: (newBalance) =>
         setStatus(`Recarga de $${amount.toFixed(2)} aplicada. Nuevo saldo: $${newBalance.toFixed(2)}.`),
@@ -220,6 +233,30 @@ export default function WalletPage() {
             </div>
           </section>
       </div>
+
+      {pendingAmount !== null && (
+        <Modal isOpen onClose={() => setPendingAmount(null)} title="Confirmar recarga">
+          <p className="font-body-md text-on-surface">
+            ¿Confirmar recarga de <strong>${pendingAmount.toFixed(2)}</strong> a tu billetera?
+          </p>
+          <div className="mt-lg flex justify-end gap-sm">
+            <button
+              type="button"
+              onClick={() => setPendingAmount(null)}
+              className="rounded-xl border border-outline-variant px-lg py-2.5 font-body-md font-semibold text-on-surface transition-colors hover:bg-surface-container focus-visible:outline-3"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={confirmRecharge}
+              className="rounded-xl bg-primary px-lg py-2.5 font-body-md font-bold text-on-primary transition-opacity hover:opacity-90 focus-visible:outline-3"
+            >
+              Confirmar recarga
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }

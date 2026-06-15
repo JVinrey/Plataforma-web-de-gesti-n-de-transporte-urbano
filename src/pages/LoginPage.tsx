@@ -43,7 +43,7 @@ export function LoginPage() {
     if (authError) {
       setError(
         authError === 'Invalid login credentials'
-          ? 'Correo o contraseña incorrectos.'
+          ? 'Correo o contraseña incorrectos. Si no recuerdas tu contraseña, usa el enlace "¿Olvidaste tu contraseña?" debajo del campo de contraseña.'
           : authError,
       )
       return
@@ -197,6 +197,7 @@ export function LoginPage() {
 
             {error && (
               <div
+                id="login-error"
                 className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
                 role="alert"
                 aria-live="polite"
@@ -220,7 +221,7 @@ export function LoginPage() {
                 <label htmlFor="email" className="block text-sm font-semibold uppercase tracking-[0.15em] text-slate-700">
                   Correo electrónico
                 </label>
-                <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-slate-300 bg-white px-5 py-4 transition-colors focus-within:border-blue-700 focus-within:ring-4 focus-within:ring-blue-100">
+                <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-slate-500 bg-white px-5 py-4 transition-colors focus-within:border-blue-700 focus-within:ring-4 focus-within:ring-blue-100">
                   <span className="material-symbols-outlined text-[22px] text-slate-500" aria-hidden="true">
                     mail
                   </span>
@@ -239,7 +240,12 @@ export function LoginPage() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-3">
-                  <label htmlFor="password" className="block text-sm font-semibold uppercase tracking-[0.15em] text-red-600">
+                  <label
+                    htmlFor="password"
+                    className={`block text-sm font-semibold uppercase tracking-[0.15em] ${
+                      error ? 'text-red-600' : 'text-slate-700'
+                    }`}
+                  >
                     Contraseña
                   </label>
                   <button
@@ -250,8 +256,8 @@ export function LoginPage() {
                     ¿Olvidaste tu contraseña?
                   </button>
                 </div>
-                <div className={`flex min-h-14 items-center gap-3 rounded-2xl border bg-white px-5 py-4 transition-colors focus-within:ring-4 ${error ? 'border-red-500 ring-red-100 focus-within:border-red-500 focus-within:ring-red-100' : 'border-slate-300 focus-within:border-blue-700 focus-within:ring-blue-100'}`}>
-                  <span className="material-symbols-outlined text-[22px] text-red-600" aria-hidden="true">
+                <div className={`flex min-h-14 items-center gap-3 rounded-2xl border bg-white px-5 py-4 transition-colors focus-within:ring-4 ${error ? 'border-red-500 ring-red-100 focus-within:border-red-500 focus-within:ring-red-100' : 'border-slate-500 focus-within:border-blue-700 focus-within:ring-blue-100'}`}>
+                  <span className={`material-symbols-outlined text-[22px] ${error ? 'text-red-600' : 'text-slate-500'}`} aria-hidden="true">
                     lock
                   </span>
                   <input
@@ -263,6 +269,7 @@ export function LoginPage() {
                     autoComplete="current-password"
                     aria-required="true"
                     aria-invalid={Boolean(error)}
+                    aria-describedby={error ? 'login-error' : undefined}
                     className="w-full bg-transparent text-base text-slate-950 outline-none placeholder:text-slate-400"
                   />
                   <button

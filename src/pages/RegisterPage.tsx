@@ -124,7 +124,7 @@ export function RegisterPage() {
                 <label htmlFor="fullName" className="block text-sm font-semibold uppercase tracking-[0.15em] text-slate-700">
                   Nombre completo
                 </label>
-                <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-slate-300 bg-white px-5 py-4 transition-colors focus-within:border-blue-700 focus-within:ring-4 focus-within:ring-blue-100">
+                <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-slate-500 bg-white px-5 py-4 transition-colors focus-within:border-blue-700 focus-within:ring-4 focus-within:ring-blue-100">
                   <span className="material-symbols-outlined text-[22px] text-slate-500" aria-hidden="true">
                     badge
                   </span>
@@ -145,7 +145,7 @@ export function RegisterPage() {
                 <label htmlFor="email" className="block text-sm font-semibold uppercase tracking-[0.15em] text-slate-700">
                   Correo electrónico
                 </label>
-                <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-slate-300 bg-white px-5 py-4 transition-colors focus-within:border-blue-700 focus-within:ring-4 focus-within:ring-blue-100">
+                <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-slate-500 bg-white px-5 py-4 transition-colors focus-within:border-blue-700 focus-within:ring-4 focus-within:ring-blue-100">
                   <span className="material-symbols-outlined text-[22px] text-slate-500" aria-hidden="true">
                     mail
                   </span>
@@ -166,7 +166,7 @@ export function RegisterPage() {
                 <label htmlFor="password" className="block text-sm font-semibold uppercase tracking-[0.15em] text-slate-700">
                   Contraseña
                 </label>
-                <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-slate-300 bg-white px-5 py-4 transition-colors focus-within:border-blue-700 focus-within:ring-4 focus-within:ring-blue-100">
+                <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-slate-500 bg-white px-5 py-4 transition-colors focus-within:border-blue-700 focus-within:ring-4 focus-within:ring-blue-100">
                   <span className="material-symbols-outlined text-[22px] text-slate-500" aria-hidden="true">
                     lock
                   </span>
@@ -202,7 +202,7 @@ export function RegisterPage() {
                 <label htmlFor="confirm" className="block text-sm font-semibold uppercase tracking-[0.15em] text-slate-700">
                   Confirmar contraseña
                 </label>
-                <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-slate-300 bg-white px-5 py-4 transition-colors focus-within:border-blue-700 focus-within:ring-4 focus-within:ring-blue-100">
+                <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-slate-500 bg-white px-5 py-4 transition-colors focus-within:border-blue-700 focus-within:ring-4 focus-within:ring-blue-100">
                   <span className="material-symbols-outlined text-[22px] text-slate-500" aria-hidden="true">
                     lock_reset
                   </span>

@@ -66,7 +66,7 @@ export function PassengerShell() {
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-full border-none bg-surface-container py-3 pl-11 pr-4 font-body-md focus:ring-2 focus:ring-primary"
+            className="w-full rounded-full border-none bg-surface-container py-3 pl-11 pr-4 font-body-md ring-1 ring-[#64748b]/60 focus:ring-2 focus:ring-primary"
             placeholder={copy.searchPlaceholder}
             aria-label={copy.searchPlaceholder}
           />
@@ -191,7 +191,7 @@ export function PassengerShell() {
         </aside>
 
         {/* Contenido */}
-        <main id="main-content" className="flex-1 overflow-y-auto px-lg pb-xl pt-lg" tabIndex={-1}>
+        <main id="main-content" className="flex-1 overflow-y-auto px-lg pb-20 pt-lg" tabIndex={-1}>
           <Outlet />
         </main>
       </div>

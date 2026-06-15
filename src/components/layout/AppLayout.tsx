@@ -51,7 +51,7 @@ export function AppLayout() {
         id="main-content"
         tabIndex={-1}
         className={cn(
-          'flex-1',
+          'flex-1 pb-20',
           isAuthPage ? 'w-full px-4 py-4' : 'mx-auto w-full max-w-6xl px-4 py-6',
         )}
       >

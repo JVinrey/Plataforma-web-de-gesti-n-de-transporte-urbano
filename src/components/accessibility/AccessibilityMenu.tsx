@@ -195,7 +195,10 @@ export function AccessibilityMenu() {
           </fieldset>
 
           <div className="mt-3 rounded-md border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
-            {copy.currentLanguageLabel}: <strong>{preferences.language === 'es' ? 'Español' : 'English'}</strong>
+            {copy.currentLanguageLabel}:{' '}
+            <strong lang={preferences.language === 'es' ? 'es' : 'en'}>
+              {preferences.language === 'es' ? 'Español' : 'English'}
+            </strong>
           </div>
 
           <button

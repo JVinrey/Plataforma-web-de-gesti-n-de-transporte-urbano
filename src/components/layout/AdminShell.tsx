@@ -90,7 +90,7 @@ export function AdminShell() {
       </aside>
 
       {/* Contenido principal */}
-      <main id="main-content" className="ml-64 flex-1 overflow-y-auto" tabIndex={-1}>
+      <main id="main-content" className="ml-64 flex-1 overflow-y-auto pb-20" tabIndex={-1}>
         <Outlet />
       </main>
     </div>
