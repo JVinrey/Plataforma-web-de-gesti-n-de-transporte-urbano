@@ -33,6 +33,7 @@ export function App() {
         <Route element={<PassengerShell />}>
           <Route index element={<GuestHomePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/planificar-viaje" element={<TripPlannerPage />} />
           <Route path="/lineas" element={<RoutesPage />} />
           <Route path="/adulto-mayor" element={<ElderlyModePage />} />
@@ -47,7 +48,6 @@ export function App() {
 
         {/* ZONE 2 — Sitio público (cabecera + nav superior) */}
         <Route element={<AppLayout />}>
-          <Route path="/register" element={<RegisterPage />} />
           <Route path="/rutas" element={<RoutesPage />} />
           <Route path="/viaje/:id" element={<TripPage />} />
           <Route path="/perfil" element={<ProfilePage />} />
