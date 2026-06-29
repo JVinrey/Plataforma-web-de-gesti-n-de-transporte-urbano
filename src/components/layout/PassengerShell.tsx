@@ -105,12 +105,13 @@ export function PassengerShell() {
         </div>
       </header>
 
-      {/* Cuerpo */}
+      {/* Cuerpo: el div externo atrapa el scroll para que fixed/portal funcionen
+           correctamente en todos los navegadores */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside
           className={[
-            'hidden shrink-0 flex-col overflow-hidden border-r border-outline-variant/40 pb-lg transition-[width] duration-300 ease-in-out md:flex',
+            'hidden shrink-0 flex-col overflow-y-auto border-r border-outline-variant/40 pb-lg transition-[width] duration-300 ease-in-out md:flex',
             isSidebarOpen ? 'w-72 px-lg lg:w-80' : 'w-24 px-3 lg:w-28',
           ].join(' ')}
         >
@@ -190,10 +191,14 @@ export function PassengerShell() {
           )}
         </aside>
 
-        {/* Contenido */}
-        <main id="main-content" className="flex-1 overflow-y-auto px-lg pb-20 pt-lg" tabIndex={-1}>
-          <Outlet />
-        </main>
+        {/* Contenido — overflow-y-auto en el <main> crea un containing block para
+             elementos fixed en algunos navegadores; lo movemos al div wrapper
+             que ya tiene overflow-hidden, y el main queda sin overflow propio */}
+        <div className="flex-1 overflow-y-auto">
+          <main id="main-content" className="px-lg pb-20 pt-lg" tabIndex={-1}>
+            <Outlet />
+          </main>
+        </div>
       </div>
 
       <AccessibilityMenu />

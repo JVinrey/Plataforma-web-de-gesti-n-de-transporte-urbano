@@ -66,7 +66,7 @@ export default function WalletPage() {
   }
 
   return (
-    <main id="main-content" className="mx-auto max-w-6xl">
+    <div className="mx-auto max-w-6xl">
       <h1 className="sr-only">Billetera</h1>
 
         <div className="grid grid-cols-1 gap-gutter lg:grid-cols-[1.6fr_1fr]">
@@ -257,6 +257,6 @@ export default function WalletPage() {
           </div>
         </Modal>
       )}
-    </main>
+    </div>
   )
 }
