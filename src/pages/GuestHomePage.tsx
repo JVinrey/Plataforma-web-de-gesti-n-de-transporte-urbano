@@ -491,7 +491,7 @@ export default function GuestHomePage() {
               {t.quickAccess}
             </h2>
             <Link
-              to="/lineas"
+              to="/rutas"
               className="flex items-center gap-xs font-label-lg font-bold text-primary hover:underline focus-visible:outline-3"
             >
               {t.seeAll}
@@ -557,7 +557,7 @@ export default function GuestHomePage() {
                 {t.favCount(favorites.length)}
               </p>
               <Link
-                to="/lineas"
+                to="/rutas"
                 className="mt-md inline-flex items-center gap-xs self-start font-label-lg font-bold text-primary hover:underline focus-visible:outline-3"
               >
                 {t.favCta}

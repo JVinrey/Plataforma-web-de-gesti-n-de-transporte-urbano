@@ -9,7 +9,7 @@ const NOTIFICATIONS = [
   {
     id: 'delay',
     title: 'Alerta de retraso',
-    detail: 'La ruta con mas demanda presenta congestion. Estimamos 15 min adicionales.',
+    detail: 'La ruta con más demanda presenta congestión. Estimamos 15 min adicionales.',
     time: '10 min',
     tone: 'border-amber-500 bg-amber-50 text-amber-950',
     icon: Bell,
@@ -49,7 +49,7 @@ export function HistoryNotificationsPage() {
       routes.slice(0, 5).map((route, index) => ({
         id: route.id,
         routeName: `${route.code}: ${route.name}`,
-        date: index === 0 ? 'Hoy, 08:45' : index === 1 ? 'Ayer, 18:15' : `Hace ${index + 1} dias`,
+        date: index === 0 ? 'Hoy, 08:45' : index === 1 ? 'Ayer, 18:15' : `Hace ${index + 1} días`,
         status: index === 4 ? 'planned' : 'completed',
         duration: route.estimated_time_minutes,
         cost: route.cost,
@@ -85,7 +85,7 @@ export function HistoryNotificationsPage() {
               <div className="flex-1">
                 <p className="text-sm font-black uppercase">Sugerencia</p>
                 <h2 className="text-lg font-bold">
-                  Basado en tus viajes, {bestRoute.code} es una buena opcion hoy.
+                  Basado en tus viajes, {bestRoute.code} es una buena opción hoy.
                 </h2>
               </div>
               <button
@@ -163,7 +163,7 @@ export function HistoryNotificationsPage() {
               onClick={markAllRead}
               className="rounded-md px-3 py-2 font-semibold text-primary hover:bg-surface-container"
             >
-              Marcar leidas
+              Marcar leídas
             </button>
           </div>
 
@@ -190,7 +190,7 @@ export function HistoryNotificationsPage() {
                           onClick={() => setReadNotifications((current) => [...current, id])}
                           className="mt-3 rounded-md bg-white px-3 py-2 text-sm font-bold text-gray-950 hover:bg-gray-100"
                         >
-                          Marcar como leida
+                          Marcar como leída
                         </button>
                       )}
                     </div>

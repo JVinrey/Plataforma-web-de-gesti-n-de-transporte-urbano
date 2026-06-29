@@ -436,7 +436,7 @@ export default function RoutePlanningPage() {
               {/* Map telemetry panel */}
               <section
                 aria-label="Mapa de telemetría de rutas en Manta"
-                className="relative h-[420px] overflow-hidden rounded-xl border border-outline-variant/40 shadow-sm"
+                className="relative h-[420px] rounded-xl border border-outline-variant/40 shadow-sm"
               >
                 {/* Layer chip */}
                 <div className="pointer-events-none absolute left-4 top-4 z-[500] flex items-center gap-xs rounded-lg bg-black/50 px-3 py-1.5 font-label-lg text-white backdrop-blur-sm">
@@ -444,18 +444,21 @@ export default function RoutePlanningPage() {
                   {selected ? `Ruta ${selected.code} · ${mapVehicles.length} buses` : 'Route Telemetry'}
                 </div>
 
-                <MantaMap
-                  routePath={routePath}
-                  stops={allStops}
-                  vehicles={mapVehicles}
-                  ariaLabel={
-                    selected
-                      ? `Mapa de telemetría de la ruta ${selected.code} en Manta`
-                      : 'Mapa de telemetría de la red de Manta'
-                  }
-                />
+                {/* El mapa vive en su propio contenedor con overflow-hidden para preservar
+                    los bordes redondeados sin cortar el panel de edición que flota sobre él */}
+                <div className="absolute inset-0 overflow-hidden rounded-xl">
+                  <MantaMap
+                    routePath={routePath}
+                    stops={allStops}
+                    vehicles={mapVehicles}
+                    ariaLabel={
+                      selected
+                        ? `Mapa de telemetría de la ruta ${selected.code} en Manta`
+                        : 'Mapa de telemetría de la red de Manta'
+                    }
+                  />
+                </div>
 
-                {/* Route edit card — keyed por ruta para reiniciar el formulario al cambiar */}
                 {panelOpen && selected && (
                   <RouteEditPanel
                     key={selected.id}

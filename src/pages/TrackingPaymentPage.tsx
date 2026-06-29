@@ -86,10 +86,15 @@ export function TrackingPaymentPage() {
             </label>
           </div>
 
+          {/* Notificación ETA — fuera del mapa para no ocultarlo */}
+          <div className="border-b border-amber-200 bg-amber-100 px-4 py-3 text-amber-950" role="status" aria-live="polite">
+            <span className="font-semibold">
+              Bus {firstVehicle?.plate ?? 'asignado'} llega en {eta} min.
+            </span>{' '}
+            Mantente cerca de una zona segura de espera.
+          </div>
+
           <div className="relative h-[34rem]">
-            <div className="absolute left-4 right-4 top-4 z-[500] rounded-lg border border-amber-300 bg-amber-100 px-4 py-3 text-amber-950 shadow-sm" role="status" aria-live="polite">
-              Bus {firstVehicle?.plate ?? 'asignado'} llega en {eta} min. Mantente cerca de una zona segura de espera.
-            </div>
             <MantaMap
               routePath={routePath}
               vehicles={mapVehicles}

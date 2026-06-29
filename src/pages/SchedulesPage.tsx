@@ -89,7 +89,7 @@ export default function SchedulesPage() {
   return (
     <div className="flex h-full flex-col overflow-hidden">
         {/* Header */}
-        <header className="fixed top-0 ml-64 right-0 bg-surface-bright border-b border-outline-variant shadow-sm flex items-center justify-between px-margin-desktop h-16 z-40" style={{ width: 'calc(100% - 16rem)' }}>
+        <header className="flex h-16 w-full shrink-0 items-center justify-between border-b border-outline-variant bg-surface-bright px-margin-desktop shadow-sm">
           <div className="flex items-center gap-lg flex-1">
             <div className="relative w-64">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-outline">
@@ -126,7 +126,7 @@ export default function SchedulesPage() {
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 mt-16 overflow-y-auto p-lg">
+        <div className="flex-1 overflow-y-auto p-lg">
           {/* Dashboard Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-lg gap-md">
             <div>
@@ -138,7 +138,11 @@ export default function SchedulesPage() {
                 <button
                   type="button"
                   onClick={() => setViewMode('timeline')}
-                  className="px-lg py-1.5 bg-white shadow-sm rounded-md font-label-lg text-primary focus:ring-2 focus:ring-primary"
+                  className={`px-lg py-1.5 rounded-md font-label-lg transition-colors focus:ring-2 focus:ring-primary ${
+                    viewMode === 'timeline'
+                      ? 'bg-white shadow-sm text-primary'
+                      : 'text-on-surface-variant hover:bg-surface-container-high'
+                  }`}
                   aria-pressed={viewMode === 'timeline'}
                 >
                   Timeline
@@ -146,7 +150,11 @@ export default function SchedulesPage() {
                 <button
                   type="button"
                   onClick={() => setViewMode('calendar')}
-                  className="px-lg py-1.5 text-on-surface-variant font-label-lg hover:bg-surface-container-high rounded-md transition-colors focus:ring-2 focus:ring-primary"
+                  className={`px-lg py-1.5 rounded-md font-label-lg transition-colors focus:ring-2 focus:ring-primary ${
+                    viewMode === 'calendar'
+                      ? 'bg-white shadow-sm text-primary'
+                      : 'text-on-surface-variant hover:bg-surface-container-high'
+                  }`}
                   aria-pressed={viewMode === 'calendar'}
                 >
                   Calendar
@@ -324,7 +332,7 @@ export default function SchedulesPage() {
                   </div>
                 </div>
               </div>
-              <button className="w-full py-2 bg-surface-container-highest text-on-surface-variant rounded-lg font-label-lg flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all mt-lg focus:ring-2 focus:ring-primary">
+              <button type="button" className="w-full py-2 bg-surface-container-highest text-on-surface-variant rounded-lg font-label-lg flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all mt-lg focus:ring-2 focus:ring-primary">
                 <span className="material-symbols-outlined text-[18px]">broadcast_on_personal</span>
                 Broadcast To Fleet
               </button>
