@@ -32,11 +32,11 @@ export function ElderlyModePage() {
   const delayedRoute = routes.find((route) => route.status === 'delayed')
 
   const startVoiceHelp = () => {
-    setMessage('Puedes decir tu destino o elegir un boton grande.')
+    setMessage('Puedes decir tu destino o elegir un botón grande.')
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel()
       window.speechSynthesis.speak(
-        new SpeechSynthesisUtterance('Dime a donde quieres ir o toca un destino frecuente.'),
+        new SpeechSynthesisUtterance('Dime a dónde quieres ir o toca un destino frecuente.'),
       )
     }
   }
@@ -49,17 +49,17 @@ export function ElderlyModePage() {
   }
 
   return (
-    <div className="-mx-lg -mt-lg min-h-full bg-[#f7fbff] text-gray-950">
+    <main id="main-content" className="-mx-lg -mt-lg min-h-full bg-[#f7fbff] text-gray-950">
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 lg:grid-cols-[1fr_22rem]">
         <section aria-labelledby="elderly-title" className="space-y-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="font-semibold uppercase text-green-800">Vista simplificada</p>
               <h1 id="elderly-title" className="mt-1 text-4xl font-black text-blue-950">
-                A donde quieres ir hoy?
+                ¿A dónde quieres ir hoy?
               </h1>
               <p className="mt-2 max-w-2xl text-xl text-gray-700">
-                Botones grandes, texto claro y ayuda por voz para viajar con mas confianza.
+                Botones grandes, texto claro y ayuda por voz para viajar con más confianza.
               </p>
             </div>
             <button
@@ -90,6 +90,7 @@ export function ElderlyModePage() {
                   value={destination}
                   onChange={(event) => setDestination(event.target.value)}
                   placeholder="Ejemplo: hospital, mercado, centro"
+                  autoComplete="street-address"
                   className="w-full border-0 text-xl font-semibold outline-none"
                 />
               </div>
@@ -131,11 +132,11 @@ export function ElderlyModePage() {
                 <h3 className="text-xl font-black text-gray-950">
                   {usualRoute ? `${usualRoute.code} sin retrasos` : 'Servicio activo'}
                 </h3>
-                <p className="mt-1 text-gray-700">Tu ruta recomendada esta disponible.</p>
+                <p className="mt-1 text-gray-700">Tu ruta recomendada está disponible.</p>
               </article>
               <article className="rounded-lg border-l-8 border-amber-600 bg-white p-4">
                 <h3 className="text-xl font-black text-gray-950">
-                  {delayedRoute ? `${delayedRoute.code} con retraso` : 'Camina con precaucion'}
+                  {delayedRoute ? `${delayedRoute.code} con retraso` : 'Camina con precaución'}
                 </h3>
                 <p className="mt-1 text-gray-700">
                   Revisa el seguimiento antes de salir hacia la parada.
@@ -145,7 +146,7 @@ export function ElderlyModePage() {
           </section>
         </section>
 
-        <aside className="space-y-4" aria-label="Ayuda rapida">
+        <aside className="space-y-4" aria-label="Ayuda rápida">
           <button
             type="button"
             onClick={startVoiceHelp}
@@ -156,7 +157,7 @@ export function ElderlyModePage() {
           </button>
           <button
             type="button"
-            onClick={() => setMessage('Se notifico a tu contacto de emergencia de demostracion.')}
+            onClick={() => setMessage('Se notificó a tu contacto de emergencia de demostración.')}
             className="flex min-h-32 w-full items-center justify-between rounded-lg bg-red-700 p-6 text-left text-white shadow-sm hover:bg-red-800"
           >
             <span>
@@ -173,7 +174,7 @@ export function ElderlyModePage() {
           </div>
         </aside>
       </div>
-    </div>
+    </main>
   )
 }
 

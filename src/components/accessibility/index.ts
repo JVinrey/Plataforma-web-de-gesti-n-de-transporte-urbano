@@ -1,3 +1,5 @@
 export * from './AccessibilityMenu'
 export * from './AccessibilityLanguageButton'
 export * from './AccessibilityContrastButton'
+export * from './AccessibilityAuditiveSection'
+export * from './AccessibilityVideoGuide'

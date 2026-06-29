@@ -152,6 +152,20 @@ export default function GuestHomePage() {
     }
   }, [lang])
 
+  // 1.2.2 — Sincronizar toggle global de subtítulos con el video 1
+  useEffect(() => {
+    const tracks = videoRef.current?.textTracks
+    if (!tracks) return
+    for (const track of Array.from(tracks)) {
+      if (track.kind === 'captions' || track.kind === 'subtitles') {
+        track.mode = preferences.showSubtitles ? 'showing' : (track.language === lang ? 'showing' : 'disabled')
+      }
+      if (track.kind === 'descriptions') {
+        track.mode = preferences.showAudioDescription ? 'showing' : 'disabled'
+      }
+    }
+  }, [preferences.showSubtitles, preferences.showAudioDescription, lang])
+
   const mapStops: MapStop[] = useMemo(
     () =>
       stops.map((s) => ({
@@ -191,7 +205,7 @@ export default function GuestHomePage() {
   }
 
   return (
-    <div className="flex w-full flex-col gap-10 pb-xl">
+    <main id="main-content" className="flex w-full flex-col gap-10 pb-xl">
       {/* Banner de servicio (en vivo, descartable) */}
       {delayedRoute && !bannerDismissed && (
         <div
@@ -258,6 +272,7 @@ export default function GuestHomePage() {
                     value={origin}
                     onChange={(e) => setOrigin(e.target.value)}
                     placeholder={t.originPlaceholder}
+                    autoComplete="street-address"
                     className="w-full bg-transparent font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none"
                   />
                 </div>
@@ -295,6 +310,7 @@ export default function GuestHomePage() {
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
                     placeholder={t.destinationPlaceholder}
+                    autoComplete="street-address"
                     className="w-full bg-transparent font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none"
                   />
                 </div>
@@ -369,6 +385,19 @@ export default function GuestHomePage() {
                       srcLang="en"
                       label="English"
                       default={lang === 'en'}
+                    />
+                    {/* 1.2.5 — Audiodescripción: misma pista de texto usada como descripción narrada */}
+                    <track
+                      kind="descriptions"
+                      src={PROMO_CAPTIONS_URL}
+                      srcLang="es"
+                      label="Descripción ES"
+                    />
+                    <track
+                      kind="descriptions"
+                      src={PROMO_CAPTIONS_EN_URL}
+                      srcLang="en"
+                      label="Description EN"
                     />
                     {t.videoFallback}
                   </video>
@@ -551,6 +580,5 @@ export default function GuestHomePage() {
           </div>
         </section>
       </div>
-    </div>
-  )
+    </main>)
 }

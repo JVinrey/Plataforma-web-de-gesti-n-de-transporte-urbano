@@ -50,6 +50,14 @@ type AccessibilityCopy = {
     dyslexiaFont: string
     reduceMotion: string
     narrator: string
+    noColorReliance: string
+    largeTargets: string
+    enhancedFocus: string
+    showHints: string
+    muteAll: string
+    showSubtitles: string
+    showAudioDescription: string
+    showTranscripts: string
   }
   textSizes: {
     small: string
@@ -141,6 +149,14 @@ export const UI_COPY: Record<Language, UiCopy> = {
         dyslexiaFont: 'Fuente para dislexia',
         reduceMotion: 'Reducir animaciones',
         narrator: 'Narrador / texto a voz',
+        noColorReliance: 'Sin dependencia de color',
+        largeTargets: 'Controles grandes (44px mín.)',
+        enhancedFocus: 'Indicador de foco mejorado',
+        showHints: 'Mostrar instrucciones de formularios',
+        muteAll: 'Silenciar todo el audio',
+        showSubtitles: 'Activar subtítulos',
+        showAudioDescription: 'Activar audiodescripción',
+        showTranscripts: 'Mostrar transcripciones',
       },
       textSizes: {
         small: 'Pequeño',
@@ -224,6 +240,14 @@ export const UI_COPY: Record<Language, UiCopy> = {
         dyslexiaFont: 'Dyslexia-friendly font',
         reduceMotion: 'Reduce motion',
         narrator: 'Narrator / text to speech',
+        noColorReliance: 'No color reliance',
+        largeTargets: 'Large controls (44px min.)',
+        enhancedFocus: 'Enhanced focus indicator',
+        showHints: 'Show form instructions',
+        muteAll: 'Mute all audio',
+        showSubtitles: 'Enable captions',
+        showAudioDescription: 'Enable audio description',
+        showTranscripts: 'Show transcripts',
       },
       textSizes: {
         small: 'Small',

@@ -21,6 +21,23 @@ interface StarRatingProps {
 /** Grupo de estrellas accesible (radiogroup, operable con flechas/teclado). */
 function StarRating({ label, value, onChange, size = 'sm' }: StarRatingProps) {
   const px = size === 'lg' ? 'text-[40px]' : 'text-[24px]'
+
+  const handleKeyDown = (e: React.KeyboardEvent, currentStar: number) => {
+    let nextStar = currentStar
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      nextStar = currentStar < 5 ? currentStar + 1 : 1
+      e.preventDefault()
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      nextStar = currentStar > 1 ? currentStar - 1 : 5
+      e.preventDefault()
+    }
+    if (nextStar !== currentStar) {
+      onChange(nextStar)
+      const btn = e.currentTarget.parentElement?.childNodes[nextStar - 1] as HTMLElement | undefined
+      btn?.focus()
+    }
+  }
+
   return (
     <div role="radiogroup" aria-label={label} className="flex items-center gap-xs">
       {[1, 2, 3, 4, 5].map((star) => (
@@ -29,8 +46,10 @@ function StarRating({ label, value, onChange, size = 'sm' }: StarRatingProps) {
           type="button"
           role="radio"
           aria-checked={value === star}
+          tabIndex={value === star || (value === 0 && star === 1) ? 0 : -1}
           aria-label={`${star} de 5 estrellas`}
           onClick={() => onChange(star)}
+          onKeyDown={(e) => handleKeyDown(e, star)}
           className="rounded p-0.5 transition-transform hover:scale-110 focus-visible:outline-3"
         >
           <span
@@ -101,7 +120,7 @@ export default function TripRatingPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-gutter">
+    <main id="main-content" className="mx-auto max-w-4xl space-y-gutter">
         {/* Encabezado del viaje */}
         <header className="flex items-center justify-between overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-lowest p-lg shadow-sm">
           <div>
@@ -235,6 +254,6 @@ export default function TripRatingPage() {
             </div>
           </form>
         )}
-    </div>
+    </main>
   )
 }

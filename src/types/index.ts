@@ -15,6 +15,14 @@ export interface AccessibilityPreferences {
   elderlyMode: boolean
   narrator: boolean
   language: Language
+  noColorReliance: boolean
+  muteAll: boolean
+  showSubtitles: boolean
+  showAudioDescription: boolean
+  showTranscripts: boolean
+  largeTargets: boolean
+  enhancedFocus: boolean
+  showHints: boolean
 }
 
 export interface User {

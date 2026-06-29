@@ -4,6 +4,7 @@ import { useDocumentTitle } from '../hooks/use-document-title'
 import { useProfile } from '../hooks/use-profile'
 import { useAuthStore } from '../stores/auth-store'
 import { useAccessibilityStore } from '../stores/accessibility-store'
+import { Modal } from '../components/ui/Modal'
 import {
   useAddLocation,
   useDeleteLocation,
@@ -98,6 +99,7 @@ export function ProfilePage() {
   const [adding, setAdding] = useState(false)
   const [newLabel, setNewLabel] = useState('')
   const [newAddress, setNewAddress] = useState('')
+  const [deletingLoc, setDeletingLoc] = useState<string | null>(null)
 
   const updateNotif = (key: 'push' | 'sms', value: boolean) => {
     const next = { ...notif, [key]: value }
@@ -133,7 +135,7 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <main id="main-content" className="mx-auto max-w-5xl space-y-6">
       {/* Tarjeta de identidad */}
       <section
         aria-labelledby="profile-title"
@@ -212,7 +214,7 @@ export function ProfilePage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => deleteLocation.mutate(loc.id)}
+                  onClick={() => setDeletingLoc(loc.id)}
                   className="rounded-lg p-2 text-on-surface-variant hover:bg-surface-container focus-visible:outline-3"
                   aria-label={`Eliminar ubicación ${loc.label}`}
                 >
@@ -236,6 +238,7 @@ export function ProfilePage() {
                   value={newLabel}
                   onChange={(e) => setNewLabel(e.target.value)}
                   placeholder="Ej. Universidad"
+                  autoComplete="off"
                   className="w-full rounded-md border border-outline px-3 py-2"
                 />
               </div>
@@ -248,6 +251,7 @@ export function ProfilePage() {
                   value={newAddress}
                   onChange={(e) => setNewAddress(e.target.value)}
                   placeholder="Ej. Av. Universitaria, ULEAM"
+                  autoComplete="street-address"
                   className="w-full rounded-md border border-outline px-3 py-2"
                 />
               </div>
@@ -368,7 +372,33 @@ export function ProfilePage() {
         )}
         <p className="text-sm text-on-surface-variant">Manta Mobility v4.2.0-stable</p>
       </div>
-    </div>
+      {deletingLoc && (
+        <Modal isOpen onClose={() => setDeletingLoc(null)} title="Eliminar ubicación">
+          <p className="font-body-md text-on-surface">
+            ¿Estás seguro de que deseas eliminar esta ubicación guardada? Esta acción no se puede deshacer.
+          </p>
+          <div className="mt-lg flex justify-end gap-sm">
+            <button
+              type="button"
+              onClick={() => setDeletingLoc(null)}
+              className="rounded-xl border border-outline-variant px-lg py-2.5 font-body-md font-semibold text-on-surface transition-colors hover:bg-surface-container focus-visible:outline-3"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                deleteLocation.mutate(deletingLoc)
+                setDeletingLoc(null)
+              }}
+              className="rounded-xl bg-error px-lg py-2.5 font-body-md font-bold text-on-error transition-opacity hover:opacity-90 focus-visible:outline-3"
+            >
+              Eliminar
+            </button>
+          </div>
+        </Modal>
+      )}
+    </main>
   )
 }
 

@@ -54,7 +54,7 @@ export function RegisterPage() {
   }
 
   return (
-    <section aria-labelledby="register-title" className="w-full py-0">
+    <main id="main-content" aria-labelledby="register-title" className="w-full py-0">
       <div className="grid min-h-[calc(100vh-10rem)] w-full overflow-hidden rounded-[1.75rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.10)] lg:grid-cols-[1fr_1fr] xl:min-h-[calc(100vh-11rem)]">
         <aside className="relative isolate flex min-h-[22rem] flex-col justify-between overflow-hidden bg-[radial-gradient(circle_at_top_right,_rgba(56,189,248,0.28),_transparent_28%),linear-gradient(135deg,_#0b4f8a_0%,_#133d72_55%,_#0f5d9a_100%)] px-8 py-8 text-white sm:px-10 sm:py-10 lg:px-12 lg:py-12 xl:px-14 xl:py-14">
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center opacity-12" aria-hidden="true" />
@@ -101,6 +101,7 @@ export function RegisterPage() {
 
             {error && (
               <div
+                id="register-error"
                 className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
                 role="alert"
                 aria-live="polite"
@@ -135,6 +136,8 @@ export function RegisterPage() {
                     onChange={(event) => setFullName(event.target.value)}
                     autoComplete="name"
                     aria-required="true"
+                    aria-invalid={Boolean(error && error.includes('nombre'))}
+                    aria-describedby={error && error.includes('nombre') ? 'register-error' : undefined}
                     className="w-full bg-transparent text-base text-slate-950 outline-none placeholder:text-slate-400"
                     placeholder="Ingresa tu nombre completo"
                   />
@@ -156,6 +159,8 @@ export function RegisterPage() {
                     onChange={(event) => setEmail(event.target.value)}
                     autoComplete="email"
                     aria-required="true"
+                    aria-invalid={Boolean(error && error.includes('correo'))}
+                    aria-describedby={error && error.includes('correo') ? 'register-error' : undefined}
                     className="w-full bg-transparent text-base text-slate-950 outline-none placeholder:text-slate-400"
                     placeholder="operador@manta.gov.ec"
                   />
@@ -177,7 +182,8 @@ export function RegisterPage() {
                     onChange={(event) => setPassword(event.target.value)}
                     autoComplete="new-password"
                     aria-required="true"
-                    aria-describedby="password-hint"
+                    aria-invalid={Boolean(error && error.includes('caracteres'))}
+                    aria-describedby={error && error.includes('caracteres') ? 'register-error password-hint' : 'password-hint'}
                     className="w-full bg-transparent text-base text-slate-950 outline-none placeholder:text-slate-400"
                     placeholder="Mínimo 6 caracteres"
                   />
@@ -213,6 +219,8 @@ export function RegisterPage() {
                     onChange={(event) => setConfirm(event.target.value)}
                     autoComplete="new-password"
                     aria-required="true"
+                    aria-invalid={Boolean(error && error.includes('coinciden'))}
+                    aria-describedby={error && error.includes('coinciden') ? 'register-error' : undefined}
                     className="w-full bg-transparent text-base text-slate-950 outline-none placeholder:text-slate-400"
                     placeholder="Repite tu contraseña"
                   />
@@ -262,7 +270,7 @@ export function RegisterPage() {
           </div>
         </article>
       </div>
-    </section>
+    </main>
   )
 }
 

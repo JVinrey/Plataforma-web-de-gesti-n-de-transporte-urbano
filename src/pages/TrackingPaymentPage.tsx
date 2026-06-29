@@ -4,11 +4,12 @@ import { MantaMap } from '../components/map'
 import type { MapVehicle } from '../components/map'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { useRouteStops, useRoutes, useVehicles } from '../hooks/use-transit-data'
+import { Modal } from '../components/ui/Modal'
 
 const PAYMENT_METHODS = [
   { id: 'saldo', label: 'Saldo App', detail: 'Disponible ahora', icon: Wallet },
-  { id: 'tarjeta', label: 'Tarjeta **** 4242', detail: 'Visa debito', icon: CreditCard },
-  { id: 'contactless', label: 'Pago sin contacto', detail: 'NFC / billetera movil', icon: LocateFixed },
+  { id: 'tarjeta', label: 'Tarjeta **** 4242', detail: 'Visa débito', icon: CreditCard },
+  { id: 'contactless', label: 'Pago sin contacto', detail: 'NFC / billetera móvil', icon: LocateFixed },
 ]
 
 function QrPattern() {
@@ -33,6 +34,7 @@ export function TrackingPaymentPage() {
   const [selectedRouteId, setSelectedRouteId] = useState('')
   const [selectedPayment, setSelectedPayment] = useState(PAYMENT_METHODS[0].id)
   const [paid, setPaid] = useState(false)
+  const [confirmingPay, setConfirmingPay] = useState(false)
 
   const activeRouteId = selectedRouteId || routes.find((route) => route.status !== 'off_line')?.id || ''
   const activeRoute = routes.find((route) => route.id === activeRouteId)
@@ -58,7 +60,7 @@ export function TrackingPaymentPage() {
   const balance = paid && activeRoute ? Math.max(0, 5 - activeRoute.cost) : 5
 
   return (
-    <div className="text-on-background">
+    <main id="main-content" className="text-on-background">
       <div className="mx-auto grid max-w-7xl gap-4 lg:grid-cols-[1fr_25rem]">
         <section aria-labelledby="tracking-title" className="min-h-[34rem] overflow-hidden rounded-lg border border-outline-variant bg-surface-container">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant bg-white p-4">
@@ -105,13 +107,13 @@ export function TrackingPaymentPage() {
             <h2 id="ticket-title" className="text-2xl font-black text-primary">
               Ticket digital
             </h2>
-            <p className="mt-1 text-on-surface-variant">Escanea el codigo al subir al transporte.</p>
+            <p className="mt-1 text-on-surface-variant">Escanea el código al subir al transporte.</p>
           </div>
 
           <div className="space-y-5 p-5">
             <section aria-labelledby="qr-title" className="rounded-lg bg-surface-container-high p-5 text-center">
               <h3 id="qr-title" className="sr-only">
-                Codigo QR del ticket
+                Código QR del ticket
               </h3>
               <div className="flex justify-center">
                 <QrPattern />
@@ -172,19 +174,47 @@ export function TrackingPaymentPage() {
           <div className="border-t border-outline-variant bg-surface-container-low p-5">
             <button
               type="button"
-              onClick={() => setPaid(true)}
-              className="flex min-h-14 w-full items-center justify-center gap-3 rounded-lg bg-primary px-5 py-3 text-xl font-black text-on-primary hover:opacity-90"
+              onClick={() => setConfirmingPay(true)}
+              disabled={paid}
+              className="flex min-h-14 w-full items-center justify-center gap-3 rounded-lg bg-primary px-5 py-3 text-xl font-black text-on-primary hover:opacity-90 disabled:opacity-50"
             >
               <QrCode aria-hidden="true" className="size-6" />
               Pagar pasaje
             </button>
             <p className="mt-3 text-center text-sm text-on-surface-variant" role="status" aria-live="polite">
-              {paid ? 'Pago registrado. Ticket listo para escanear.' : 'Pago seguro con confirmacion inmediata.'}
+              {paid ? 'Pago registrado. Ticket listo para escanear.' : 'Pago seguro con confirmación inmediata.'}
             </p>
           </div>
         </aside>
       </div>
-    </div>
+
+      {confirmingPay && (
+        <Modal isOpen onClose={() => setConfirmingPay(false)} title="Confirmar pago">
+          <p className="font-body-md text-on-surface">
+            ¿Confirmas el pago del pasaje para la ruta {activeRoute?.code} usando {PAYMENT_METHODS.find(m => m.id === selectedPayment)?.label}?
+          </p>
+          <div className="mt-lg flex justify-end gap-sm">
+            <button
+              type="button"
+              onClick={() => setConfirmingPay(false)}
+              className="rounded-xl border border-outline-variant px-lg py-2.5 font-body-md font-semibold text-on-surface transition-colors hover:bg-surface-container focus-visible:outline-3"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setPaid(true)
+                setConfirmingPay(false)
+              }}
+              className="rounded-xl bg-primary px-lg py-2.5 font-body-md font-bold text-on-primary transition-opacity hover:opacity-90 focus-visible:outline-3"
+            >
+              Confirmar
+            </button>
+          </div>
+        </Modal>
+      )}
+    </main>
   )
 }
 

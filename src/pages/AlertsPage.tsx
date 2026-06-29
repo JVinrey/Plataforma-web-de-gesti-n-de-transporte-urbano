@@ -7,6 +7,7 @@ import {
   useReminders,
   useToggleReminder,
 } from '../hooks/use-reminders'
+import { Modal } from '../components/ui/Modal'
 
 // =====================================================================
 // AlertsPage — Recordatorios y alertas de transporte.
@@ -33,6 +34,7 @@ export default function AlertsPage() {
   const [time, setTime] = useState('08:30')
   const [lead, setLead] = useState(15)
   const [status, setStatus] = useState<string | null>(null)
+  const [deletingAlert, setDeletingAlert] = useState<string | null>(null)
 
   const pending = reminders.filter((r) => r.active).length
   const selectedRoute = routes.find((r) => r.id === routeId)
@@ -51,7 +53,7 @@ export default function AlertsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <main id="main-content" className="mx-auto max-w-6xl">
         <header className="mb-lg">
           <h1 className="text-headline-lg font-bold text-on-surface">Alertas y recordatorios</h1>
           <p className="font-body-md text-on-surface-variant">
@@ -222,7 +224,7 @@ export default function AlertsPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => deleteReminder.mutate(r.id)}
+                      onClick={() => setDeletingAlert(r.id)}
                       className="rounded-lg p-2 text-error transition-colors hover:bg-error-container focus-visible:outline-3"
                       aria-label={`Eliminar alerta de ${r.route?.code ?? 'ruta'}`}
                     >
@@ -242,6 +244,33 @@ export default function AlertsPage() {
             </div>
           </section>
         </div>
-    </div>
+
+      {deletingAlert && (
+        <Modal isOpen onClose={() => setDeletingAlert(null)} title="Eliminar alerta">
+          <p className="font-body-md text-on-surface">
+            ¿Estás seguro de que deseas eliminar esta alerta? Dejarás de recibir notificaciones para este recordatorio.
+          </p>
+          <div className="mt-lg flex justify-end gap-sm">
+            <button
+              type="button"
+              onClick={() => setDeletingAlert(null)}
+              className="rounded-xl border border-outline-variant px-lg py-2.5 font-body-md font-semibold text-on-surface transition-colors hover:bg-surface-container focus-visible:outline-3"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                deleteReminder.mutate(deletingAlert)
+                setDeletingAlert(null)
+              }}
+              className="rounded-xl bg-error px-lg py-2.5 font-body-md font-bold text-on-error transition-opacity hover:opacity-90 focus-visible:outline-3"
+            >
+              Eliminar
+            </button>
+          </div>
+        </Modal>
+      )}
+    </main>
   )
 }

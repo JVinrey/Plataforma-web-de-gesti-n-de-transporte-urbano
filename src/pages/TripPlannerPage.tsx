@@ -7,6 +7,7 @@ import { useAiContext, useAiRecommend } from '../hooks/use-ai';
 import { fastestRoute, filterRoutesByDestination } from '../utils/route-matching';
 import { MantaMap } from '../components/map';
 import type { MapVehicle } from '../components/map';
+import { AccessibilityVideoGuide } from '../components/accessibility/AccessibilityVideoGuide';
 
 type Congestion = 'baja' | 'media' | 'alta';
 
@@ -170,7 +171,8 @@ export default function TripPlannerPage() {
   };
 
   return (
-    <div
+    <main
+      id="main-content"
       className="-mx-lg -mt-lg flex h-[calc(100vh-5rem)] overflow-hidden text-on-background"
       style={{ backgroundColor: PAGE_BG }}
     >
@@ -179,7 +181,15 @@ export default function TripPlannerPage() {
           <h1 className="text-4xl font-bold text-primary">Planificar Viaje</h1>
           <p className="mt-1 text-body-md text-on-surface-variant">Encuentra la mejor ruta en Manta.</p>
 
-          <form className="mt-lg space-y-sm" onSubmit={(e) => e.preventDefault()}>
+          <div className="mt-4 mb-4">
+            <AccessibilityVideoGuide />
+          </div>
+
+          <form className="mt-lg space-y-sm" onSubmit={(e) => {
+            e.preventDefault();
+            if (origin.trim()) sessionStorage.setItem('trip-origin', origin.trim());
+            if (destination.trim()) sessionStorage.setItem('trip-destination', destination.trim());
+          }}>
             {/* Origen */}
             <div className="relative rounded-xl border border-outline-variant bg-surface-container-lowest px-md py-3">
               <label
@@ -198,6 +208,7 @@ export default function TripPlannerPage() {
                   type="text"
                   value={origin}
                   onChange={(e) => setOrigin(e.target.value)}
+                  autoComplete="street-address"
                   className="w-full bg-transparent font-body-md text-on-surface focus:outline-none"
                 />
               </div>
@@ -234,6 +245,7 @@ export default function TripPlannerPage() {
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
                   placeholder="¿A dónde vas?"
+                  autoComplete="street-address"
                   className="w-full bg-transparent font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none"
                 />
               </div>
@@ -457,6 +469,6 @@ export default function TripPlannerPage() {
             }
           />
         </section>
-    </div>
+    </main>
   );
 }

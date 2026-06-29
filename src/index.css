@@ -226,3 +226,64 @@ body {
 .high-contrast :focus-visible {
   outline-color: #ffd400;
 }
+
+/* 1.4.1 — Sin dependencia de color: añade bordes y patrones a indicadores */
+.no-color-reliance [data-status],
+.no-color-reliance .status-indicator,
+.no-color-reliance input:required,
+.no-color-reliance a {
+  border: 2px solid currentColor !important;
+  text-decoration: underline !important;
+}
+.no-color-reliance [data-status="error"],
+.no-color-reliance .text-red-600,
+.no-color-reliance [class*="error"] {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.15) 3px,
+    rgba(0, 0, 0, 0.15) 6px
+  ) !important;
+}
+
+/* 2.5.8 — Área mínima de interacción: controles grandes */
+.large-targets button,
+.large-targets a,
+.large-targets input,
+.large-targets select,
+.large-targets textarea,
+.large-targets [role="button"],
+.large-targets [role="checkbox"],
+.large-targets [role="radio"],
+.large-targets label {
+  min-height: 44px !important;
+  min-width: 44px !important;
+  padding: 0.75rem !important;
+}
+
+/* 2.4.7 — Foco mejorado (anillo de alto contraste de 3px) */
+.enhanced-focus :focus-visible {
+  outline: 3px solid #0066CC !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 5px rgba(0, 102, 204, 0.25) !important;
+}
+.high-contrast.enhanced-focus :focus-visible {
+  outline: 3px solid #ffd400 !important;
+  box-shadow: 0 0 0 5px rgba(255, 212, 0, 0.35) !important;
+}
+
+/* 3.3.2 — Mostrar textos de ayuda ocultos en formularios */
+.show-hints .field-hint,
+.show-hints [class*="hint"],
+.show-hints [class*="help-text"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* 1.2.1 — Mostrar transcripciones junto a medios */
+.show-transcripts .transcripcion,
+.show-transcripts [class*="transcript"] {
+  display: block !important;
+}

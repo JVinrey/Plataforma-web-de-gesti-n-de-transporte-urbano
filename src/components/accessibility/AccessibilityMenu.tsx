@@ -5,6 +5,7 @@ import type { AccessibilityPreferences, TextSize } from '../../types'
 import { AccessibilityContrastButton } from './AccessibilityContrastButton'
 import { AccessibilityLanguageButton } from './AccessibilityLanguageButton'
 import { getUiCopy } from '../../utils/ui-copy'
+import { AccessibilityAuditiveSection } from './AccessibilityAuditiveSection'
 
 const TEXT_SIZES: Array<{ value: TextSize }> = [
   { value: 'small' },
@@ -17,12 +18,16 @@ type TogglePreferenceKey = {
   [K in keyof AccessibilityPreferences]: AccessibilityPreferences[K] extends boolean ? K : never
 }[keyof AccessibilityPreferences]
 
-const TOGGLES: Array<{ key: TogglePreferenceKey }> = [
+const TOGGLES: Array<{ key: TogglePreferenceKey; section?: string }> = [
   { key: 'elderlyMode' },
   { key: 'highContrast' },
+  { key: 'noColorReliance' },
   { key: 'increasedSpacing' },
   { key: 'dyslexiaFont' },
   { key: 'reduceMotion' },
+  { key: 'largeTargets' },
+  { key: 'enhancedFocus' },
+  { key: 'showHints' },
   { key: 'narrator' },
 ]
 
@@ -106,6 +111,51 @@ export function AccessibilityMenu() {
     return () => document.removeEventListener('keydown', handleShortcut)
   }, [])
 
+  // WCAG 3.3.1 — Identificación y descripción de errores en tiempo real
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      document.querySelectorAll<HTMLElement>('[aria-invalid="true"]').forEach((field) => {
+        if (field.dataset.a11yErrorHandled) return
+        field.dataset.a11yErrorHandled = 'true'
+        const errorIcon = document.createElement('span')
+        errorIcon.setAttribute('aria-hidden', 'true')
+        errorIcon.textContent = ' ⚠️ '
+        errorIcon.className = 'a11y-error-icon'
+        const existingIcon = field.parentElement?.querySelector('.a11y-error-icon')
+        if (!existingIcon) field.insertAdjacentElement('beforebegin', errorIcon)
+      })
+      // Limpiar cuando se resuelve el error
+      document.querySelectorAll('[data-a11y-error-handled]').forEach((field) => {
+        if (field.getAttribute('aria-invalid') !== 'true') {
+          delete (field as HTMLElement).dataset.a11yErrorHandled
+          field.parentElement?.querySelector('.a11y-error-icon')?.remove()
+        }
+      })
+    })
+    observer.observe(document.body, { attributes: true, attributeFilter: ['aria-invalid'], subtree: true })
+    return () => observer.disconnect()
+  }, [])
+
+  // WCAG 2.4.11 — Foco no oculto por el menú flotante
+  useEffect(() => {
+    const handleFocusIn = (e: FocusEvent) => {
+      if (!panelRef.current || !isOpen) return
+      const focused = e.target as HTMLElement
+      const panelRect = panelRef.current.getBoundingClientRect()
+      const focusedRect = focused.getBoundingClientRect()
+      const isHidden =
+        focusedRect.bottom > panelRect.top &&
+        focusedRect.top < panelRect.bottom &&
+        focusedRect.right > panelRect.left &&
+        focusedRect.left < panelRect.right
+      if (isHidden) {
+        focused.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      }
+    }
+    document.addEventListener('focusin', handleFocusIn)
+    return () => document.removeEventListener('focusin', handleFocusIn)
+  }, [isOpen])
+
   return (
     <div className="fixed bottom-4 right-4 z-40">
       {isOpen && (
@@ -114,7 +164,7 @@ export function AccessibilityMenu() {
           id={panelId}
           role="dialog"
           aria-labelledby={titleId}
-          className="absolute bottom-16 right-0 w-80 rounded-lg border border-gray-300 bg-white p-4 shadow-xl"
+          className="absolute bottom-16 right-0 w-80 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-lg border border-gray-300 bg-white p-4 shadow-xl"
         >
           <div className="mb-3 flex items-center justify-between gap-2">
             <h2 id={titleId} className="text-lg font-bold text-gray-900">
@@ -200,6 +250,44 @@ export function AccessibilityMenu() {
               {preferences.language === 'es' ? 'Español' : 'English'}
             </strong>
           </div>
+
+          {/* Sección Auditiva condicional — WCAG 1.2.x */}
+          <AccessibilityAuditiveSection />
+
+          {/* 3.2.6 — Ayuda en ubicación consistente */}
+          <div className="mt-3 border-t border-gray-200 pt-3">
+            <a
+              href="/ayuda"
+              className="flex min-h-11 items-center gap-2 rounded-md px-2 py-2 text-sm text-blue-700 underline hover:bg-blue-50"
+            >
+              <span aria-hidden="true">❓</span>
+              {preferences.language === 'es' ? 'Ayuda y soporte' : 'Help & support'}
+            </a>
+          </div>
+
+          {/* 3.3.7 — Indicador de datos ya ingresados en sesión */}
+          {(() => {
+            const savedOrigin = sessionStorage.getItem('trip-origin')
+            const savedDest = sessionStorage.getItem('trip-destination')
+            if (!savedOrigin && !savedDest) return null
+            return (
+              <div className="mt-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800">
+                <p className="font-semibold">
+                  {preferences.language === 'es' ? 'Datos de viaje guardados:' : 'Saved trip data:'}
+                </p>
+                {savedOrigin && (
+                  <p className="mt-0.5">
+                    {preferences.language === 'es' ? 'Origen:' : 'Origin:'} <span className="font-medium">{savedOrigin}</span>
+                  </p>
+                )}
+                {savedDest && (
+                  <p>
+                    {preferences.language === 'es' ? 'Destino:' : 'Destination:'} <span className="font-medium">{savedDest}</span>
+                  </p>
+                )}
+              </div>
+            )
+          })()}
 
           <button
             type="button"

@@ -22,6 +22,7 @@ import {
   TripRatingPage,
   TrackingPaymentPage,
   WalletPage,
+  HelpPage,
 } from './pages'
 
 export function App() {
@@ -42,6 +43,7 @@ export function App() {
           <Route path="/alertas" element={<AlertsPage />} />
           <Route path="/calificar" element={<TripRatingPage />} />
           <Route path="/billetera" element={<WalletPage />} />
+          <Route path="/ayuda" element={<HelpPage />} />
         </Route>
 
         {/* ZONE 2 — Sitio público (cabecera + nav superior) */}
