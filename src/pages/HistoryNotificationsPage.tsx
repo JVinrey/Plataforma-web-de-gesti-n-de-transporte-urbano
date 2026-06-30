@@ -200,21 +200,21 @@ export function HistoryNotificationsPage() {
             })}
           </div>
 
-          <section aria-labelledby="summary-title" className="rounded-lg bg-inverse-surface p-5 text-inverse-on-surface">
+          <section aria-labelledby="summary-title" className="rounded-lg bg-[#1e293b] p-5">
             <div className="flex items-center gap-3">
-              <Wallet aria-hidden="true" className="size-6 text-secondary-fixed" />
-              <h2 id="summary-title" className="text-xl font-black">
+              <Wallet aria-hidden="true" className="size-6 text-[#7dd3af]" />
+              <h2 id="summary-title" className="text-xl font-black text-white">
                 Resumen mensual
               </h2>
             </div>
             <dl className="mt-4 grid grid-cols-2 gap-4">
               <div>
-                <dt className="text-sm opacity-80">Total gastado</dt>
-                <dd className="text-3xl font-black">{formatCurrency(totalSpent)}</dd>
+                <dt className="text-sm text-slate-300">Total gastado</dt>
+                <dd className="text-3xl font-black text-white">{formatCurrency(totalSpent)}</dd>
               </div>
               <div>
-                <dt className="text-sm opacity-80">Viajes</dt>
-                <dd className="text-3xl font-black">{history.length}</dd>
+                <dt className="text-sm text-slate-300">Viajes</dt>
+                <dd className="text-3xl font-black text-white">{history.length}</dd>
               </div>
             </dl>
           </section>

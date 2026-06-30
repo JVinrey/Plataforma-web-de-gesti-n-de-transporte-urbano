@@ -53,6 +53,11 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
 
   if (!isOpen) return null
 
+  // Usa #modal-root como portal target (definido en index.html fuera de #root).
+  // Esto evita que contenedores con overflow:hidden/auto en el layout creen un
+  // containing block que atrape el overlay position:fixed (bug visual en recarga).
+  const portalTarget = document.getElementById('modal-root') ?? document.body
+
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4">
       <div
@@ -60,17 +65,17 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl"
+        className="max-w-modal w-full shrink-0 rounded-2xl border border-outline-variant bg-surface-container-lowest p-6 shadow-xl"
       >
         <div className="mb-4 flex items-start justify-between gap-4">
-          <h2 id={titleId} className="text-xl font-bold text-gray-900">
+          <h2 id={titleId} className="text-title-lg font-bold text-on-surface">
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Cerrar diálogo"
-            className="rounded-md p-1 text-gray-700 hover:bg-gray-100"
+            className="shrink-0 rounded-md p-1 text-on-surface-variant transition-colors hover:bg-surface-container focus-visible:outline-3"
           >
             <X aria-hidden="true" className="size-5" />
           </button>
@@ -78,6 +83,6 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
         {children}
       </div>
     </div>,
-    document.body,
+    portalTarget,
   )
 }

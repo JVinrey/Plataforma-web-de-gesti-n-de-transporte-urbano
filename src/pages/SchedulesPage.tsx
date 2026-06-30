@@ -189,9 +189,9 @@ export default function SchedulesPage() {
               </div>
             </div>
 
-            <div className="col-span-12 lg:col-span-8 bg-inverse-surface text-white p-lg rounded-lg shadow-sm">
+            <div className="col-span-12 lg:col-span-8 bg-[#1e293b] p-lg rounded-lg shadow-sm">
               <h3 className="font-title-lg text-white">System Efficiency</h3>
-              <p className="text-body-md text-white/70">
+              <p className="text-body-md text-slate-300">
                 {viewMode === 'timeline'
                   ? `Promedio de frecuencia actual: ${averageFrequency} min. Cambios aplicados sobre ${selectedSchedule?.route.code ?? 'la ruta seleccionada'}.`
                   : 'Vista calendario basada en las rutas registradas y su frecuencia base en Supabase.'}
@@ -326,7 +326,7 @@ export default function SchedulesPage() {
                   </div>
                   <div className="flex-1">
                     <p className="text-label-lg text-on-surface">
-                      Marcus T. <span className="font-normal opacity-60 ml-2">Route 101</span>
+                      Marcus T. <span className="font-normal text-on-surface-variant ml-2">Route 101</span>
                     </p>
                     <p className="text-[10px] text-on-surface-variant">"Approaching Harbor Bridge..."</p>
                   </div>

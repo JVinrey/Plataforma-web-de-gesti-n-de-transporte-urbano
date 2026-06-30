@@ -81,7 +81,7 @@ export default function FleetPage() {
         {/* Header */}
         <header className="bg-surface-bright border-b border-outline-variant shadow-sm flex items-center justify-between px-margin-desktop h-16 w-full shrink-0">
           <div className="flex items-center gap-lg flex-1">
-            <div className="relative w-full max-w-md">
+            <div className="relative w-full max-w-form">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-on-surface-variant">
                 <span className="material-symbols-outlined text-[20px]">search</span>
               </span>

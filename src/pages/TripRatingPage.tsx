@@ -169,7 +169,7 @@ export default function TripRatingPage() {
               </p>
               <div className="mt-md flex flex-col items-center">
                 <StarRating label="Calificación general" value={overall} onChange={setOverall} size="lg" />
-                <div className="mt-xs flex w-full max-w-xs justify-between font-label-lg">
+                <div className="mt-xs flex w-full max-w-[20rem] justify-between font-label-lg">
                   <span className="text-on-surface-variant">Malo</span>
                   <span className="font-bold text-secondary">Excelente</span>
                 </div>

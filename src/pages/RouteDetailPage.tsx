@@ -173,7 +173,7 @@ export default function RouteDetailPage() {
             vehicles={mapVehicles}
             ariaLabel={`Mapa del recorrido de la línea ${route.code} en Manta`}
           />
-          <div className="pointer-events-none absolute bottom-4 right-4 z-[500] max-w-xs rounded-xl bg-surface-bright p-md shadow-md">
+          <div className="pointer-events-none absolute bottom-4 right-4 z-[500] max-w-[20rem] rounded-xl bg-surface-bright p-md shadow-md">
             <p className="flex items-center gap-sm font-body-md font-bold text-on-surface">
               <span className="h-2.5 w-2.5 rounded-full bg-secondary" aria-hidden="true" />
               {isOnline ? `Vía libre hacia ${route.destination ?? 'destino'}` : 'Ruta sin servicio'}

@@ -100,6 +100,16 @@
   line-height: 1rem;
 }
 
+/* Anchos máximos semánticos — en este tema, max-w-sm/md/lg/xs resuelven a
+ * --spacing-* (p. ej. max-w-lg = 1.5rem). Usar estas utilidades para diálogos
+ * y campos que necesitan un ancho de contenido real. */
+@utility max-w-modal {
+  max-width: min(100%, 32rem);
+}
+@utility max-w-form {
+  max-width: min(100%, 28rem);
+}
+
 /* Iconografía Material Symbols (cargada desde Google Fonts en index.html) */
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
@@ -117,6 +127,22 @@
     'wght' 400,
     'GRAD' 0,
     'opsz' 24;
+}
+
+/* Scrollbar discreta en paneles con mucho contenido (planificador de viaje) */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-outline-variant) transparent;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-outline-variant);
+  border-radius: 9999px;
 }
 
 /* ---------------------------------------------------------------------------

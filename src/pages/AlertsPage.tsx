@@ -142,22 +142,22 @@ export default function AlertsPage() {
               </p>
             </form>
 
-            {/* Vista previa de notificación */}
-            <div className="mt-lg rounded-2xl bg-inverse-surface p-md text-inverse-on-surface">
+            {/* Vista previa de notificación — fondo oscuro con texto blanco garantizado WCAG AA */}
+            <div className="mt-lg rounded-2xl bg-[#1e293b] p-md">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-sm">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20 text-white">
                     <span className="material-symbols-outlined text-[20px]">directions_bus</span>
                   </span>
                   <div>
-                    <p className="font-label-lg font-semibold">Vista Previa de Notificación</p>
-                    <p className="font-label-md opacity-70">Ahora mismo</p>
+                    <p className="font-label-lg font-semibold text-white">Vista Previa de Notificación</p>
+                    <p className="font-label-md text-slate-300">Ahora mismo</p>
                   </div>
                 </div>
-                <span className="material-symbols-outlined opacity-60">notifications</span>
+                <span className="material-symbols-outlined text-slate-300">notifications</span>
               </div>
-              <p className="mt-md font-body-md font-bold">¡Tu transporte se acerca!</p>
-              <p className="font-body-md opacity-90">
+              <p className="mt-md font-body-md font-bold text-white">¡Tu transporte se acerca!</p>
+              <p className="font-body-md text-slate-200">
                 La {selectedRoute ? selectedRoute.code : 'ruta seleccionada'} llegará en {lead} minutos a tu
                 parada habitual.
               </p>
@@ -238,7 +238,7 @@ export default function AlertsPage() {
             {/* Banner */}
             <div className="overflow-hidden rounded-2xl bg-primary p-lg text-on-primary">
               <h3 className="text-title-lg font-bold">Manta se mueve contigo</h3>
-              <p className="mt-xs font-body-md opacity-90">
+              <p className="mt-xs font-body-md text-on-primary/90">
                 98% de precisión en nuestras alertas en tiempo real.
               </p>
             </div>

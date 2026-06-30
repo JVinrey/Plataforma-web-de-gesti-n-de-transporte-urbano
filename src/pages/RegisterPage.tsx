@@ -70,9 +70,9 @@ export function RegisterPage() {
           <div className="relative max-w-2xl space-y-6 xl:space-y-8">
             <h1 id="register-title" className="max-w-2xl text-5xl font-black leading-[0.95] tracking-tight sm:text-6xl xl:text-7xl">
               Crea tu
-              <span className="block text-white/85">cuenta ahora.</span>
+              <span className="block text-white">cuenta ahora.</span>
             </h1>
-            <p className="max-w-2xl text-sm leading-7 text-white/85 sm:text-base xl:text-lg">
+            <p className="max-w-2xl text-sm leading-7 text-white sm:text-base xl:text-lg">
               Regístrate para guardar tus rutas frecuentes, sincronizar preferencias y acceder a todas las funciones de la plataforma.
             </p>
           </div>
@@ -83,8 +83,8 @@ export function RegisterPage() {
                 <span className="material-symbols-outlined text-[20px]">verified</span>
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/80">Registro seguro</p>
-                <p className="text-sm text-white/90">Tu cuenta se crea con soporte de Supabase Auth.</p>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-white">Registro seguro</p>
+                <p className="text-sm text-white">Tu cuenta se crea con soporte de Supabase Auth.</p>
               </div>
             </div>
           </div>

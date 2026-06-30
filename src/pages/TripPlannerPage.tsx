@@ -171,21 +171,24 @@ export default function TripPlannerPage() {
   };
 
   return (
-    <main
-      id="main-content"
-      className="-mx-lg -mt-lg flex h-[calc(100vh-5rem)] overflow-hidden text-on-background"
+    <div
+      className="-mx-lg -mb-20 -mt-lg flex h-[calc(100dvh-5rem)] min-h-0 flex-col overflow-hidden text-on-background lg:flex-row"
       style={{ backgroundColor: PAGE_BG }}
     >
-        {/* Trip planner form */}
-        <div className="w-[26rem] shrink-0 overflow-y-auto px-lg py-lg">
-          <h1 className="text-4xl font-bold text-primary">Planificar Viaje</h1>
-          <p className="mt-1 text-body-md text-on-surface-variant">Encuentra la mejor ruta en Manta.</p>
+        {/* Panel lateral: formulario y resultados */}
+        <aside
+          aria-label="Planificador de viaje"
+          className="custom-scrollbar flex max-h-[48vh] w-full shrink-0 flex-col overflow-y-auto border-b border-outline-variant bg-surface-container-lowest shadow-lg lg:h-full lg:max-h-none lg:w-[26rem] lg:border-b-0 lg:border-r"
+        >
+          <div className="px-lg py-md">
+          <h1 className="text-headline-lg font-bold text-primary">Planificar Viaje</h1>
+          <p className="mt-1 font-body-md text-on-surface-variant">Encuentra la mejor ruta en Manta.</p>
 
-          <div className="mt-4 mb-4">
+          <div className="mt-md">
             <AccessibilityVideoGuide />
           </div>
 
-          <form className="mt-lg space-y-sm" onSubmit={(e) => {
+          <form className="mt-md space-y-sm" onSubmit={(e) => {
             e.preventDefault();
             if (origin.trim()) sessionStorage.setItem('trip-origin', origin.trim());
             if (destination.trim()) sessionStorage.setItem('trip-destination', destination.trim());
@@ -194,8 +197,7 @@ export default function TripPlannerPage() {
             <div className="relative rounded-xl border border-outline-variant bg-surface-container-lowest px-md py-3">
               <label
                 htmlFor="trip-origin"
-                className="absolute -top-2 left-3 px-1 font-label-md font-semibold text-primary"
-                style={{ backgroundColor: PAGE_BG }}
+                className="absolute -top-2 left-3 bg-surface-container-lowest px-1 font-label-md font-semibold text-primary"
               >
                 Origen
               </label>
@@ -230,8 +232,7 @@ export default function TripPlannerPage() {
             <div className="relative rounded-xl border border-outline-variant bg-surface-container-lowest px-md py-3">
               <label
                 htmlFor="trip-destination"
-                className="absolute -top-2 left-3 px-1 font-label-md font-semibold text-on-surface-variant"
-                style={{ backgroundColor: PAGE_BG }}
+                className="absolute -top-2 left-3 bg-surface-container-lowest px-1 font-label-md font-semibold text-on-surface-variant"
               >
                 Destino
               </label>
@@ -424,12 +425,13 @@ export default function TripPlannerPage() {
               );
             })}
           </ul>
-        </div>
+          </div>
+        </aside>
 
-        {/* Map — Leaflet real centrado en Manta con el recorrido seleccionado */}
+        {/* Mapa a pantalla completa en el panel derecho */}
         <section
           aria-label="Mapa del viaje planificado en Manta"
-          className="relative m-lg flex-1 overflow-hidden rounded-2xl border border-outline-variant/50"
+          className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#dce9ff]"
         >
           {/* Weather chip */}
           <div className="pointer-events-none absolute right-4 top-4 z-[500] flex items-center gap-xs rounded-full bg-surface-bright px-4 py-2 font-label-lg font-semibold text-on-surface shadow-md">
@@ -462,6 +464,7 @@ export default function TripPlannerPage() {
             routePath={routePath}
             stops={allStops}
             vehicles={mapVehicles}
+            rounded={false}
             ariaLabel={
               selectedRouteRow
                 ? `Mapa del recorrido de la línea ${selectedRouteRow.code} en Manta`
@@ -469,6 +472,6 @@ export default function TripPlannerPage() {
             }
           />
         </section>
-    </main>
+    </div>
   );
 }

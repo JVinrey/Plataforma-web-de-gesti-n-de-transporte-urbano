@@ -18,6 +18,10 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Portal target para modales: vive fuera de #root para evitar que
+         contenedores con overflow:hidden/auto creen un containing block
+         que atrape los elementos position:fixed del modal (WCAG 2.1.1). -->
+    <div id="modal-root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

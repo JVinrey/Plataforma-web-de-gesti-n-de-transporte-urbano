@@ -75,11 +75,11 @@ export default function WalletPage() {
             aria-label="Saldo actual"
             className="relative overflow-hidden rounded-2xl bg-primary p-lg text-on-primary shadow-sm"
           >
-            <p className="font-label-lg font-semibold uppercase tracking-wide opacity-80">Saldo Actual</p>
+            <p className="font-label-lg font-semibold uppercase tracking-wide text-on-primary/90">Saldo Actual</p>
             <p className="mt-xs text-[56px] font-bold leading-none">
               {isLoading ? '—' : `$${Number(wallet?.balance ?? 0).toFixed(2)}`}
             </p>
-            <p className="mt-lg flex items-center gap-sm font-body-md opacity-90">
+            <p className="mt-lg flex items-center gap-sm font-body-md text-on-primary/90">
               <span className="material-symbols-outlined text-[20px]">credit_card</span>
               {wallet?.linked_card ? `Vinculado a ${wallet.linked_card}` : 'Sin tarjeta vinculada'}
             </p>

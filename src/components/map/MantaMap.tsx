@@ -62,6 +62,8 @@ export interface MantaMapProps {
   className?: string
   /** Etiqueta accesible del mapa. */
   ariaLabel?: string
+  /** Si es false, el mapa ocupa el contenedor sin bordes redondeados (p. ej. panel completo). */
+  rounded?: boolean
 }
 
 /** Ícono de autobús (divIcon) coloreado según el estado del vehículo. */
@@ -99,6 +101,7 @@ export function MantaMap({
   vehicles = [],
   className = 'h-full w-full',
   ariaLabel = 'Mapa de la red de transporte de Manta',
+  rounded = true,
 }: MantaMapProps) {
   const pathPoints = useMemo<[number, number][]>(
     () => routePath.map((s) => [s.lat, s.lng]),
@@ -116,7 +119,7 @@ export function MantaMap({
         center={MANTA_CENTER}
         zoom={13}
         scrollWheelZoom
-        className="h-full w-full rounded-2xl"
+        className={['h-full w-full', rounded ? 'rounded-2xl' : 'rounded-none'].join(' ')}
         style={{ minHeight: '100%' }}
       >
         <TileLayer

@@ -251,7 +251,7 @@ export default function RoutePlanningPage() {
     <div className="flex h-full flex-col overflow-hidden">
         {/* Header */}
         <header className="flex h-16 w-full shrink-0 items-center justify-between border-b border-outline-variant bg-surface-bright px-margin-desktop shadow-sm">
-          <div className="relative w-full max-w-md">
+          <div className="relative w-full max-w-form">
             <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-on-surface-variant">
               <span className="material-symbols-outlined text-[20px]">search</span>
             </span>

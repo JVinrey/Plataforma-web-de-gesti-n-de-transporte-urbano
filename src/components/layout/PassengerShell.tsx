@@ -58,7 +58,7 @@ export function PassengerShell() {
             {copy.brand}
           </Link>
         </div>
-        <form role="search" onSubmit={submitSearch} className="relative w-full max-w-md">
+        <form role="search" onSubmit={submitSearch} className="relative w-full max-w-form">
           <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-on-surface-variant">
             <span className="material-symbols-outlined text-[20px]">search</span>
           </span>

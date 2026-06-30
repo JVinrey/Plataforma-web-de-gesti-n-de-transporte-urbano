@@ -60,66 +60,75 @@ export function AccessibilityVideoGuide() {
   }, [lang])
 
   return (
-    <section
-      aria-labelledby="guide-video-title"
-      className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
-    >
-      <span className="text-xs font-bold uppercase tracking-widest text-blue-700">
-        {t.eyebrow}
-      </span>
-      <h2 id="guide-video-title" className="mt-2 text-xl font-bold text-gray-900">
-        {t.title}
-      </h2>
-      <p className="mt-1 text-sm text-gray-600">{t.summary}</p>
-
-      <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_320px]">
-        <figure className="overflow-hidden rounded-xl border border-gray-200 bg-black">
-          <video
-            ref={videoRef}
-            controls
-            preload="metadata"
-            className="aspect-video w-full"
-            aria-label={t.title}
-            aria-describedby="guide-transcript guide-description"
+    <details className="group rounded-xl border border-outline-variant/60 bg-surface-container-lowest shadow-sm">
+      <summary className="cursor-pointer list-none px-md py-3 [&::-webkit-details-marker]:hidden">
+        <div className="flex items-center justify-between gap-sm">
+          <div className="min-w-0">
+            <span className="font-label-md font-bold uppercase tracking-widest text-primary">
+              {t.eyebrow}
+            </span>
+            <p className="mt-0.5 font-body-md font-semibold text-on-surface">{t.title}</p>
+            <p className="mt-0.5 font-label-md text-on-surface-variant">{t.summary}</p>
+          </div>
+          <span
+            className="material-symbols-outlined shrink-0 text-on-surface-variant transition-transform group-open:rotate-180"
+            aria-hidden="true"
           >
-            <source src={GUIDE_VIDEO_URL} type="video/mp4" />
-            {/* 1.2.2 — Subtítulos en video pregrabado */}
-            <track kind="captions" src={GUIDE_CAPTIONS_ES_URL} srcLang="es" label="Español" default={lang === 'es'} />
-            <track kind="captions" src={GUIDE_CAPTIONS_EN_URL} srcLang="en" label="English" default={lang === 'en'} />
-            {/* 1.2.5 — Audiodescripción (mismos subtítulos extendidos como descripción) */}
-            <track kind="descriptions" src={GUIDE_CAPTIONS_ES_URL} srcLang="es" label="Descripción ES" />
-            <track kind="descriptions" src={GUIDE_CAPTIONS_EN_URL} srcLang="en" label="Description EN" />
-            {t.fallback}
-          </video>
+            expand_more
+          </span>
+        </div>
+      </summary>
 
-          {/* 1.2.1 — Transcripción permanente */}
-          <figcaption
-            id="guide-transcript"
-            className="border-t border-gray-200 bg-white px-4 py-4"
+      <section aria-labelledby="guide-video-title" className="border-t border-outline-variant/60 px-md pb-md pt-sm">
+        <h2 id="guide-video-title" className="sr-only">
+          {t.title}
+        </h2>
+
+        <div className="flex flex-col gap-md">
+          <figure className="min-w-0 overflow-hidden rounded-xl border border-outline-variant bg-black">
+            <video
+              ref={videoRef}
+              controls
+              preload="metadata"
+              className="aspect-video w-full"
+              aria-label={t.title}
+              aria-describedby="guide-transcript guide-description"
+            >
+              <source src={GUIDE_VIDEO_URL} type="video/mp4" />
+              <track kind="captions" src={GUIDE_CAPTIONS_ES_URL} srcLang="es" label="Español" default={lang === 'es'} />
+              <track kind="captions" src={GUIDE_CAPTIONS_EN_URL} srcLang="en" label="English" default={lang === 'en'} />
+              <track kind="descriptions" src={GUIDE_CAPTIONS_ES_URL} srcLang="es" label="Descripción ES" />
+              <track kind="descriptions" src={GUIDE_CAPTIONS_EN_URL} srcLang="en" label="Description EN" />
+              {t.fallback}
+            </video>
+
+            <figcaption
+              id="guide-transcript"
+              className="border-t border-outline-variant bg-surface-container-lowest px-4 py-3"
+            >
+              <div className="flex items-center justify-between">
+                <p className="font-label-md font-bold uppercase tracking-widest text-primary">
+                  {t.transcriptTitle}
+                </p>
+                <span className="rounded-full bg-primary-container px-2 py-0.5 font-label-md font-semibold text-on-primary-container">
+                  {t.wcagBadge}
+                </span>
+              </div>
+              <p className="mt-2 font-body-md leading-relaxed text-on-surface-variant">{t.transcriptText}</p>
+            </figcaption>
+          </figure>
+
+          <aside
+            id="guide-description"
+            className="rounded-xl border border-outline-variant bg-surface-container-low p-md"
           >
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-bold uppercase tracking-widest text-blue-700">
-                {t.transcriptTitle}
-              </p>
-              <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-800">
-                {t.wcagBadge}
-              </span>
-            </div>
-            <p className="mt-2 text-sm leading-7 text-gray-700">{t.transcriptText}</p>
-          </figcaption>
-        </figure>
-
-        {/* 1.2.5 — Descripción visual del contenido del video */}
-        <aside
-          id="guide-description"
-          className="rounded-xl border border-gray-200 bg-gray-50 p-4"
-        >
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-500">
-            {t.descTitle}
-          </p>
-          <p className="mt-2 text-sm leading-7 text-gray-700">{t.descText}</p>
-        </aside>
-      </div>
-    </section>
+            <p className="font-label-md font-bold uppercase tracking-widest text-on-surface-variant">
+              {t.descTitle}
+            </p>
+            <p className="mt-2 font-body-md leading-relaxed text-on-surface-variant">{t.descText}</p>
+          </aside>
+        </div>
+      </section>
+    </details>
   )
 }
