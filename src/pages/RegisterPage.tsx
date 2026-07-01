@@ -137,11 +137,16 @@ export function RegisterPage() {
                     autoComplete="name"
                     aria-required="true"
                     aria-invalid={Boolean(error && error.includes('nombre'))}
-                    aria-describedby={error && error.includes('nombre') ? 'register-error' : undefined}
+                    aria-describedby={
+                      error && error.includes('nombre') ? 'register-error fullName-hint' : 'fullName-hint'
+                    }
                     className="w-full bg-transparent text-base text-slate-950 outline-none placeholder:text-slate-400"
                     placeholder="Ingresa tu nombre completo"
                   />
                 </div>
+                <p id="fullName-hint" className="field-hint hidden text-xs text-slate-500">
+                  Escribe tu nombre y apellido tal como aparecen en tu documento de identidad.
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -160,11 +165,16 @@ export function RegisterPage() {
                     autoComplete="email"
                     aria-required="true"
                     aria-invalid={Boolean(error && error.includes('correo'))}
-                    aria-describedby={error && error.includes('correo') ? 'register-error' : undefined}
+                    aria-describedby={
+                      error && error.includes('correo') ? 'register-error email-hint' : 'email-hint'
+                    }
                     className="w-full bg-transparent text-base text-slate-950 outline-none placeholder:text-slate-400"
                     placeholder="operador@manta.gov.ec"
                   />
                 </div>
+                <p id="email-hint" className="field-hint hidden text-xs text-slate-500">
+                  Usa el correo con el que quieres iniciar sesión más adelante.
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -183,7 +193,11 @@ export function RegisterPage() {
                     autoComplete="new-password"
                     aria-required="true"
                     aria-invalid={Boolean(error && error.includes('caracteres'))}
-                    aria-describedby={error && error.includes('caracteres') ? 'register-error password-hint' : 'password-hint'}
+                    aria-describedby={
+                      error && error.includes('caracteres')
+                        ? 'register-error password-hint password-field-hint'
+                        : 'password-hint password-field-hint'
+                    }
                     className="w-full bg-transparent text-base text-slate-950 outline-none placeholder:text-slate-400"
                     placeholder="Mínimo 6 caracteres"
                   />
@@ -201,6 +215,9 @@ export function RegisterPage() {
                 </div>
                 <p id="password-hint" className="text-sm text-slate-500">
                   La contraseña debe tener al menos 6 caracteres.
+                </p>
+                <p id="password-field-hint" className="field-hint hidden text-xs text-slate-500">
+                  Combina letras y números para que sea más difícil de adivinar.
                 </p>
               </div>
 
@@ -220,11 +237,16 @@ export function RegisterPage() {
                     autoComplete="new-password"
                     aria-required="true"
                     aria-invalid={Boolean(error && error.includes('coinciden'))}
-                    aria-describedby={error && error.includes('coinciden') ? 'register-error' : undefined}
+                    aria-describedby={
+                      error && error.includes('coinciden') ? 'register-error confirm-hint' : 'confirm-hint'
+                    }
                     className="w-full bg-transparent text-base text-slate-950 outline-none placeholder:text-slate-400"
                     placeholder="Repite tu contraseña"
                   />
                 </div>
+                <p id="confirm-hint" className="field-hint hidden text-xs text-slate-500">
+                  Debe coincidir exactamente con la contraseña anterior.
+                </p>
               </div>
 
               <button

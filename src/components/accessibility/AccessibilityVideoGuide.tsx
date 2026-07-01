@@ -2,17 +2,27 @@ import { useEffect, useRef } from 'react'
 import { useAccessibilityStore } from '../../stores/accessibility-store'
 
 const GUIDE_VIDEO_URL = new URL(
-  '../../../video/Manta_Transit_trip_guide_20260628.mp4',
+  '../../../video/Manta_Transit_trip_guide_20260701.mp4',
   import.meta.url,
 ).href
 
 const GUIDE_CAPTIONS_ES_URL = new URL(
-  '../../../video/Manta_Transit_trip_guide_20260628.es.vtt',
+  '../../../video/Manta_Transit_trip_guide_20260701.es.vtt',
   import.meta.url,
 ).href
 
 const GUIDE_CAPTIONS_EN_URL = new URL(
-  '../../../video/Manta_Transit_trip_guide_20260628.en.vtt',
+  '../../../video/Manta_Transit_trip_guide_20260701.en.vtt',
+  import.meta.url,
+).href
+
+const GUIDE_DESCRIPTIONS_ES_URL = new URL(
+  '../../../video/Manta_Transit_trip_guide_20260701.desc.es.vtt',
+  import.meta.url,
+).href
+
+const GUIDE_DESCRIPTIONS_EN_URL = new URL(
+  '../../../video/Manta_Transit_trip_guide_20260701.desc.en.vtt',
   import.meta.url,
 ).href
 
@@ -25,26 +35,26 @@ export function AccessibilityVideoGuide() {
     es: {
       eyebrow: 'Guía de uso',
       title: 'Cómo planificar tu viaje',
-      summary: 'Tutorial paso a paso para buscar y confirmar una ruta en Manta Transit.',
+      summary: 'Animación que resume cómo buscar tu ruta y seguir el bus en tiempo real.',
       transcriptTitle: 'Transcripción',
       transcriptText:
-        'Cómo planificar tu viaje en Manta Transit. Paso 1: Ingresa tu punto de partida. Paso 2: Escribe tu destino y pulsa Buscar Ruta. Paso 3: Selecciona la ruta más conveniente. Paso 4: Confirma el viaje y sigue el mapa en tiempo real. Movilidad para todos.',
+        'Bienvenidos a Manta Transit. Planificar tu ruta es fácil. Solo ingresa tu destino y el mejor camino. Sigue tu bus en tiempo real. Manta Transit, tu ciudad en movimiento.',
       descTitle: 'Descripción visual',
       descText:
-        'Tutorial en pantalla que muestra la interfaz del planificador de viajes: campos de origen y destino, botón de búsqueda, listado de rutas con tiempos estimados y mapa interactivo.',
+        'Animación de la marca: el logo de Manta Transit aparece sobre el perfil de la ciudad, una mano escribe un destino en el buscador, un mapa resalta la mejor ruta y un ícono de bus se mueve en tiempo real hasta la pantalla final con el eslogan.',
       fallback: 'Tu navegador no soporta la reproducción de video.',
       wcagBadge: 'WCAG 1.2 — Video 2/2',
     },
     en: {
       eyebrow: 'Usage guide',
       title: 'How to plan your trip',
-      summary: 'Step-by-step tutorial to search and confirm a route in Manta Transit.',
+      summary: 'Animation summarizing how to search your route and track the bus in real time.',
       transcriptTitle: 'Transcript',
       transcriptText:
-        'How to plan your trip in Manta Transit. Step 1: Enter your starting point. Step 2: Enter destination and press Search Route. Step 3: Select the most convenient route. Step 4: Confirm your trip and follow the live map. Mobility for everyone.',
+        'Welcome to Manta Transit. Planning your route is easy. Just enter your destination for the best route. Track your bus in real time. Manta Transit, your city in motion.',
       descTitle: 'Visual description',
       descText:
-        'On-screen tutorial showing the trip planner interface: origin and destination fields, search button, route list with estimated times, and interactive map.',
+        'Brand animation: the Manta Transit logo appears over the city skyline, a hand types a destination into the search bar, a map highlights the best route, and a bus icon moves in real time to the closing screen with the slogan.',
       fallback: 'Your browser does not support video playback.',
       wcagBadge: 'WCAG 1.2 — Video 2/2',
     },
@@ -97,8 +107,8 @@ export function AccessibilityVideoGuide() {
               <source src={GUIDE_VIDEO_URL} type="video/mp4" />
               <track kind="captions" src={GUIDE_CAPTIONS_ES_URL} srcLang="es" label="Español" default={lang === 'es'} />
               <track kind="captions" src={GUIDE_CAPTIONS_EN_URL} srcLang="en" label="English" default={lang === 'en'} />
-              <track kind="descriptions" src={GUIDE_CAPTIONS_ES_URL} srcLang="es" label="Descripción ES" />
-              <track kind="descriptions" src={GUIDE_CAPTIONS_EN_URL} srcLang="en" label="Description EN" />
+              <track kind="descriptions" src={GUIDE_DESCRIPTIONS_ES_URL} srcLang="es" label="Descripción ES" />
+              <track kind="descriptions" src={GUIDE_DESCRIPTIONS_EN_URL} srcLang="en" label="Description EN" />
               {t.fallback}
             </video>
 

@@ -234,10 +234,13 @@ export function LoginPage() {
                     autoComplete="email"
                     aria-required="true"
                     aria-invalid={Boolean(error)}
-                    aria-describedby={error ? 'login-error' : undefined}
+                    aria-describedby={error ? 'login-error email-hint' : 'email-hint'}
                     className="w-full bg-transparent text-base text-slate-950 outline-none placeholder:text-slate-400"
                   />
                 </div>
+                <p id="email-hint" className="field-hint hidden text-xs text-slate-500">
+                  Usa el mismo correo con el que creaste tu cuenta.
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -271,7 +274,7 @@ export function LoginPage() {
                     autoComplete="current-password"
                     aria-required="true"
                     aria-invalid={Boolean(error)}
-                    aria-describedby={error ? 'login-error' : undefined}
+                    aria-describedby={error ? 'login-error password-hint' : 'password-hint'}
                     className="w-full bg-transparent text-base text-slate-950 outline-none placeholder:text-slate-400"
                   />
                   <button
@@ -294,6 +297,9 @@ export function LoginPage() {
                     {error}
                   </p>
                 )}
+                <p id="password-hint" className="field-hint hidden text-xs text-slate-500">
+                  Usa la misma contraseña que definiste al registrarte.
+                </p>
               </div>
 
               <div className="flex items-center justify-between gap-4">

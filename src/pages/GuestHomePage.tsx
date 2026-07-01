@@ -22,6 +22,16 @@ const PROMO_CAPTIONS_EN_URL = new URL(
   import.meta.url,
 ).href
 
+const PROMO_DESCRIPTIONS_ES_URL = new URL(
+  '../../video/Manta_Transit_promotional_video_202606150117.desc.es.vtt',
+  import.meta.url,
+).href
+
+const PROMO_DESCRIPTIONS_EN_URL = new URL(
+  '../../video/Manta_Transit_promotional_video_202606150117.desc.en.vtt',
+  import.meta.url,
+).href
+
 // =====================================================================
 // GuestHomePage — Home de la app de pasajeros "Tu ciudad, en movimiento".
 // Banner de servicio en vivo (ruta con retraso real), buscador de viaje
@@ -386,16 +396,16 @@ export default function GuestHomePage() {
                       label="English"
                       default={lang === 'en'}
                     />
-                    {/* 1.2.5 — Audiodescripción: misma pista de texto usada como descripción narrada */}
+                    {/* 1.2.5 — Audiodescripción: describe lo que ocurre en pantalla, no el diálogo */}
                     <track
                       kind="descriptions"
-                      src={PROMO_CAPTIONS_URL}
+                      src={PROMO_DESCRIPTIONS_ES_URL}
                       srcLang="es"
                       label="Descripción ES"
                     />
                     <track
                       kind="descriptions"
-                      src={PROMO_CAPTIONS_EN_URL}
+                      src={PROMO_DESCRIPTIONS_EN_URL}
                       srcLang="en"
                       label="Description EN"
                     />
