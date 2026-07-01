@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDocumentTitle } from '../hooks/use-document-title'
 import { ADMIN_DEMO, useAuthStore } from '../stores/auth-store'
+import { AccessibilityMenu } from '../components/accessibility/AccessibilityMenu'
 
 export function LoginPage() {
   useDocumentTitle('Iniciar sesión')
@@ -119,6 +120,7 @@ export function LoginPage() {
   }
 
   return (
+    <>
     <main id="main-content" aria-labelledby="login-title" className="w-full py-0">
       <div className="grid min-h-[calc(100vh-10rem)] w-full overflow-hidden rounded-[1.75rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.10)] lg:grid-cols-[1fr_1fr] xl:min-h-[calc(100vh-11rem)]">
         <aside className="relative isolate flex min-h-[22rem] flex-col justify-between overflow-hidden bg-[radial-gradient(circle_at_top_right,_rgba(56,189,248,0.28),_transparent_28%),linear-gradient(135deg,_#0b4f8a_0%,_#133d72_55%,_#0f5d9a_100%)] px-8 py-8 text-white sm:px-10 sm:py-10 lg:px-12 lg:py-12 xl:px-14 xl:py-14">
@@ -360,6 +362,8 @@ export function LoginPage() {
         </article>
       </div>
     </main>
+    <AccessibilityMenu />
+    </>
   )
 }
 

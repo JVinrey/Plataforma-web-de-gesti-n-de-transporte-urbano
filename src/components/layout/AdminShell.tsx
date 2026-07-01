@@ -4,6 +4,7 @@ import { useProfile } from '../../hooks/use-profile'
 import { useAuthStore } from '../../stores/auth-store'
 import { useAccessibilityStore } from '../../stores/accessibility-store'
 import { getUiCopy } from '../../utils/ui-copy'
+import { AccessibilityMenu } from '../accessibility/AccessibilityMenu'
 
 /**
  * AdminShell — armazón compartido del panel de administración de flota.
@@ -93,6 +94,8 @@ export function AdminShell() {
       <main id="main-content" className="ml-64 flex-1 overflow-y-auto pb-20" tabIndex={-1}>
         <Outlet />
       </main>
+
+      <AccessibilityMenu />
     </div>
   )
 }
